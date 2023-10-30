@@ -4,6 +4,8 @@ import com.projectlib.librarian.model.Vendor;
 import com.projectlib.librarian.service.VendorService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,17 +29,20 @@ public class VendorController {
     }
 
     @PostMapping("/save")
-    public Vendor createVendor(@RequestBody Vendor vendor) {
-        return vendorService.createVendor(vendor);
+    public ResponseEntity<String> createVendor(@RequestBody Vendor vendor) {
+        String message = vendorService.createVendor(vendor);
+        return new ResponseEntity<>(message, HttpStatus.CREATED);
     }
 
     @PutMapping("/update/{id}")
-    public Vendor updateVendor(@PathVariable Long id, @RequestBody Vendor vendor) {
-        return vendorService.updateVendor(id, vendor);
+    public ResponseEntity<String> updateVendor(@PathVariable Long id, @RequestBody Vendor vendor) {
+        String message = vendorService.updateVendor(id, vendor);
+        return new ResponseEntity<>(message, HttpStatus.OK);
     }
 
     @DeleteMapping("/delete/{id}")
-    public void deleteVendor(@PathVariable Long id) {
-        vendorService.deleteVendor(id);
+    public ResponseEntity<String> deleteVendor(@PathVariable Long id) {
+        String message = vendorService.deleteVendor(id);
+        return new ResponseEntity<>(message, HttpStatus.OK);
     }
 }
