@@ -48,10 +48,12 @@ public class Book {
     private Boolean status;
 
     @ManyToOne
+    @JsonIgnore
     @JoinColumn(name = "vendor_id")
     private Vendor vendor;
 
     @ManyToMany(cascade = CascadeType.ALL)
+    @JsonIgnore
     @JoinTable(name = "book_author",
             joinColumns = @JoinColumn(name = "book_id"),
             inverseJoinColumns = @JoinColumn(name = "author_id"))

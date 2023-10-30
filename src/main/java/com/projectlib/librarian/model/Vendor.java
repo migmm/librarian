@@ -29,5 +29,6 @@ public class Vendor {
     private  Boolean status;
 
     @OneToMany(mappedBy = "vendor")
+    @JsonIgnore
     private Set<Book> books = new HashSet<>();
 }
