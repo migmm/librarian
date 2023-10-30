@@ -41,5 +41,6 @@ public class AuthorService {
             authorRepository.save(existingAuthor);
             return "Author updated successfully.";
         }
+        return "Author does not exist.";
     }
 }

@@ -17,19 +17,21 @@ public class BookService {
         return bookRepository.findAll();
     }
 
-    public Book createBook(Book book) {
-        return bookRepository.save(book);
+    public String createBook(Book book) {
+        bookRepository.save(book);
+        return "Author created successfully.";
     }
 
     public Book getBookById(Long id) {
         return bookRepository.findById(id).orElse(null);
     }
 
-    public void deleteBook(Long id) {
+    public String deleteBook(Long id) {
         bookRepository.deleteById(id);
+        return "Author with ID " + id + " deleted successfully.";
     }
 
-    public Book updateBook(Long id, Book updatedBook) {
+    public String updateBook(Long id, Book updatedBook) {
         Book existingBook = getBookById(id);
         if (existingBook != null) {
             existingBook.setISBN(updatedBook.getISBN());
@@ -40,8 +42,9 @@ public class BookService {
             existingBook.setBooks_left(updatedBook.getBooks_left());
             existingBook.setGenre(updatedBook.getGenre());
             existingBook.setStatus(updatedBook.getStatus());
-            return bookRepository.save(existingBook);
+            bookRepository.save(existingBook);
+            return "Author updated successfully.";
         }
-        return null;
+        return "Book does not exist.";
     }
 }

@@ -4,6 +4,8 @@ import com.projectlib.librarian.model.Book;
 import com.projectlib.librarian.service.BookService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,27 +19,32 @@ public class BookController {
     private BookService bookService;
 
     @GetMapping("/findAll")
-    public List<Book> getAllBooks() {
-        return bookService.getAllBooks();
+    public ResponseEntity<List<Book>> getAllBooks() {
+        List<Book> books = bookService.getAllBooks();
+        return new ResponseEntity<>(books, HttpStatus.OK);
     }
 
     @GetMapping("/find/{id}")
-    public Book getBookById(@PathVariable Long id) {
-        return bookService.getBookById(id);
+    public ResponseEntity<Book> getBookById(@PathVariable Long id) {
+        Book book = bookService.getBookById(id);
+        return new ResponseEntity<>(book, HttpStatus.OK);
     }
 
     @PostMapping("/save")
-    public Book createBook(@RequestBody Book book) {
-        return bookService.createBook(book);
+    public ResponseEntity<String> createBook(@RequestBody Book book) {
+        String message = bookService.createBook(book);
+        return new ResponseEntity<>(message, HttpStatus.CREATED);
     }
 
     @PutMapping("/update/{id}")
-    public Book updateBook(@PathVariable Long id, @RequestBody Book book) {
-        return bookService.updateBook(id, book);
+    public ResponseEntity<String> updateBook(@PathVariable Long id, @RequestBody Book book) {
+        String message = bookService.updateBook(id, book);
+        return new ResponseEntity<>(message, HttpStatus.OK);
     }
 
     @DeleteMapping("/delete/{id}")
-    public void deletebook(@PathVariable Long id) {
-        bookService.deleteBook(id);
+    public ResponseEntity<String> deletebook(@PathVariable Long id) {
+        String message = bookService.deleteBook(id);
+        return new ResponseEntity<>(message, HttpStatus.OK);
     }
 }

@@ -20,8 +20,8 @@ public class AuthorController {
 
     @GetMapping("/findAll")
     public ResponseEntity<List<Author>> getAllAuthors() {
-        List<Author> author = authorService.getAllAuthors();
-        return new ResponseEntity<>(author, HttpStatus.OK);
+        List<Author> authors = authorService.getAllAuthors();
+        return new ResponseEntity<>(authors, HttpStatus.OK);
     }
 
     @GetMapping("/find/{id}")
