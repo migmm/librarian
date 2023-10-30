@@ -17,18 +17,13 @@ public class BookService {
         return bookRepository.findAll();
     }
 
-    public String createBook(Book book) {
-        bookRepository.save(book);
-        return "Author created successfully.";
-    }
-
     public Book getBookById(Long id) {
         return bookRepository.findById(id).orElse(null);
     }
 
-    public String deleteBook(Long id) {
-        bookRepository.deleteById(id);
-        return "Author with ID " + id + " deleted successfully.";
+    public String createBook(Book book) {
+        bookRepository.save(book);
+        return "Author created successfully.";
     }
 
     public String updateBook(Long id, Book updatedBook) {
@@ -46,5 +41,20 @@ public class BookService {
             return "Author updated successfully.";
         }
         return "Book does not exist.";
+    }
+
+    public String setStatus(Long id, Book setStatus) {
+        Book existingBook = getBookById(id);
+        if (existingBook != null) {
+            existingBook.setStatus(setStatus.getStatus());
+            bookRepository.save(existingBook);
+            return "Author status updated successfully.";
+        }
+        return "Book does not exist.";
+    }
+
+    public String deleteBook(Long id) {
+        bookRepository.deleteById(id);
+        return "Author with ID " + id + " deleted successfully.";
     }
 }

@@ -19,13 +19,15 @@ public class VendorController {
     private VendorService vendorService;
 
     @GetMapping("/findAll")
-    public List<Vendor> getAllVendors() {
-        return vendorService.getAllVendors();
+    public ResponseEntity<List<Vendor>> getAllVendors() {
+        List<Vendor> vendors = vendorService.getAllVendors();
+        return new ResponseEntity<>(vendors, HttpStatus.OK);
     }
 
     @GetMapping("/find/{id}")
-    public Vendor getVendorById(@PathVariable Long id) {
-        return vendorService.getVendorById(id);
+    public ResponseEntity<Vendor>  getVendorById(@PathVariable Long id) {
+        Vendor vendor = vendorService.getVendorById(id);
+        return new ResponseEntity<>(vendor, HttpStatus.OK);
     }
 
     @PostMapping("/save")
@@ -37,6 +39,12 @@ public class VendorController {
     @PutMapping("/update/{id}")
     public ResponseEntity<String> updateVendor(@PathVariable Long id, @RequestBody Vendor vendor) {
         String message = vendorService.updateVendor(id, vendor);
+        return new ResponseEntity<>(message, HttpStatus.OK);
+    }
+
+    @PutMapping("/setstatus/{id}")
+    public ResponseEntity<String> setStatus(@PathVariable Long id, @RequestBody Vendor vendor) {
+        String message = vendorService.setStatus(id, vendor);
         return new ResponseEntity<>(message, HttpStatus.OK);
     }
 

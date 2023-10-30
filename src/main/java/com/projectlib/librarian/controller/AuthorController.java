@@ -42,6 +42,12 @@ public class AuthorController {
         return new ResponseEntity<>(message, HttpStatus.OK);
     }
 
+    @PutMapping("/setstatus/{id}")
+    public ResponseEntity<String> setStatus(@PathVariable Long id, @RequestBody Author author) {
+        String message = authorService.setStatus(id, author);
+        return new ResponseEntity<>(message, HttpStatus.OK);
+    }
+
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<String> deleteAuthor(@PathVariable Long id) {
         String message = authorService.deleteAuthor(id);

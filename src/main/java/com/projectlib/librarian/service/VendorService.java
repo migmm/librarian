@@ -17,18 +17,13 @@ public class VendorService {
         return vendorRepository.findAll();
     }
 
-    public String createVendor(Vendor vendor) {
-        vendorRepository.save(vendor);
-        return "Vendor created successfully.";
-    }
-
     public Vendor getVendorById(Long id) {
         return vendorRepository.findById(id).orElse(null);
     }
 
-    public String deleteVendor(Long id) {
-        vendorRepository.deleteById(id);
-        return "Vendor with ID " + id + " deleted successfully.";
+    public String createVendor(Vendor vendor) {
+        vendorRepository.save(vendor);
+        return "Vendor created successfully.";
     }
 
     public String updateVendor(Long id, Vendor updatedVendor) {
@@ -36,8 +31,22 @@ public class VendorService {
         if (existingVendor != null) {
             existingVendor.setName(updatedVendor.getName());
             existingVendor.setStatus(updatedVendor.getStatus());
-            return "Author updated successfully.";
+            return "Vendor updated successfully.";
         }
-        return "Author does not exist.";
+        return "Vendor does not exist.";
+    }
+
+    public String setStatus(Long id, Vendor setStatus) {
+        Vendor existingVendor = getVendorById(id);
+        if (existingVendor != null) {
+            existingVendor.setStatus(setStatus.getStatus());
+            return "Vendor status updated successfully.";
+        }
+        return "Vendor does not exist.";
+    }
+
+    public String deleteVendor(Long id) {
+        vendorRepository.deleteById(id);
+        return "Vendor with ID " + id + " deleted successfully.";
     }
 }

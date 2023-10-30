@@ -42,6 +42,12 @@ public class BookController {
         return new ResponseEntity<>(message, HttpStatus.OK);
     }
 
+    @PutMapping("/setstatus/{id}")
+    public ResponseEntity<String> setStatus(@PathVariable Long id, @RequestBody Book book) {
+        String message = bookService.setStatus(id, book);
+        return new ResponseEntity<>(message, HttpStatus.OK);
+    }
+
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<String> deletebook(@PathVariable Long id) {
         String message = bookService.deleteBook(id);
