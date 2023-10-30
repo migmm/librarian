@@ -4,6 +4,8 @@ import com.projectlib.librarian.model.Author;
 import com.projectlib.librarian.service.AuthorService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,8 +19,9 @@ public class AuthorController {
     private AuthorService authorService;
 
     @GetMapping("/findAll")
-    public List<Author> getAllAuthors() {
-        return authorService.getAllAuthors();
+    public ResponseEntity<List<Author>> getAllAuthors() {
+        List<Author> author = authorService.getAllAuthors();
+        return new ResponseEntity<>(author, HttpStatus.OK);
     }
 
     @GetMapping("/find/{id}")
@@ -27,17 +30,20 @@ public class AuthorController {
     }
 
     @PostMapping("/save")
-    public Author createAuthor(@RequestBody Author author) {
-        return authorService.createAuthor(author);
+    public ResponseEntity<String> createAuthor(@RequestBody Author author) {
+        String message = authorService.createAuthor(author);
+        return new ResponseEntity<>(message, HttpStatus.CREATED);
     }
 
     @PutMapping("/update/{id}")
-    public Author updateAuthor(@PathVariable Long id, @RequestBody Author author) {
-        return authorService.updateAuthor(id, author);
+    public ResponseEntity<String> updateAuthor(@PathVariable Long id, @RequestBody Author author) {
+        String message = authorService.updateAuthor(id, author);
+        return new ResponseEntity<>(message, HttpStatus.OK);
     }
 
     @DeleteMapping("/delete/{id}")
-    public void deleteAuthor(@PathVariable Long id) {
-        authorService.deleteAuthor(id);
+    public ResponseEntity<String> deleteAuthor(@PathVariable Long id) {
+        String message = authorService.deleteAuthor(id);
+        return new ResponseEntity<>(message, HttpStatus.OK);
     }
 }

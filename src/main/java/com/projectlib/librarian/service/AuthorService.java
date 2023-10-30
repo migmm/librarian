@@ -18,26 +18,28 @@ public class AuthorService {
         return authorRepository.findAll();
     }
 
-    public Author createAuthor(Author author) {
-        return authorRepository.save(author);
+    public String createAuthor(Author author) {
+        authorRepository.save(author);
+        return "Author created successfully.";
     }
 
     public Author getAuthorById(Long id) {
         return authorRepository.findById(id).orElse(null);
     }
 
-    public void deleteAuthor(Long id) {
+    public String deleteAuthor(Long id) {
         authorRepository.deleteById(id);
+        return "Author with ID " + id + " deleted successfully.";
     }
 
-    public Author updateAuthor(Long id, Author updatedAuthor) {
+    public String updateAuthor(Long id, Author updatedAuthor) {
         Author existingAuthor = getAuthorById(id);
         if (existingAuthor != null) {
             existingAuthor.setName(updatedAuthor.getName());
             existingAuthor.setSurname(updatedAuthor.getSurname());
             existingAuthor.setStatus(updatedAuthor.getStatus());
-            return authorRepository.save(existingAuthor);
+            authorRepository.save(existingAuthor);
+            return "Author updated successfully.";
         }
-        return null;
     }
 }
