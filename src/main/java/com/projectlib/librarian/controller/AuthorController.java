@@ -25,8 +25,9 @@ public class AuthorController {
     }
 
     @GetMapping("/find/{id}")
-    public Author getAuthorById(@PathVariable Long id) {
-        return authorService.getAuthorById(id);
+    public ResponseEntity<Author> getAuthorById(@PathVariable Long id) {
+        Author author = authorService.getAuthorById(id);
+        return new ResponseEntity<>(author, HttpStatus.OK);
     }
 
     @PostMapping("/save")
