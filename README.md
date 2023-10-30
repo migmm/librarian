@@ -59,10 +59,7 @@ Alternatively, you can build an executable JAR file and then run it:
 
     The application will be available at http://localhost:8080. You can access it from your web browser.
 
-### Using the Application
-
-This is a sample application and can be customized to suit your needs. The application currently includes basic Spring Security configuration for user authentication. You can modify and extend the functionality as per your requirements.
-Dependencies
+### Dependences
 
 The project uses the following Spring Boot dependencies:
 
@@ -75,6 +72,18 @@ The project uses the following Spring Boot dependencies:
 You can manage the dependencies in the project's pom.xml file.
 
 This project is under the MIT license. Please refer to the LICENSE file for more details.
+
+### Swagger documentation
+
+To access to Swagger API documentation you can go to the links below in your localhost:
+
+[Swagger UI](http://localhost:8080/swagger-ui/index.html)
+[Swagger JSON](http://localhost:8080/v3/api-docs)
+
+### Source information
+
+[Swagger Documentation](https://www.baeldung.com/spring-rest-openapi-documentation)
+
 
 ### Contact
 
