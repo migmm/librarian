@@ -39,10 +39,13 @@ public class Book {
     private Integer borrowed_books;
 
     @Column
-    private Boolean status;
+    private Integer books_left;
 
     @Column
     private String genre;
+
+    @Column
+    private Boolean status;
 
     @ManyToOne
     @JoinColumn(name = "vendor_id")
