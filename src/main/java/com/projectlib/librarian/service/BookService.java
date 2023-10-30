@@ -23,7 +23,7 @@ public class BookService {
 
     public String createBook(Book book) {
         bookRepository.save(book);
-        return "Author created successfully.";
+        return "Book created successfully.";
     }
 
     public String updateBook(Long id, Book updatedBook) {
@@ -38,7 +38,7 @@ public class BookService {
             existingBook.setGenre(updatedBook.getGenre());
             existingBook.setStatus(updatedBook.getStatus());
             bookRepository.save(existingBook);
-            return "Author updated successfully.";
+            return "Book updated successfully.";
         }
         return "Book does not exist.";
     }
@@ -48,13 +48,13 @@ public class BookService {
         if (existingBook != null) {
             existingBook.setStatus(setStatus.getStatus());
             bookRepository.save(existingBook);
-            return "Author status updated successfully.";
+            return "Book status updated successfully.";
         }
         return "Book does not exist.";
     }
 
     public String deleteBook(Long id) {
         bookRepository.deleteById(id);
-        return "Author with ID " + id + " deleted successfully.";
+        return "Book with ID " + id + " deleted successfully.";
     }
 }
