@@ -36,7 +36,7 @@ I used two types of relationships.
 In some scenarios, you might need to establish many-to-many relationships between entities. For this, you can use a junction table (also known as a linking or pivot table). In a Spring Data JPA application, you can create entities and repositories to represent this relationship. For example, if you have two entities, Book and author, and you want to establish a many-to-many relationship, you can create a junction table book_author:
 
     book entity has a @ManyToMany relationship with the book_author entity.
-    author entity also has a @OneToMany relationship with the book_author entity.
+    author entity also has a @ManyToMany relationship with the book_author entity.
 
 ##### Direct Relationship
 
@@ -44,11 +44,21 @@ In other cases, you may have direct relationships between entities, such as a on
 
 ### Running the Project
 
+First create a database named librarian then set a variable in your application.properties file named spring.jpa.hibernate.ddl-auto=create
+
 Clone this repository or download the source code.
 Open a terminal and navigate to the project's root directory.
+
+
 Run the project using Maven:
 
     mvn spring-boot:run
+
+Stop the running, then change the variable value to spring.jpa.hibernate.ddl-auto=none
+
+Load the dummy data using DBeaver or Heidi, or your preferenced database editor.
+
+Run the project again and you are in!
 
 Alternatively, you can build an executable JAR file and then run it:
 
@@ -73,6 +83,38 @@ You can manage the dependencies in the project's pom.xml file.
 
 This project is under the MIT license. Please refer to the LICENSE file for more details.
 
+### Endpoints documentation
+
+| Endpoint                      | Method      | Description                                                    |
+|-------------------------------|-------------|----------------------------------------------------------------|
+|                               |             |                                                                |
+| `/authors/findall`            | GET         | Get all authors.                                               |
+| `/authors/find/{id}`          | GET         | Get author by ID.                                              |
+| `/authors/save`               | POST        | Register new author.                                           |
+| `/authors/update/{id}`        | PUT         | Update a author.                                               |
+| `/authors/setstatus/{id}`     | PUT         | Set author status to true o false (logical deletion).          |
+| `/authors/delete/{id}`        | DELETE      | Delete author from database.                                   |
+|                               |             |                                                                |
+| `/books/findall`              | GET         | Get all books.                                                 |
+| `/books/find/{id}`            | GET         | Get book by ID.                                                |
+| `/books/save`                 | POST        | Register new book.                                             |
+| `/books/update/{id}`          | PUT         | Update a book.                                                 |
+| `/books/setstatus/{id}`       | PUT         | Set book status to true o false (logical deletion).            |
+| `/books/borrow/{id}`          | PUT         | Borrow a book                                                  |
+| `/books/return/{id}`          | PUT         | Return a book                                                  |
+| `/books/delete/{id}`          | DELETE      | Delete book from database.                                     |
+|                               |             |                                                                |
+| `/vendor/findall`             | GET         | Get all vendors.                                               |
+| `/vendor/find/{id}`           | GET         | Get vendor by ID.                                              |
+| `/vendor/save`                | POST        | Register new vendor.                                           |
+| `/vendor/update/{id}`         | PUT         | Update a vendor.                                               |
+| `/vendor/setstatus/{id}`      | PUT         | Set vendor status to true o false (logical deletion).          |
+| `/vendor/delete/{id}`         | DELETE      | Delete vendor from database.                                   |
+
+
+All endpoints uses local host url http://localhost:8080/
+If you want a more complete description of the endpoints and how to use it go to the section below.
+
 ### Swagger documentation
 
 To access to Swagger API documentation you can go to the links below in your localhost:
@@ -87,4 +129,4 @@ To access to Swagger API documentation you can go to the links below in your loc
 
 ### Contact
 
-YOu can reachme in hi@miguedev.com.
+YOu can reachme in hi@miguedev.com. and my web https://www.miguedev.com
