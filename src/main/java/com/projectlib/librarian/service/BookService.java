@@ -51,6 +51,8 @@ public class BookService {
 
             if (existingBook.getBooks_left() == 0) {
                 existingBook.setStatus(false);
+            } else {
+                existingBook.setStatus(true);
             }
 
             bookRepository.save(existingBook);
@@ -67,6 +69,8 @@ public class BookService {
 
             if (existingBook.getBooks_left() > 0) {
                 existingBook.setStatus(true);
+            }else {
+                existingBook.setStatus(false);
             }
 
             bookRepository.save(existingBook);
@@ -86,7 +90,12 @@ public class BookService {
     }
 
     public String deleteBook(Long id) {
-        bookRepository.deleteById(id);
-        return "Book with ID " + id + " deleted successfully.";
+        Book existingBook = getBookById(id);
+        if (existingBook != null) {
+            bookRepository.deleteById(id);
+            return "Book with ID " + id + " deleted successfully.";
+        }
+        return "Book does not exist.";
     }
+
 }
