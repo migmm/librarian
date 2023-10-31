@@ -21,6 +21,7 @@ public class VendorController {
     @GetMapping("/findAll")
     public ResponseEntity<List<Vendor>> getAllVendors() {
         List<Vendor> vendors = vendorService.getAllVendors();
+        vendors.removeIf(vendor -> !vendor.getStatus());
         return new ResponseEntity<>(vendors, HttpStatus.OK);
     }
 

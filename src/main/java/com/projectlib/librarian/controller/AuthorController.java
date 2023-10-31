@@ -21,6 +21,7 @@ public class AuthorController {
     @GetMapping("/findAll")
     public ResponseEntity<List<Author>> getAllAuthors() {
         List<Author> authors = authorService.getAllAuthors();
+        authors.removeIf(author -> !author.getStatus());
         return new ResponseEntity<>(authors, HttpStatus.OK);
     }
 

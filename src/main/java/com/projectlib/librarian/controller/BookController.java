@@ -21,6 +21,7 @@ public class BookController {
     @GetMapping("/findAll")
     public ResponseEntity<List<Book>> getAllBooks() {
         List<Book> books = bookService.getAllBooks();
+        books.removeIf(book -> !book.getStatus());
         return new ResponseEntity<>(books, HttpStatus.OK);
     }
 
