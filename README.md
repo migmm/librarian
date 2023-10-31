@@ -129,4 +129,4 @@ To access to Swagger API documentation you can go to the links below in your loc
 
 ### Contact
 
-YOu can reachme in hi@miguedev.com. and my web https://www.miguedev.com
+You can reachme at hi@miguedev.com or go to my web https://www.miguedev.com
