@@ -42,14 +42,26 @@ public class BookController {
         return new ResponseEntity<>(message, HttpStatus.OK);
     }
 
-    @PutMapping("/setstatus/{id}")
+    @PutMapping("/borrrow/{id}")
+    public ResponseEntity<String> borrowBook(@PathVariable Long id, @RequestBody Book book) {
+        String message = bookService.borrowBook(id, book);
+        return new ResponseEntity<>(message, HttpStatus.OK);
+    }
+
+    @PutMapping("/return/{id}")
+    public ResponseEntity<String> returnBook(@PathVariable Long id, @RequestBody Book book) {
+        String message = bookService.returnBook(id, book);
+        return new ResponseEntity<>(message, HttpStatus.OK);
+    }
+
+    @PutMapping("/status/{id}")
     public ResponseEntity<String> setStatus(@PathVariable Long id, @RequestBody Book book) {
         String message = bookService.setStatus(id, book);
         return new ResponseEntity<>(message, HttpStatus.OK);
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<String> deletebook(@PathVariable Long id) {
+    public ResponseEntity<String> deleteBook(@PathVariable Long id) {
         String message = bookService.deleteBook(id);
         return new ResponseEntity<>(message, HttpStatus.OK);
     }

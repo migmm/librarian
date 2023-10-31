@@ -43,6 +43,38 @@ public class BookService {
         return "Book does not exist.";
     }
 
+    public String borrowBook(Long id, Book updatedBook) {
+        Book existingBook = getBookById(id);
+        if (existingBook != null) {
+            existingBook.setBorrowed_books(existingBook.getBorrowed_books() + 1);
+            existingBook.setBooks_left(existingBook.getBooks_left() - 1);
+
+            if (existingBook.getBooks_left() == 0) {
+                existingBook.setStatus(false);
+            }
+
+            bookRepository.save(existingBook);
+            return "Book borrowed successfully.";
+        }
+        return "Book does not exist.";
+    }
+
+    public String returnBook(Long id, Book updatedBook) {
+        Book existingBook = getBookById(id);
+        if (existingBook != null) {
+            existingBook.setBorrowed_books(existingBook.getBorrowed_books() - 1);
+            existingBook.setBooks_left(existingBook.getBooks_left() + 1);
+
+            if (existingBook.getBooks_left() > 0) {
+                existingBook.setStatus(true);
+            }
+
+            bookRepository.save(existingBook);
+            return "Book returned successfully.";
+        }
+        return "Book does not exist.";
+    }
+
     public String setStatus(Long id, Book setStatus) {
         Book existingBook = getBookById(id);
         if (existingBook != null) {
