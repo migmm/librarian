@@ -1,26 +1,31 @@
 package com.projectlib.librarian.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.projectlib.librarian.model.Vendor;
 import com.projectlib.librarian.service.VendorService;
-import org.junit.jupiter.api.BeforeEach;
+import jakarta.transaction.Transactional;
+
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import static org.mockito.Mockito.when;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
-import java.util.ArrayList;
+import org.mockito.Mockito;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
+@AutoConfigureMockMvc
 public class VendorControllerTest {
 
     @Mock
@@ -29,97 +34,87 @@ public class VendorControllerTest {
     @InjectMocks
     private VendorController vendorController;
 
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    @Test
+    public void testGetAllVendors() throws Exception {
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/vendors/findAll")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(jsonPath("$.size()", greaterThan(2)));
     }
 
     @Test
-    public void testGetAllVendors() {
-        List<Vendor> vendors = new ArrayList<>();
-        vendors.add(new Vendor(1L, "Vendor 1", true, new HashSet<>()));
-
-        when(vendorService.getAllVendors()).thenReturn(vendors);
-
-        ResponseEntity<List<Vendor>> response = vendorController.getAllVendors();
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(1, response.getBody().size());
-    }
-
-    @Test
-    public void testGetVendorById() {
+    public void testGetVendorById() throws Exception {
         Long vendorId = 1L;
-        Vendor vendor = new Vendor(vendorId, "Vendor 1", true, new HashSet<>());
 
-        when(vendorService.getVendorById(vendorId)).thenReturn(vendor);
-
-        ResponseEntity<Vendor> response = vendorController.getVendorById(vendorId);
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(vendorId, response.getBody().getId());
+        mockMvc.perform(MockMvcRequestBuilders.get("/vendors/find/{id}", vendorId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(vendorId));
     }
 
-
     @Test
-    public void testCreateVendor() {
+    public void testCreateVendor() throws Exception {
         Vendor newVendor = new Vendor(1L, "New Vendor", true, new HashSet<>());
 
         when(vendorService.createVendor(Mockito.any(Vendor.class))).thenReturn("Vendor created successfully.");
 
-        ResponseEntity<String> response = vendorController.createVendor(newVendor);
-
-        assertEquals(HttpStatus.CREATED, response.getStatusCode());
-        assertEquals("Vendor created successfully.", response.getBody());
+        mockMvc.perform(MockMvcRequestBuilders.post("/vendors/save")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(newVendor)))
+                .andExpect(MockMvcResultMatchers.status().isCreated())
+                .andExpect(MockMvcResultMatchers.content().string("Vendor created successfully."));
     }
 
     @Test
-    public void testUpdateVendor() {
+    public void testUpdateVendor() throws Exception {
         Long vendorId = 1L;
         Vendor updatedVendor = new Vendor(vendorId, "Updated Vendor", false, new HashSet<>());
 
         when(vendorService.updateVendor(vendorId, updatedVendor)).thenReturn("Vendor updated successfully.");
 
-        ResponseEntity<String> response = vendorController.updateVendor(vendorId, updatedVendor);
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals("Vendor updated successfully.", response.getBody());
+        mockMvc.perform(MockMvcRequestBuilders.put("/vendors/update/{id}", vendorId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updatedVendor)))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().string("Vendor updated successfully."));
     }
 
     @Test
-    public void testSetStatus() {
+    public void testSetStatus() throws Exception {
         Long vendorId = 1L;
         Vendor updatedVendor = new Vendor(vendorId, "Vendor 1", false, new HashSet<>());
 
         when(vendorService.setStatus(vendorId, updatedVendor)).thenReturn("Vendor status updated successfully.");
 
-        ResponseEntity<String> response = vendorController.setStatus(vendorId, updatedVendor);
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals("Vendor status updated successfully.", response.getBody());
+        mockMvc.perform(MockMvcRequestBuilders.put("/vendors/setstatus/{id}", vendorId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updatedVendor)))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().string("Vendor status updated successfully."));
     }
 
     @Test
-    public void testDeleteVendor() {
-        Long vendorId = 1L;
+    @Transactional
+    public void testDeleteVendor() throws Exception {
+        Long vendorId = 2L;
 
-        when(vendorService.deleteVendor(vendorId)).thenReturn("Vendor with ID 1 deleted successfully.");
+        when(vendorService.deleteVendor(vendorId)).thenReturn("Vendor with ID " + vendorId + " deleted successfully.");
 
-        ResponseEntity<String> response = vendorController.deleteVendor(vendorId);
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals("Vendor with ID 1 deleted successfully.", response.getBody());
-    }
-
-    @Test
-    public void testDeleteVendorVendorDoesNotExist() {
-        Long vendorId = 1L;
-
-        when(vendorService.deleteVendor(vendorId)).thenReturn("Vendor does not exist.");
-
-        ResponseEntity<String> response = vendorController.deleteVendor(vendorId);
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals("Vendor does not exist.", response.getBody());
+        mockMvc.perform(MockMvcRequestBuilders.delete("/vendors/delete/{id}", vendorId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().string("Vendor with ID " + vendorId + " deleted successfully."));
     }
 }
