@@ -55,7 +55,7 @@ public class BookController {
         return new ResponseEntity<>(message, HttpStatus.OK);
     }
 
-    @PutMapping("/status/{id}")
+    @PutMapping("/setstatus/{id}")
     public ResponseEntity<String> setStatus(@PathVariable Long id, @RequestBody Book book) {
         String message = bookService.setStatus(id, book);
         return new ResponseEntity<>(message, HttpStatus.OK);
