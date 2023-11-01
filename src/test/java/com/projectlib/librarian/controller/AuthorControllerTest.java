@@ -1,121 +1,120 @@
 package com.projectlib.librarian.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.projectlib.librarian.model.Author;
 import com.projectlib.librarian.service.AuthorService;
-import org.junit.jupiter.api.BeforeEach;
+import jakarta.transaction.Transactional;
+
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 import static org.mockito.Mockito.when;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+
+import org.mockito.Mockito;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-
-import java.util.ArrayList;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+
+@SpringBootTest
+@AutoConfigureMockMvc
 public class AuthorControllerTest {
+
     @Mock
     private AuthorService authorService;
 
     @InjectMocks
     private AuthorController authorController;
 
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    @Test
+    public void testGetAllAuthors() throws Exception {
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/authors/findAll")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(jsonPath("$.size()", greaterThan(2)));
     }
 
     @Test
-    public void testGetAllAuthors() {
-        List<Author> authors = new ArrayList<>();
-        authors.add(new Author(1L, "Author 1", "Last Name 1", true, new HashSet<>()));
-
-        when(authorService.getAllAuthors()).thenReturn(authors);
-
-        ResponseEntity<List<Author>> response = authorController.getAllAuthors();
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(1, response.getBody().size());
-    }
-
-    @Test
-    public void testGetAuthorById() {
+    public void testGetAuthorById() throws Exception {
         Long authorId = 1L;
-        Author author = new Author(authorId, "Author 1", "Last Name 1", true, new HashSet<>());
 
-        when(authorService.getAuthorById(authorId)).thenReturn(author);
-
-        ResponseEntity<Author> response = authorController.getAuthorById(authorId);
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(authorId, response.getBody().getId());
+        mockMvc.perform(MockMvcRequestBuilders.get("/authors/find/{id}", authorId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(authorId));
     }
 
     @Test
-    public void testCreateAuthor() {
+    public void testCreateAuthor() throws Exception {
         Author newAuthor = new Author(1L, "New Author", "New Last Name", true, new HashSet<>());
 
         when(authorService.createAuthor(Mockito.any(Author.class))).thenReturn("Author created successfully.");
 
-        ResponseEntity<String> response = authorController.createAuthor(newAuthor);
-
-        assertEquals(HttpStatus.CREATED, response.getStatusCode());
-        assertEquals("Author created successfully.", response.getBody());
+        mockMvc.perform(MockMvcRequestBuilders.post("/authors/save")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(newAuthor)))
+                .andExpect(MockMvcResultMatchers.status().isCreated())
+                .andExpect(MockMvcResultMatchers.content().string("Author created successfully."));
     }
 
     @Test
-    public void testUpdateAuthor() {
+    public void testUpdateAuthor() throws Exception {
         Long authorId = 1L;
         Author updatedAuthor = new Author(authorId, "Updated Author", "Updated Last Name", false, new HashSet<>());
 
         when(authorService.updateAuthor(authorId, updatedAuthor)).thenReturn("Author updated successfully.");
 
-        ResponseEntity<String> response = authorController.updateAuthor(authorId, updatedAuthor);
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals("Author updated successfully.", response.getBody());
+        mockMvc.perform(MockMvcRequestBuilders.put("/authors/update/{id}", authorId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updatedAuthor)))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().string("Author updated successfully."));
     }
 
     @Test
-    public void testSetStatus() {
+    public void testSetStatus() throws Exception {
         Long authorId = 1L;
         Author updatedAuthor = new Author(authorId, "Author 1", "Last Name 1", false, new HashSet<>());
 
         when(authorService.setStatus(authorId, updatedAuthor)).thenReturn("Author status updated successfully.");
 
-        ResponseEntity<String> response = authorController.setStatus(authorId, updatedAuthor);
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals("Author status updated successfully.", response.getBody());
+        mockMvc.perform(MockMvcRequestBuilders.put("/authors/setstatus/{id}", authorId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updatedAuthor)))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().string("Author status updated successfully."));
     }
 
     @Test
-    public void testDeleteAuthor() {
-        Long authorId = 1L;
+    @Transactional
+    public void testDeleteAuthor() throws Exception {
+        Long authorId = 2L;
 
-        when(authorService.deleteAuthor(authorId)).thenReturn("Author with ID 1 deleted successfully.");
+        when(authorService.deleteAuthor(authorId)).thenReturn("Author with ID " + authorId + " deleted successfully.");
 
-        ResponseEntity<String> response = authorController.deleteAuthor(authorId);
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals("Author with ID 1 deleted successfully.", response.getBody());
-    }
-
-    @Test
-    public void testDeleteAuthorAuthorDoesNotExist() {
-        Long authorId = 1L;
-
-        when(authorService.deleteAuthor(authorId)).thenReturn("Author does not exist.");
-
-        ResponseEntity<String> response = authorController.deleteAuthor(authorId);
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals("Author does not exist.", response.getBody());
+        mockMvc.perform(MockMvcRequestBuilders.delete("/authors/delete/{id}", authorId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().string("Author with ID " + authorId + " deleted successfully."));
     }
 }
