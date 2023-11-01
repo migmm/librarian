@@ -117,7 +117,7 @@ This project is under the MIT license. Please refer to the LICENSE file for more
 | `/vendor/delete/{id}`         | DELETE      | Delete vendor from database.                                   |
 
 
-All endpoints uses local host url http://localhost:8080/
+All endpoints uses a local host url http://localhost:8080/
 If you want a more complete description of the endpoints and how to use it go to the section below.
 
 ### Swagger documentation
@@ -131,10 +131,9 @@ To access to Swagger API documentation you can go to the links below in your loc
 
 [Swagger Documentation](https://www.baeldung.com/spring-rest-openapi-documentation)
 
-
 ### Extra files
 
-I included a [Dummy data](dummy_data.sql) to populate the database and a [Postman file](Librarian.postman_collection.json) to test the routes propertly, you can use in postman o import in another tester like [Hoppscotch](https://hoppscotch.io/)
+I included a [Dummy data](dummy_data.sql) to populate the database and a [Postman file](Librarian.postman_collection.json) to test the routes propertly, you can use in postman o you can import this file in another tester like [Hoppscotch](https://hoppscotch.io/).
 
 ### Contact
 
