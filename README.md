@@ -132,6 +132,13 @@ To access to Swagger API documentation you can go to the links below in your loc
 [Swagger Documentation](https://www.baeldung.com/spring-rest-openapi-documentation)
 
 
+### Extra files
+
+I inlcuded a [Dummy data](dummydata.sql) to populate the database and a [Postman file](Librarian.postman_collection.json) to test the routes propertly.
+
+
+https://hoppscotch.io/
+
 ### Contact
 
 You can reachme at hi@miguedev.com or go to my website https://www.miguedev.com
