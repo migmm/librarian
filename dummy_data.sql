@@ -12,7 +12,6 @@ VALUES
     ('J.K.', 'Rowling', true),
     ('Harper', 'Lee', true);
 
-
 -- Insert 10 Vendors (Publishing Companies)
 INSERT INTO Vendor (name, status)
 VALUES
@@ -26,7 +25,6 @@ VALUES
     ('Vintage Books', true),
     ('Houghton Mifflin Harcourt', true),
     ('Scholastic Corporation', true);
-
 
 -- Insert 10 Books with Authors and Vendors
 INSERT INTO Book (ISBN, title, year, books_quantity, borrowed_books, books_left, genre, status, vendor_id)
