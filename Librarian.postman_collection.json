@@ -34,7 +34,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8080/books/find/Dune",
+							"raw": "http://localhost:8080/books/find/1",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -43,7 +43,7 @@
 							"path": [
 								"books",
 								"find",
-								"Dune"
+								"1"
 							]
 						}
 					},
@@ -105,7 +105,7 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8080/books/delete/12",
+							"raw": "http://localhost:8080/books/delete/1",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -114,7 +114,70 @@
 							"path": [
 								"books",
 								"delete",
-								"12"
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Set Book status",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/books/setstatus/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"books",
+								"setstatus",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Borrow Book",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/books/borrow/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"books",
+								"borrow",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Return Book",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/books/return/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"books",
+								"return",
+								"1"
 							]
 						}
 					},
@@ -151,14 +214,13 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8080/books/authors/find/1",
+							"raw": "http://localhost:8080/authors/find/1",
 							"protocol": "http",
 							"host": [
 								"localhost"
 							],
 							"port": "8080",
 							"path": [
-								"books",
 								"authors",
 								"find",
 								"1"
@@ -174,7 +236,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "",
+							"raw": "{\r\n  \"id\": 0,\r\n  \"name\": \"string\",\r\n  \"surname\": \"string\",\r\n  \"status\": true,\r\n  \"books\": [\r\n    \"string\"\r\n  ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -232,6 +294,27 @@
 							"path": [
 								"authors",
 								"delete",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Set Author status",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/authors/setstatus/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"authors",
+								"setstatus",
 								"1"
 							]
 						}
@@ -331,7 +414,7 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8080/vendors/delete/12",
+							"raw": "http://localhost:8080/vendors/delete/1",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -340,7 +423,28 @@
 							"path": [
 								"vendors",
 								"delete",
-								"12"
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Set Vendors status",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/vendors/setstatus/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"vendors",
+								"setstatus",
+								"1"
 							]
 						}
 					},
