@@ -134,10 +134,7 @@ To access to Swagger API documentation you can go to the links below in your loc
 
 ### Extra files
 
-I inlcuded a [Dummy data](dummy_data.sql) to populate the database and a [Postman file](Librarian.postman_collection.json) to test the routes propertly.
-
-
-https://hoppscotch.io/
+I inlcuded a [Dummy data](dummy_data.sql) to populate the database and a [Postman file](Librarian.postman_collection.json) to test the routes propertly, you can use in postman o import in another tester like [Hoppscotch](https://hoppscotch.io/)
 
 ### Contact
 
