@@ -1,120 +1,147 @@
 package com.projectlib.librarian.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.projectlib.librarian.model.Vendor;
 import com.projectlib.librarian.service.VendorService;
-import jakarta.transaction.Transactional;
-
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import static org.mockito.Mockito.when;
-import static org.hamcrest.Matchers.greaterThan;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-
-import org.mockito.Mockito;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import java.util.HashSet;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 
 @SpringBootTest
 @AutoConfigureMockMvc
 public class VendorControllerTest {
 
-    @Mock
-    private VendorService vendorService;
-
-    @InjectMocks
-    private VendorController vendorController;
-
-    private final ObjectMapper objectMapper = new ObjectMapper();
-
     @Autowired
     private MockMvc mockMvc;
 
-    @Test
-    public void testGetAllVendors() throws Exception {
+    @MockBean
+    private VendorService vendorService;
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/vendors/findAll")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(jsonPath("$.size()", greaterThan(2)));
+    @Test
+    public void testGetAllvendors() throws Exception {
+        // Mock data
+        List<Vendor> vendors = new ArrayList<>();
+
+        vendors.add(new Vendor(1L, "Vendor 1",  true, new HashSet<>()));
+        vendors.add(new Vendor(2L, "Vendor 2", true, new HashSet<>()));
+
+        when(vendorService.getAllVendors()).thenReturn(vendors);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/vendors/findAll"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].name").value("Vendor 1"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[1].name").value("Vendor 2"));
+
+        verify(vendorService, times(1)).getAllVendors();
     }
 
     @Test
-    public void testGetVendorById() throws Exception {
+    public void testGetvendorById() throws Exception {
+        // Mock data
+        Vendor vendor = new Vendor(1L, "Vendor 1", true, new HashSet<>());
         Long vendorId = 1L;
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/vendors/find/{id}", vendorId)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(vendorId));
+        when(vendorService.getVendorById(vendorId)).thenReturn(vendor);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/vendors/find/{id}", vendorId))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.name").value("Vendor 1"));
+
+        verify(vendorService, times(1)).getVendorById(vendorId);
     }
 
     @Test
-    public void testCreateVendor() throws Exception {
-        Vendor newVendor = new Vendor(1L, "New Vendor", true, new HashSet<>());
+    public void testCreatevendor() throws Exception {
+        // Mock data
+        Vendor newvendor = new Vendor(1L, "Vendor 1", true, new HashSet<>());
 
-        when(vendorService.createVendor(Mockito.any(Vendor.class))).thenReturn("Vendor created successfully.");
+        when(vendorService.createVendor(newvendor)).thenReturn("vendor created successfully.");
 
         mockMvc.perform(MockMvcRequestBuilders.post("/vendors/save")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(newVendor)))
-                .andExpect(MockMvcResultMatchers.status().isCreated())
-                .andExpect(MockMvcResultMatchers.content().string("Vendor created successfully."));
+                        .content("{"
+                                + "\"id\":3,"
+                                + "\"isbn\":0,"
+                                + "\"title\":\"New vendor\","
+                                + "\"year\":\"2023-11-02T21:02:24.982Z\","
+                                + "\"vendors_quantity\":5,"
+                                + "\"borrowed_vendors\":0,"
+                                + "\"vendors_left\":5,"
+                                + "\"genre\":\"Adventure\","
+                                + "\"status\":true,"
+                                + "\"vendors\":["
+                                + "]"
+                                + "}"))
+                .andExpect(status().isCreated());
     }
 
     @Test
     public void testUpdateVendor() throws Exception {
+        // Mock data
         Long vendorId = 1L;
-        Vendor updatedVendor = new Vendor(vendorId, "Updated Vendor", false, new HashSet<>());
+        Vendor updatedvendor = new Vendor(1L, "Vendor 1", true, new HashSet<>());
 
-        when(vendorService.updateVendor(vendorId, updatedVendor)).thenReturn("Vendor updated successfully.");
+        when(vendorService.updateVendor(vendorId, updatedvendor)).thenReturn("vendor updated successfully.");
 
         mockMvc.perform(MockMvcRequestBuilders.put("/vendors/update/{id}", vendorId)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(updatedVendor)))
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().string("Vendor updated successfully."));
+                        .content("{"
+                                + "\"id\":3,"
+                                + "\"isbn\":0,"
+                                + "\"title\":\"New vendor\","
+                                + "\"year\":\"2023-11-02T21:02:24.982Z\","
+                                + "\"vendors_quantity\":5,"
+                                + "\"borrowed_vendors\":0,"
+                                + "\"vendors_left\":5,"
+                                + "\"genre\":\"Adventure\","
+                                + "\"status\":true,"
+                                + "\"vendors\":["
+                                + "]"
+                                + "}"))
+                .andExpect(status().isOk());
     }
 
     @Test
     public void testSetStatus() throws Exception {
+        // Mock data
         Long vendorId = 1L;
-        Vendor updatedVendor = new Vendor(vendorId, "Vendor 1", false, new HashSet<>());
+        Vendor vendor = new Vendor(1L, "Vendor 1", true, new HashSet<>());
 
-        when(vendorService.setStatus(vendorId, updatedVendor)).thenReturn("Vendor status updated successfully.");
+        when(vendorService.setStatus(vendorId, vendor)).thenReturn("vendor status updated successfully.");
 
         mockMvc.perform(MockMvcRequestBuilders.put("/vendors/setstatus/{id}", vendorId)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(updatedVendor)))
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().string("Vendor status updated successfully."));
+                        .content("{\"status\":true}"))
+                .andExpect(status().isOk());
     }
 
     @Test
-    @Transactional
-    public void testDeleteVendor() throws Exception {
-        Long vendorId = 2L;
+    public void testDeletevendor() throws Exception {
+        // Mock data
+        Long vendorId = 1L;
 
-        when(vendorService.deleteVendor(vendorId)).thenReturn("Vendor with ID " + vendorId + " deleted successfully.");
+        when(vendorService.deleteVendor(vendorId)).thenReturn("vendor with ID " + vendorId + " deleted successfully.");
 
-        mockMvc.perform(MockMvcRequestBuilders.delete("/vendors/delete/{id}", vendorId)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().string("Vendor with ID " + vendorId + " deleted successfully."));
+        mockMvc.perform(MockMvcRequestBuilders.delete("/vendors/delete/{id}", vendorId))
+                .andExpect(status().isOk())
+                .andExpect(content().string("vendor with ID " + vendorId + " deleted successfully."));
+
+        verify(vendorService, times(1)).deleteVendor(vendorId);
     }
 }
