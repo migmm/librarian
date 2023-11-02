@@ -48,7 +48,7 @@ public class Book {
     private Boolean status;
 
     @ManyToOne
-
+    @JsonIgnore
     @JoinColumn(name = "vendor_id")
     private Vendor vendor;
 
