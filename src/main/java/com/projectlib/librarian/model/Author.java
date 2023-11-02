@@ -32,6 +32,6 @@ public class Author {
     private  Boolean status;
 
     @ManyToMany(mappedBy = "authors")
-
+    @JsonIgnore
     private Set<Book> books = new HashSet<>();
 }
