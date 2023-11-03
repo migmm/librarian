@@ -2,6 +2,7 @@ package com.projectlib.librarian.controller;
 
 import com.projectlib.librarian.model.Book;
 import com.projectlib.librarian.service.BookService;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@DisplayName("Book controllers tests")
 public class BookControllerTest {
 
     @Autowired
@@ -31,6 +33,7 @@ public class BookControllerTest {
     private BookService bookService;
 
     @Test
+    @DisplayName("Get all books")
     public void testGetAllBooks() throws Exception {
         // Mock data
         List<Book> books = new ArrayList<>();
@@ -49,6 +52,7 @@ public class BookControllerTest {
     }
 
     @Test
+    @DisplayName("Get a book by ID")
     public void testGetBookById() throws Exception {
         // Mock data
         Book book = new Book(1L, 1234567890L, "Book 1", null, 10, 5, 5, "Fiction", true, null, null);
@@ -65,6 +69,7 @@ public class BookControllerTest {
     }
 
     @Test
+    @DisplayName("Create new book")
     public void testCreateBook() throws Exception {
         // Mock data
         Book newBook = new Book(3L, 9876543210L, "New Book", null, 5, 0, 5, "Adventure", true, null, null);
@@ -90,6 +95,7 @@ public class BookControllerTest {
     }
 
     @Test
+    @DisplayName("Upate a book")
     public void testUpdateBook() throws Exception {
         // Mock data
         Long bookId = 1L;
@@ -116,6 +122,7 @@ public class BookControllerTest {
     }
 
     @Test
+    @DisplayName("Borrow a book")
     public void testBorrowBook() throws Exception {
         // Mock data
         Long bookId = 1L;
@@ -142,6 +149,7 @@ public class BookControllerTest {
     }
 
     @Test
+    @DisplayName("Return a book")
     public void testReturnBook() throws Exception {
         // Mock data
         Long bookId = 1L;
@@ -168,6 +176,7 @@ public class BookControllerTest {
     }
 
     @Test
+    @DisplayName("Set book status (logical deletion)")
     public void testSetStatus() throws Exception {
         // Mock data
         Long bookId = 1L;
@@ -182,6 +191,7 @@ public class BookControllerTest {
     }
 
     @Test
+    @DisplayName("Delete a book")
     public void testDeleteBook() throws Exception {
         // Mock data
         Long bookId = 1L;

@@ -2,6 +2,7 @@ package com.projectlib.librarian.controller;
 
 import com.projectlib.librarian.model.Vendor;
 import com.projectlib.librarian.service.VendorService;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@DisplayName("Vendor controllers tests")
 public class VendorControllerTest {
 
     @Autowired
@@ -32,6 +34,7 @@ public class VendorControllerTest {
     private VendorService vendorService;
 
     @Test
+    @DisplayName("Get all vendors")
     public void testGetAllvendors() throws Exception {
         // Mock data
         List<Vendor> vendors = new ArrayList<>();
@@ -51,6 +54,7 @@ public class VendorControllerTest {
     }
 
     @Test
+    @DisplayName("Get a vendor by ID")
     public void testGetvendorById() throws Exception {
         // Mock data
         Vendor vendor = new Vendor(1L, "Vendor 1", true, new HashSet<>());
@@ -67,6 +71,7 @@ public class VendorControllerTest {
     }
 
     @Test
+    @DisplayName("Create new vendor")
     public void testCreatevendor() throws Exception {
         // Mock data
         Vendor newvendor = new Vendor(1L, "Vendor 1", true, new HashSet<>());
@@ -92,6 +97,7 @@ public class VendorControllerTest {
     }
 
     @Test
+    @DisplayName("Update a vendor")
     public void testUpdateVendor() throws Exception {
         // Mock data
         Long vendorId = 1L;
@@ -118,6 +124,7 @@ public class VendorControllerTest {
     }
 
     @Test
+    @DisplayName("Set vendor status (logical deletion)")
     public void testSetStatus() throws Exception {
         // Mock data
         Long vendorId = 1L;
@@ -132,6 +139,7 @@ public class VendorControllerTest {
     }
 
     @Test
+    @DisplayName("Delete vendor")
     public void testDeletevendor() throws Exception {
         // Mock data
         Long vendorId = 1L;

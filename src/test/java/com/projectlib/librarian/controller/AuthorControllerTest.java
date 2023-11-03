@@ -2,6 +2,9 @@ package com.projectlib.librarian.controller;
 
 import com.projectlib.librarian.model.Author;
 import com.projectlib.librarian.service.AuthorService;
+
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,17 +15,19 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@DisplayName("Author cntrollers tests")
 public class AuthorControllerTest {
 
     @Autowired
@@ -32,6 +37,7 @@ public class AuthorControllerTest {
     private AuthorService authorService;
 
     @Test
+    @DisplayName("Get all authors")
     public void testGetAllAuthors() throws Exception {
         // Mock data
         List<Author> authors = new ArrayList<>();
@@ -51,6 +57,7 @@ public class AuthorControllerTest {
     }
 
     @Test
+    @DisplayName("Get an author by ID")
     public void testGetAuthorById() throws Exception {
         // Mock data
         Author author = new Author(1L, "Author 1", "New Last Name", true, new HashSet<>());
@@ -67,6 +74,7 @@ public class AuthorControllerTest {
     }
 
     @Test
+    @DisplayName("Create new author")
     public void testCreateauthor() throws Exception {
         // Mock data
         Author newauthor = new Author(1L, "New Author", "New Last Name", true, new HashSet<>());
@@ -92,6 +100,7 @@ public class AuthorControllerTest {
     }
 
     @Test
+    @DisplayName("Update an author")
     public void testUpdateauthor() throws Exception {
         // Mock data
         Long authorId = 1L;
@@ -118,6 +127,7 @@ public class AuthorControllerTest {
     }
 
     @Test
+    @DisplayName("Set author status (logical deletion)")
     public void testSetStatus() throws Exception {
         // Mock data
         Long authorId = 1L;
@@ -132,6 +142,7 @@ public class AuthorControllerTest {
     }
 
     @Test
+    @DisplayName("Delete an author")
     public void testDeleteAuthor() throws Exception {
         // Mock data
         Long authorId = 1L;
