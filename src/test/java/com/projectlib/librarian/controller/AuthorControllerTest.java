@@ -27,7 +27,7 @@ import static org.mockito.Mockito.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@DisplayName("Author cntrollers tests")
+@DisplayName("Author controllers tests")
 public class AuthorControllerTest {
 
     @Autowired

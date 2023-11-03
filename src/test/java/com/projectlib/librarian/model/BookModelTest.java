@@ -26,7 +26,7 @@ public class BookModelTest {
         book.setId(id);
         assertEquals(id, book.getId());
     }
-    
+
     @Test
     @DisplayName("Get ISBN")
     public void testGetISBN() {
