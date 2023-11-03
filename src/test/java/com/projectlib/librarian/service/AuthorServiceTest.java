@@ -2,8 +2,8 @@ package com.projectlib.librarian.service;
 
 import com.projectlib.librarian.model.Author;
 import com.projectlib.librarian.repository.AuthorRepository;
-import com.projectlib.librarian.service.AuthorService;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -12,15 +12,14 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.context.SpringBootTest;
 import static org.mockito.Mockito.when;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 
 @SpringBootTest
+@DisplayName("Author service tests")
 public class AuthorServiceTest {
 
     @Mock
@@ -35,6 +34,7 @@ public class AuthorServiceTest {
     }
 
     @Test
+    @DisplayName("Create an author")
     public void testCreateAuthor() {
         Author newAuthor = new Author(1L, "New Author", "New Last Name", true, new HashSet<>());
 
@@ -46,6 +46,7 @@ public class AuthorServiceTest {
     }
 
     @Test
+    @DisplayName("Update an author")
     public void testUpdateAuthor() {
         Long authorId = 1L;
         Author existingAuthor = new Author(authorId, "Author 1", "Last Name 1", true, new HashSet<>());
@@ -60,6 +61,7 @@ public class AuthorServiceTest {
     }
 
     @Test
+    @DisplayName("Set status (logical deletion)")
     public void testSetStatus() {
         Long authorId = 1L;
         Author existingAuthor = new Author(authorId, "Author 1", "Last Name 1", true, new HashSet<>());
@@ -74,6 +76,7 @@ public class AuthorServiceTest {
     }
 
     @Test
+    @DisplayName("Delete author")
     public void testDeleteAuthor() {
         Long authorId = 1L;
 

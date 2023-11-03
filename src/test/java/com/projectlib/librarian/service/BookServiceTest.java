@@ -2,8 +2,8 @@ package com.projectlib.librarian.service;
 
 import com.projectlib.librarian.model.Book;
 import com.projectlib.librarian.repository.BookRepository;
-import com.projectlib.librarian.service.BookService;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -15,6 +15,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 
+@DisplayName("Book service tests")
 public class BookServiceTest {
 
     @InjectMocks
@@ -29,6 +30,7 @@ public class BookServiceTest {
     }
 
     @Test
+    @DisplayName("Get bool by ID")
     public void testGetBookById() {
         Long bookId = 1L;
         Book book = new Book();
@@ -40,6 +42,7 @@ public class BookServiceTest {
     }
 
     @Test
+    @DisplayName("Get book by ID when not exists")
     public void testGetBookByIdWhenNotExists() {
         Long bookId = 1L;
         when(bookRepository.findById(bookId)).thenReturn(Optional.empty());
@@ -50,6 +53,7 @@ public class BookServiceTest {
     }
 
     @Test
+    @DisplayName("Create a book")
     public void testCreateBook() {
         Book book = new Book();
         when(bookRepository.save(book)).thenReturn(book);
@@ -60,6 +64,7 @@ public class BookServiceTest {
     }
 
     @Test
+    @DisplayName("Update a book")
     public void testUpdateBook() {
         Long bookId = 1L;
         Book existingBook = new Book();
@@ -73,6 +78,7 @@ public class BookServiceTest {
     }
 
     @Test
+    @DisplayName("Test update a book when not exists")
     public void testUpdateBookWhenNotExists() {
         Long bookId = 1L;
         Book updatedBook = new Book();
@@ -85,6 +91,7 @@ public class BookServiceTest {
     }
 
     @Test
+    @DisplayName("Test borrow a book")
     public void testBorrowBook() {
         Long bookId = 1L;
 
@@ -107,6 +114,7 @@ public class BookServiceTest {
 
 
     @Test
+    @DisplayName("Test borrow a book when not exists")
     public void testBorrowBookWhenNotExists() {
         Long bookId = 1L;
         when(bookRepository.findById(bookId)).thenReturn(Optional.empty());
@@ -119,6 +127,7 @@ public class BookServiceTest {
     }
 
     @Test
+    @DisplayName("Test return a book")
     public void testReturnBook() {
         Long bookId = 1L;
         Book existingBook = new Book();
@@ -137,6 +146,7 @@ public class BookServiceTest {
     }
 
     @Test
+    @DisplayName("Test return a book when not exists")
     public void testReturnBookWhenNotExists() {
         Long bookId = 1L;
         when(bookRepository.findById(bookId)).thenReturn(Optional.empty());
@@ -149,6 +159,7 @@ public class BookServiceTest {
     }
 
     @Test
+    @DisplayName("Test Set status of a book (logical deletion)")
     public void testSetStatus() {
         Long bookId = 1L;
         Book existingBook = new Book();
@@ -174,11 +185,11 @@ public class BookServiceTest {
     }
 
     @Test
+    @DisplayName("Test delete a book")
     public void testDeleteBook() {
         Long bookId = 1L;
         when(bookRepository.existsById(bookId)).thenReturn(true);
 
-        // Mockear el libro existente
         Book existingBook = new Book();
         when(bookRepository.findById(bookId)).thenReturn(Optional.of(existingBook));
 
@@ -189,6 +200,7 @@ public class BookServiceTest {
     }
 
     @Test
+    @DisplayName("Test delete a book when not exists")
     public void testDeleteBookWhenNotExists() {
         Long bookId = 0L;
         when(bookRepository.existsById(bookId)).thenReturn(false);
