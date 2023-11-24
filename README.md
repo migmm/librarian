@@ -4,7 +4,7 @@
 
 [![Java](https://img.shields.io/badge/Java-17-blue.svg)](https://www.oracle.com/java/) [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.1.4-brightgreen.svg)](https://spring.io/projects/spring-boot) [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-13.4-blue.svg)](https://www.postgresql.org/) [![MAVEN](https://img.shields.io/badge/Maven-3.9.4-brightgreen.svg)](https://gradle.org/)
 
- <img src="README-images/logo-library.png?raw=true" alt="Logo"/>
+ <img src="https://raw.githubusercontent.com/migmm/images/10db16ae9b09ca8de8d4d98d6a8375a3d6907259/library-logo.png?token=AYKEUNZJXGIRTIITATTVKGDFMCW6C" alt="Logo"/>
 
 This is a sample project that uses Spring Boot and PostgreSQL to create a Java application. The project uses Maven as a dependency management system and has been developed with Java 17.
 
@@ -32,7 +32,7 @@ Replace database_name, username, and password with your own values.
 
 ### Database Relationships
 
- <img src="README-images/relations.png?raw=true" alt="Logo"/>
+ <img src="https://raw.githubusercontent.com/migmm/images/10db16ae9b09ca8de8d4d98d6a8375a3d6907259/database-relations.png?token=AYKEUN5ORVHF3SX67IUVRHTFMCW6C" alt="Logo"/>
  
 I used two types of relationships.
 
