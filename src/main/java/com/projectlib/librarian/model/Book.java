@@ -10,6 +10,7 @@ import lombok.Setter;
 
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 
@@ -56,6 +57,12 @@ public class Book {
     @Column
     @Schema(description = "Book status")
     private Boolean status;
+
+
+    @ElementCollection
+    @CollectionTable(name = "book_images", joinColumns = @JoinColumn(name = "book_id"))
+    @Column(name = "image_path")
+    private List<String> images;
 
     @ManyToOne
     @JsonIgnore

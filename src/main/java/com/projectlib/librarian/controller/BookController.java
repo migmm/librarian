@@ -1,5 +1,7 @@
 package com.projectlib.librarian.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.projectlib.librarian.model.Book;
 import com.projectlib.librarian.service.BookService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -9,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -38,9 +41,16 @@ public class BookController {
 
     @PostMapping("/save")
     @Operation(summary = "Save a new book", description = "Save a new book with full information using the ID as param.")
-    public ResponseEntity<String> createBook(@RequestBody Book book) {
-        String message = bookService.createBook(book);
-        return new ResponseEntity<>(message, HttpStatus.CREATED);
+    public ResponseEntity<String> createBook(@RequestPart("book") String bookJson, @RequestPart("images") List<MultipartFile> images) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            Book book = objectMapper.readValue(bookJson, Book.class);
+            String message = bookService.createBook(book, images);
+            return new ResponseEntity<>(message, HttpStatus.CREATED);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            return new ResponseEntity<>("Error processing book object.", HttpStatus.BAD_REQUEST);
+        }
     }
 
     @PutMapping("/update/{id}")

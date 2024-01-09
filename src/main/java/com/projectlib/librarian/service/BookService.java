@@ -4,7 +4,11 @@ import com.projectlib.librarian.model.Book;
 import com.projectlib.librarian.repository.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+import com.projectlib.librarian.helper.FilesHelper;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -12,6 +16,8 @@ import java.util.List;
 public class BookService {
     @Autowired
     private BookRepository bookRepository;
+    @Autowired
+    private FilesHelper filesHelper;
 
     public List<Book> getAllBooks() {
         return bookRepository.findAll();
@@ -21,8 +27,21 @@ public class BookService {
         return bookRepository.findById(id).orElse(null);
     }
 
-    public String createBook(Book book) {
+    public String createBook(Book book, List<MultipartFile> imagePaths) {
+        List<String> savedImagePaths = new ArrayList<>();
+
+        for (MultipartFile multipartFile : imagePaths) {
+            try {
+                String savedImagePath = filesHelper.saveImageToServer(multipartFile);
+                savedImagePaths.add(savedImagePath);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        book.setImages(savedImagePaths);
         bookRepository.save(book);
+
         return "Book created successfully.";
     }
 
@@ -97,5 +116,4 @@ public class BookService {
         }
         return "Book does not exist.";
     }
-
 }
