@@ -45,21 +45,38 @@ public class BookService {
         return "Book created successfully.";
     }
 
-    public String updateBook(Long id, Book updatedBook) {
-        Book existingBook = getBookById(id);
-        if (existingBook != null) {
-            existingBook.setISBN(updatedBook.getISBN());
-            existingBook.setTitle(updatedBook.getTitle());
-            existingBook.setYear(updatedBook.getYear());
-            existingBook.setBooks_quantity(updatedBook.getBooks_quantity());
-            existingBook.setBorrowed_books(updatedBook.getBorrowed_books());
-            existingBook.setBooks_left(updatedBook.getBooks_left());
-            existingBook.setGenre(updatedBook.getGenre());
-            existingBook.setStatus(updatedBook.getStatus());
-            bookRepository.save(existingBook);
-            return "Book updated successfully.";
-        }
-        return "Book does not exist.";
+    public String updateBook(Long id, Book updatedBook, List<MultipartFile> newImages) {
+            Book existingBook = getBookById(id);
+            if (existingBook != null) {
+                existingBook.setISBN(updatedBook.getISBN());
+                existingBook.setTitle(updatedBook.getTitle());
+                existingBook.setYear(updatedBook.getYear());
+                existingBook.setBooks_quantity(updatedBook.getBooks_quantity());
+                existingBook.setBorrowed_books(updatedBook.getBorrowed_books());
+                existingBook.setBooks_left(updatedBook.getBooks_left());
+                existingBook.setGenre(updatedBook.getGenre());
+                existingBook.setStatus(updatedBook.getStatus());
+
+                if (newImages != null && !newImages.isEmpty()) {
+                    filesHelper.deleteImagesFromServer(existingBook.getImages());
+
+                    List<String> savedImagePaths = new ArrayList<>();
+
+                    for (MultipartFile multipartFile : newImages) {
+                        try {
+                            String savedImagePath = filesHelper.saveImageToServer(multipartFile);
+                            savedImagePaths.add(savedImagePath);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    existingBook.setImages(savedImagePaths);
+                }
+
+                bookRepository.save(existingBook);
+                return "Book updated successfully.";
+            }
+            return "Book does not exist.";
     }
 
     public String borrowBook(Long id, Book updatedBook) {

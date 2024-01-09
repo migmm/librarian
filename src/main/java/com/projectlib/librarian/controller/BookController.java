@@ -55,10 +55,18 @@ public class BookController {
 
     @PutMapping("/update/{id}")
     @Operation(summary = "Update a book", description = "Update a book information using the ID as param.")
-    public ResponseEntity<String> updateBook(@PathVariable Long id, @RequestBody Book book) {
-        String message = bookService.updateBook(id, book);
-        return new ResponseEntity<>(message, HttpStatus.OK);
+    public ResponseEntity<String> updateBook(@PathVariable Long id, @RequestPart("book") String bookJson, @RequestPart(name = "images", required = false) List<MultipartFile> images) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            Book book = objectMapper.readValue(bookJson, Book.class);
+            String message = bookService.updateBook(id, book, images);
+            return new ResponseEntity<>(message, HttpStatus.OK);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            return new ResponseEntity<>("Error processing book object.", HttpStatus.BAD_REQUEST);
+        }
     }
+
 
     @PutMapping("/borrrow/{id}")
     @Operation(summary = "borrow a book", description = "Borrow a book using the ID as param.")

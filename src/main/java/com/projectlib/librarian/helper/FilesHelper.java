@@ -39,7 +39,7 @@ public class FilesHelper {
         return fileNameWithUuid;
     }
 
-    private void deleteImagesFromServer(List<String> imagePaths) {
+    public void deleteImagesFromServer(List<String> imagePaths) {
         for (String imagePath : imagePaths) {
             try {
                 Path path = Paths.get(imagePath);
