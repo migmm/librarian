@@ -28,15 +28,17 @@ Make sure you have a PostgreSQL database set up. You can configure the database 
     spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
     spring.jpa.hibernate.ddl-auto=create
 
+    upload.dir=images
+
 Replace database_name, username, and password with your own values.
 
 ### Database Relationships
 
  <img src="https://raw.githubusercontent.com/migmm/images/10db16ae9b09ca8de8d4d98d6a8375a3d6907259/database-relations.png?token=AYKEUN5ORVHF3SX67IUVRHTFMCW6C" alt="Logo"/>
  
-I used two types of relationships.
+I used three types of relationships.
 
-#####Foreign Key Relationship (Using a Junction Table)
+##### Foreign Key Relationship (Using a Junction Table)
 
 In some scenarios, you might need to establish many-to-many relationships between entities. For this, you can use a junction table (also known as a linking or pivot table). In a Spring Data JPA application, you can create entities and repositories to represent this relationship. For example, if you have two entities, Book and author, and you want to establish a many-to-many relationship, you can create a junction table book_author:
 
@@ -46,6 +48,10 @@ In some scenarios, you might need to establish many-to-many relationships betwee
 ##### Direct Relationship
  
 In other cases, you may have direct relationships between entities, such as a one-to-one or one-to-many relationship. In this project I made a relationship @OneToOne between books and vendors.
+
+##### Element Collection
+ 
+In this case I used a collection of images, in file helper with the bean @ElementCollection. This is often used when you want to model a one-to-many relationship without creating a separate table for the related entities. Instead, the collection is stored as part of the owning entity's table.
 
 ### Running the Project
 
