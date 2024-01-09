@@ -2,7 +2,7 @@
 ## Java, Spring Boot, and PostgreSQL Project
 
 
-[![Java](https://img.shields.io/badge/Java-17-blue.svg)](https://www.oracle.com/java/) [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.1.4-brightgreen.svg)](https://spring.io/projects/spring-boot) [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-13.4-blue.svg)](https://www.postgresql.org/) [![MAVEN](https://img.shields.io/badge/Maven-3.9.4-brightgreen.svg)](https://gradle.org/)
+[![Java](https://img.shields.io/badge/Java-17-blue.svg)](https://www.oracle.com/java/) [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.2.1-brightgreen.svg)](https://spring.io/projects/spring-boot) [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-13.4-blue.svg)](https://www.postgresql.org/) [![MAVEN](https://img.shields.io/badge/Maven-3.9.4-brightgreen.svg)](https://gradle.org/)
 
 ![alt text]([Logo](https://github.com/migmm/librarian/blob/media/assets/logo-library.png)?raw=true)
 
@@ -84,7 +84,7 @@ Alternatively, you can build an executable JAR file and then run it:
 
 The project uses the following Spring Boot dependencies:
 
-    Spring Boot 2.5.5
+    Spring Boot 3.2.1
     Lombok
     Spring Security
     Spring Data JPA
