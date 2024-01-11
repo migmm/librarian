@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 
@@ -21,6 +22,7 @@ import java.util.List;
 @Tag(name = "Books", description = "Endpoints to work with books.")
 @RequestMapping("/books")
 public class BookController {
+
     @Autowired
     private BookService bookService;
 
@@ -41,32 +43,23 @@ public class BookController {
 
     @PostMapping("/save")
     @Operation(summary = "Save a new book", description = "Save a new book with full information using the ID as param.")
-    public ResponseEntity<String> createBook(@RequestPart("book") String bookJson, @RequestPart("images") List<MultipartFile> images) {
+    public ResponseEntity<String> createBook(@RequestPart("book") String bookJson, @RequestPart("images") List<MultipartFile> images) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
-        try {
-            Book book = objectMapper.readValue(bookJson, Book.class);
-            String message = bookService.createBook(book, images);
-            return new ResponseEntity<>(message, HttpStatus.CREATED);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-            return new ResponseEntity<>("Error processing book object.", HttpStatus.BAD_REQUEST);
-        }
+        Book book;
+        book = objectMapper.readValue(bookJson, Book.class);
+        String message = bookService.createBook(book, images);
+        return new ResponseEntity<>(message, HttpStatus.CREATED);
     }
 
     @PutMapping("/update/{id}")
     @Operation(summary = "Update a book", description = "Update a book information using the ID as param.")
-    public ResponseEntity<String> updateBook(@PathVariable Long id, @RequestPart("book") String bookJson, @RequestPart(name = "images", required = false) List<MultipartFile> images) {
+    public ResponseEntity<String> updateBook(@PathVariable Long id, @RequestPart("book") String bookJson, @RequestPart(name = "images", required = false) List<MultipartFile> images) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
-        try {
-            Book book = objectMapper.readValue(bookJson, Book.class);
-            String message = bookService.updateBook(id, book, images);
-            return new ResponseEntity<>(message, HttpStatus.OK);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-            return new ResponseEntity<>("Error processing book object.", HttpStatus.BAD_REQUEST);
-        }
+        Book book;
+        book = objectMapper.readValue(bookJson, Book.class);
+        String message = bookService.updateBook(id, book, images);
+        return new ResponseEntity<>(message, HttpStatus.OK);
     }
-
 
     @PutMapping("/borrrow/{id}")
     @Operation(summary = "borrow a book", description = "Borrow a book using the ID as param.")

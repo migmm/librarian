@@ -1,5 +1,6 @@
 package com.projectlib.librarian.service;
 
+import com.projectlib.librarian.exception.BookNotFoundException;
 import com.projectlib.librarian.model.Book;
 import com.projectlib.librarian.repository.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,16 +28,12 @@ public class BookService {
         return bookRepository.findById(id).orElse(null);
     }
 
-    public String createBook(Book book, List<MultipartFile> imagePaths) {
+    public String createBook(Book book, List<MultipartFile> imagePaths) throws IOException {
         List<String> savedImagePaths = new ArrayList<>();
 
         for (MultipartFile multipartFile : imagePaths) {
-            try {
-                String savedImagePath = filesHelper.saveImageToServer(multipartFile);
-                savedImagePaths.add(savedImagePath);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            String savedImagePath = filesHelper.saveImageToServer(multipartFile);
+            savedImagePaths.add(savedImagePath);
         }
 
         book.setImages(savedImagePaths);
@@ -45,38 +42,34 @@ public class BookService {
         return "Book created successfully.";
     }
 
-    public String updateBook(Long id, Book updatedBook, List<MultipartFile> newImages) {
-            Book existingBook = getBookById(id);
-            if (existingBook != null) {
-                existingBook.setISBN(updatedBook.getISBN());
-                existingBook.setTitle(updatedBook.getTitle());
-                existingBook.setYear(updatedBook.getYear());
-                existingBook.setBooks_quantity(updatedBook.getBooks_quantity());
-                existingBook.setBorrowed_books(updatedBook.getBorrowed_books());
-                existingBook.setBooks_left(updatedBook.getBooks_left());
-                existingBook.setGenre(updatedBook.getGenre());
-                existingBook.setStatus(updatedBook.getStatus());
+    public String updateBook(Long id, Book updatedBook, List<MultipartFile> newImages) throws IOException {
+        Book existingBook = getBookById(id);
+        if (existingBook != null) {
+            existingBook.setISBN(updatedBook.getISBN());
+            existingBook.setTitle(updatedBook.getTitle());
+            existingBook.setYear(updatedBook.getYear());
+            existingBook.setBooks_quantity(updatedBook.getBooks_quantity());
+            existingBook.setBorrowed_books(updatedBook.getBorrowed_books());
+            existingBook.setBooks_left(updatedBook.getBooks_left());
+            existingBook.setGenre(updatedBook.getGenre());
+            existingBook.setStatus(updatedBook.getStatus());
 
-                if (newImages != null && !newImages.isEmpty()) {
-                    filesHelper.deleteImagesFromServer(existingBook.getImages());
+            if (newImages != null && !newImages.isEmpty()) {
+                filesHelper.deleteImagesFromServer(existingBook.getImages());
 
-                    List<String> savedImagePaths = new ArrayList<>();
+                List<String> savedImagePaths = new ArrayList<>();
 
-                    for (MultipartFile multipartFile : newImages) {
-                        try {
-                            String savedImagePath = filesHelper.saveImageToServer(multipartFile);
-                            savedImagePaths.add(savedImagePath);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                    existingBook.setImages(savedImagePaths);
+                for (MultipartFile multipartFile : newImages) {
+                    String savedImagePath = filesHelper.saveImageToServer(multipartFile);
+                    savedImagePaths.add(savedImagePath);
                 }
-
-                bookRepository.save(existingBook);
-                return "Book updated successfully.";
+                existingBook.setImages(savedImagePaths);
             }
-            return "Book does not exist.";
+
+            bookRepository.save(existingBook);
+            return "Book updated successfully.";
+        }
+        throw new BookNotFoundException("Book with ID " + id + " does not exist.");
     }
 
     public String borrowBook(Long id, Book updatedBook) {
@@ -94,7 +87,7 @@ public class BookService {
             bookRepository.save(existingBook);
             return "Book borrowed successfully.";
         }
-        return "Book does not exist.";
+        throw new BookNotFoundException("Book with ID " + id + " does not exist.");
     }
 
     public String returnBook(Long id, Book updatedBook) {
@@ -105,14 +98,14 @@ public class BookService {
 
             if (existingBook.getBooks_left() > 0) {
                 existingBook.setStatus(true);
-            }else {
+            } else {
                 existingBook.setStatus(false);
             }
 
             bookRepository.save(existingBook);
             return "Book returned successfully.";
         }
-        return "Book does not exist.";
+        throw new BookNotFoundException("Book with ID " + id + " does not exist.");
     }
 
     public String setStatus(Long id, Book setStatus) {
@@ -122,7 +115,7 @@ public class BookService {
             bookRepository.save(existingBook);
             return "Book status updated successfully.";
         }
-        return "Book does not exist.";
+        throw new BookNotFoundException("Book with ID " + id + " does not exist.");
     }
 
     public String deleteBook(Long id) {
@@ -131,6 +124,6 @@ public class BookService {
             bookRepository.deleteById(id);
             return "Book with ID " + id + " deleted successfully.";
         }
-        return "Book does not exist.";
+        throw new BookNotFoundException("Book with ID " + id + " does not exist.");
     }
 }
