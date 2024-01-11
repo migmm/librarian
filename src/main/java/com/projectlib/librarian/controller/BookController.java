@@ -42,7 +42,7 @@ public class BookController {
     }
 
     @PostMapping("/save")
-    @Operation(summary = "Save a new book", description = "Save a new book with full information using the ID as param.")
+    @Operation(summary = "Save a new book", description = "Save a new book with full information.")
     public ResponseEntity<String> createBook(@RequestPart("book") String bookJson, @RequestPart("images") List<MultipartFile> images) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
         Book book;
