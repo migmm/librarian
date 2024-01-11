@@ -32,6 +32,10 @@ Make sure you have a PostgreSQL database set up. You can configure the database 
 
 Replace database_name, username, and password with your own values.
 
+### Features
+
+    - Global exception handler
+
 ### Database Relationships
 
  <img src="https://raw.githubusercontent.com/migmm/images/10db16ae9b09ca8de8d4d98d6a8375a3d6907259/database-relations.png?token=AYKEUN5ORVHF3SX67IUVRHTFMCW6C" alt="Logo"/>
