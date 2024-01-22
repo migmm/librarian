@@ -36,6 +36,7 @@ public class UserService {
             existingUser.setStatus(updatedUser.getStatus());
             existingUser.setEmail(updatedUser.getEmail());
             existingUser.setUsername(updatedUser.getUsername());
+            existingUser.setRole(updatedUser.getRole());
             existingUser.setPassword(updatedUser.getPassword());
             userRepository.save(existingUser);
             return "User updated successfully.";

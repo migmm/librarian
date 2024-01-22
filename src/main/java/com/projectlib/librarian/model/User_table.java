@@ -41,6 +41,10 @@ public class User_table {
     private String username;
 
     @Column
+    @Schema(description = "User role")
+    private String role;
+
+    @Column
     @Schema(description = "User password")
     private String password;
 
