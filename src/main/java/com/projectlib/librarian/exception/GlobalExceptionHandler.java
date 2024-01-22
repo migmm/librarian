@@ -42,6 +42,7 @@ public class GlobalExceptionHandler {
         // Maneja excepciones de procesamiento JSON
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error de procesamiento JSON: " + e.getMessage());
     }
+
     @ExceptionHandler(BookNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ResponseEntity<String> handleBookNotFoundException(BookNotFoundException e) {

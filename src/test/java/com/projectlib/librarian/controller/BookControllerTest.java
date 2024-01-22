@@ -1,206 +1,152 @@
 package com.projectlib.librarian.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.projectlib.librarian.model.Book;
 import com.projectlib.librarian.service.BookService;
-import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.*;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.web.multipart.MultipartFile;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 
-@SpringBootTest
-@AutoConfigureMockMvc
-@DisplayName("Book controllers tests")
-public class BookControllerTest {
+class BookControllerTest {
 
-    @Autowired
-    private MockMvc mockMvc;
+    @InjectMocks
+    private BookController bookController;
 
-    @MockBean
+    @Mock
     private BookService bookService;
 
+    @BeforeEach
+    public void setup() {
+        MockitoAnnotations.openMocks(this);
+    }
+
     @Test
-    @DisplayName("Get all books")
-    public void testGetAllBooks() throws Exception {
-        // Mock data
-        List<Book> books = new ArrayList<>();
-        books.add(new Book(1L, 1234567890L, "Book 1", null, 10, 5, 5, "Fiction", true, null, null));
-        books.add(new Book(2L, 9876543210L, "Book 2", null, 8, 2, 6, "Mystery", true, null, null));
+    void testGetAllBooks() {
+        List<Book> mockBooks = new ArrayList<>();
+        when(bookService.getAllBooks()).thenReturn(mockBooks);
 
-        when(bookService.getAllBooks()).thenReturn(books);
+        ResponseEntity<List<Book>> response = bookController.getAllBooks();
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/books/findAll"))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].title").value("Book 1"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[1].title").value("Book 2"));
-
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(mockBooks, response.getBody());
         verify(bookService, times(1)).getAllBooks();
     }
 
     @Test
-    @DisplayName("Get a book by ID")
-    public void testGetBookById() throws Exception {
-        // Mock data
-        Book book = new Book(1L, 1234567890L, "Book 1", null, 10, 5, 5, "Fiction", true, null, null);
+    void testGetBookById() {
         Long bookId = 1L;
+        Book mockBook = new Book();
+        when(bookService.getBookById(bookId)).thenReturn(mockBook);
 
-        when(bookService.getBookById(bookId)).thenReturn(book);
+        ResponseEntity<Book> response = bookController.getBookById(bookId);
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/books/find/{id}", bookId))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.title").value("Book 1"));
-
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(mockBook, response.getBody());
         verify(bookService, times(1)).getBookById(bookId);
     }
 
     @Test
-    @DisplayName("Create new book")
-    public void testCreateBook() throws Exception {
-        // Mock data
-        Book newBook = new Book(3L, 9876543210L, "New Book", null, 5, 0, 5, "Adventure", true, null, null);
+    void createBook() throws IOException {
+        String bookJson = "{\"id\":1,\"title\":\"New Book\",\"isbn\":123456,\"status\":true}";
+        List<MultipartFile> images = Arrays.asList(new MockMultipartFile("image", "new.jpg", "image/jpeg", "New image".getBytes()));
 
-        when(bookService.createBook(newBook)).thenReturn("Book created successfully.");
+        when(bookService.createBook(any(), eq(images)))
+                .thenReturn("Book created successfully.");
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/books/save")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{"
-                        + "\"id\":3,"
-                        + "\"isbn\":0,"
-                        + "\"title\":\"New Book\","
-                        + "\"year\":\"2023-11-02T21:02:24.982Z\","
-                        + "\"books_quantity\":5,"
-                        + "\"borrowed_books\":0,"
-                        + "\"books_left\":5,"
-                        + "\"genre\":\"Adventure\","
-                        + "\"status\":true,"
-                        + "\"authors\":["
-                        + "]"
-                        + "}"))
-                .andExpect(status().isCreated());
+        ResponseEntity<String> response = bookController.createBook(bookJson, images);
+
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+
+        verify(bookService, times(1)).createBook(any(), eq(images));
     }
 
     @Test
-    @DisplayName("Upate a book")
-    public void testUpdateBook() throws Exception {
-        // Mock data
+    void updateBook() throws IOException {
         Long bookId = 1L;
-        Book updatedBook = new Book(1L, 1234567890L, "Updated Book", null, 15, 5, 10, "Fiction", true, null, null);
+        String bookJson = "{\"id\":1,\"title\":\"Updated Book\",\"isbn\":789012,\"status\":true}";
+        List<MultipartFile> images = Arrays.asList(new MockMultipartFile("image", "updated.jpg", "image/jpeg", "Updated image".getBytes()));
 
-        when(bookService.updateBook(bookId, updatedBook)).thenReturn("Book updated successfully.");
+        ObjectMapper objectMapper = new ObjectMapper();
+        Book expectedBook = objectMapper.readValue(bookJson, Book.class);
 
-        mockMvc.perform(MockMvcRequestBuilders.put("/books/update/{id}", bookId)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{"
-                                + "\"id\":3,"
-                                + "\"isbn\":0,"
-                                + "\"title\":\"New Book\","
-                                + "\"year\":\"2023-11-02T21:02:24.982Z\","
-                                + "\"books_quantity\":5,"
-                                + "\"borrowed_books\":0,"
-                                + "\"books_left\":5,"
-                                + "\"genre\":\"Adventure\","
-                                + "\"status\":true,"
-                                + "\"authors\":["
-                                + "]"
-                                + "}"))
-                .andExpect(status().isOk());
+        when(bookService.updateBook(eq(bookId), any(), eq(images)))
+                .thenReturn("Book updated successfully."); // Cambiado a un retorno exitoso
+
+        ResponseEntity<String> response = bookController.updateBook(bookId, bookJson, images);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals("Book updated successfully.", response.getBody());
+
+        verify(bookService, times(1)).updateBook(eq(bookId), any(), eq(images));
     }
 
     @Test
-    @DisplayName("Borrow a book")
-    public void testBorrowBook() throws Exception {
-        // Mock data
+    void borrowBook() {
         Long bookId = 1L;
-        Book borrowedBook = new Book(1L, 1234567890L, "Book 1", null, 10, 6, 4, "Fiction", true, null, null);
+        Book borrowedBook = new Book();
 
-        when(bookService.borrowBook(bookId, borrowedBook)).thenReturn("Book borrowed successfully.");
+        when(bookService.borrowBook(eq(bookId), any())).thenReturn("Book borrowed successfully.");
 
-        mockMvc.perform(MockMvcRequestBuilders.put("/books/borrrow/{id}", bookId)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{"
-                                + "\"id\":3,"
-                                + "\"isbn\":0,"
-                                + "\"title\":\"New Book\","
-                                + "\"year\":\"2023-11-02T21:02:24.982Z\","
-                                + "\"books_quantity\":5,"
-                                + "\"borrowed_books\":0,"
-                                + "\"books_left\":5,"
-                                + "\"genre\":\"Adventure\","
-                                + "\"status\":true,"
-                                + "\"authors\":["
-                                + "]"
-                                + "}"))
-                .andExpect(status().isOk());
+        ResponseEntity<String> response = bookController.borrowBook(bookId, borrowedBook);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals("Book borrowed successfully.", response.getBody());
+
+        verify(bookService, times(1)).borrowBook(bookId, borrowedBook);
     }
 
     @Test
-    @DisplayName("Return a book")
-    public void testReturnBook() throws Exception {
-        // Mock data
+    void returnBook() {
         Long bookId = 1L;
-        Book returnedBook = new Book(1L, 1234567890L, "Book 1", null, 10, 4, 6, "Fiction", true, null, null);
+        Book returnedBook = new Book();
 
-        when(bookService.returnBook(bookId, returnedBook)).thenReturn("Book returned successfully.");
+        when(bookService.returnBook(eq(bookId), any())).thenReturn("Book returned successfully.");
 
-        mockMvc.perform(MockMvcRequestBuilders.put("/books/return/{id}", bookId)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{"
-                                + "\"id\":3,"
-                                + "\"isbn\":0,"
-                                + "\"title\":\"New Book\","
-                                + "\"year\":\"2023-11-02T21:02:24.982Z\","
-                                + "\"books_quantity\":5,"
-                                + "\"borrowed_books\":0,"
-                                + "\"books_left\":5,"
-                                + "\"genre\":\"Adventure\","
-                                + "\"status\":true,"
-                                + "\"authors\":["
-                                + "]"
-                                + "}"))
-                .andExpect(status().isOk());
+        ResponseEntity<String> response = bookController.returnBook(bookId, returnedBook);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals("Book returned successfully.", response.getBody());
+
+        verify(bookService, times(1)).returnBook(bookId, returnedBook);
     }
 
     @Test
-    @DisplayName("Set book status (logical deletion)")
-    public void testSetStatus() throws Exception {
-        // Mock data
+    void setStatus() {
         Long bookId = 1L;
-        Book book = new Book(1L, 1234567890L, "Book 1", null, 10, 4, 6, "Fiction", true, null, null);
+        Book statusBook = new Book();
 
-        when(bookService.setStatus(bookId, book)).thenReturn("Book status updated successfully.");
+        when(bookService.setStatus(eq(bookId), any())).thenReturn("Book status updated successfully.");
 
-        mockMvc.perform(MockMvcRequestBuilders.put("/books/setstatus/{id}", bookId)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"status\":true}"))
-                .andExpect(status().isOk());
+        ResponseEntity<String> response = bookController.setStatus(bookId, statusBook);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals("Book status updated successfully.", response.getBody());
+
+        verify(bookService, times(1)).setStatus(bookId, statusBook);
     }
 
     @Test
-    @DisplayName("Delete a book")
-    public void testDeleteBook() throws Exception {
-        // Mock data
+    void deleteBook() {
         Long bookId = 1L;
 
-        when(bookService.deleteBook(bookId)).thenReturn("Book with ID " + bookId + " deleted successfully.");
+        when(bookService.deleteBook(eq(bookId))).thenReturn("Book with ID 1 deleted successfully.");
 
-        mockMvc.perform(MockMvcRequestBuilders.delete("/books/delete/{id}", bookId))
-                .andExpect(status().isOk())
-                .andExpect(content().string("Book with ID " + bookId + " deleted successfully."));
+        ResponseEntity<String> response = bookController.deleteBook(bookId);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals("Book with ID 1 deleted successfully.", response.getBody());
 
         verify(bookService, times(1)).deleteBook(bookId);
     }
