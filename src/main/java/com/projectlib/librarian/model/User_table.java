@@ -42,7 +42,7 @@ public class User_table {
 
     @Column
     @Schema(description = "User role")
-    private String role;
+    private String role = "user";
 
     @Column
     @Schema(description = "User password")
