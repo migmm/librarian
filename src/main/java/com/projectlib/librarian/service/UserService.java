@@ -1,5 +1,6 @@
 package com.projectlib.librarian.service;
 
+import com.projectlib.librarian.exception.NotFoundException;
 import com.projectlib.librarian.model.User_table;
 import com.projectlib.librarian.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +23,9 @@ public class UserService {
     }
 
     public User_table getUserById(Long id) {
-        return userRepository.findById(id).orElse(null);
+
+        return userRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("User with ID " + id + " does not exist."));
     }
 
     public String createUser(User_table user) {
@@ -45,7 +48,7 @@ public class UserService {
             userRepository.save(existingUser);
             return "User updated successfully.";
         }
-        return "User does not exist.";
+        throw new NotFoundException("User with ID " + id + " does not exist.");
     }
 
     public String setStatus(Long id, Boolean newStatus) {
@@ -55,11 +58,15 @@ public class UserService {
             userRepository.save(existingUser);
             return "User status updated successfully.";
         }
-        return "User does not exist.";
+        throw new NotFoundException("User with ID " + id + " does not exist.");
     }
 
     public String deleteUser(Long id) {
-        userRepository.deleteById(id);
-        return "User with ID " + id + " deleted successfully.";
+        User_table existingUser = getUserById(id);
+        if (existingUser != null) {
+            userRepository.deleteById(id);
+            return "User with ID " + id + " deleted successfully.";
+        }
+        throw new NotFoundException("User with ID " + id + " does not exist.");
     }
 }

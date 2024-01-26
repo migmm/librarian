@@ -1,6 +1,5 @@
 package com.projectlib.librarian.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.projectlib.librarian.model.Book;
 import com.projectlib.librarian.service.BookService;

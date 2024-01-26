@@ -1,7 +1,7 @@
 package com.projectlib.librarian.exception;
 
-public class BookNotFoundException extends RuntimeException {
-    public BookNotFoundException(String message) {
+public class NotFoundException extends RuntimeException {
+    public NotFoundException(String message) {
         super(message);
     }
 }

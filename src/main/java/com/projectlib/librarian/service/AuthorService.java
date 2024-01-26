@@ -1,5 +1,6 @@
 package com.projectlib.librarian.service;
 
+import com.projectlib.librarian.exception.NotFoundException;
 import com.projectlib.librarian.model.Author;
 import com.projectlib.librarian.repository.AuthorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +19,9 @@ public class AuthorService {
     }
 
     public Author getAuthorById(Long id) {
-        return authorRepository.findById(id).orElse(null);
+
+        return authorRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Author with ID " + id + " does not exist."));
     }
 
     public String createAuthor(Author author) {
@@ -35,7 +38,7 @@ public class AuthorService {
             authorRepository.save(existingAuthor);
             return "Author updated successfully.";
         }
-        return "Author does not exist.";
+        throw new NotFoundException("Author with ID " + id + " does not exist.");
     }
 
     public String setStatus(Long id, Author updatedAuthor) {
@@ -45,11 +48,15 @@ public class AuthorService {
             authorRepository.save(existingAuthor);
             return "Author status updated successfully.";
         }
-        return "Author does not exist.";
+        throw new NotFoundException("Author with ID " + id + " does not exist.");
     }
 
     public String deleteAuthor(Long id) {
+        Author existingAuthor = getAuthorById(id);
+        if (existingAuthor != null) {
         authorRepository.deleteById(id);
         return "Author with ID " + id + " deleted successfully.";
+        }
+        throw new NotFoundException("Author with ID " + id + " does not exist.");
     }
 }

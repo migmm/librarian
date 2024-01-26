@@ -1,5 +1,6 @@
 package com.projectlib.librarian.service;
 
+import com.projectlib.librarian.exception.NotFoundException;
 import com.projectlib.librarian.model.Vendor;
 import com.projectlib.librarian.repository.VendorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +19,8 @@ public class VendorService {
     }
 
     public Vendor getVendorById(Long id) {
-        return vendorRepository.findById(id).orElse(null);
+        return vendorRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Vendor with ID " + id + " does not exist."));
     }
 
     public String createVendor(Vendor vendor) {

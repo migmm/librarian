@@ -1,6 +1,7 @@
 package com.projectlib.librarian.service;
 
-import com.projectlib.librarian.exception.BookNotFoundException;
+
+import com.projectlib.librarian.exception.NotFoundException;
 import com.projectlib.librarian.model.Book;
 import com.projectlib.librarian.repository.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +26,8 @@ public class BookService {
     }
 
     public Book getBookById(Long id) {
-        return bookRepository.findById(id).orElse(null);
+        return bookRepository.findById(id)
+        .orElseThrow(() -> new NotFoundException("Book with ID " + id + " does not exist."));
     }
 
     public String createBook(Book book, List<MultipartFile> imagePaths) throws IOException {
@@ -69,7 +71,7 @@ public class BookService {
             bookRepository.save(existingBook);
             return "Book updated successfully.";
         }
-        throw new BookNotFoundException("Book with ID " + id + " does not exist.");
+        throw new NotFoundException("Book with ID " + id + " does not exist.");
     }
 
     public String borrowBook(Long id, Book updatedBook) {
@@ -87,7 +89,7 @@ public class BookService {
             bookRepository.save(existingBook);
             return "Book borrowed successfully.";
         }
-        throw new BookNotFoundException("Book with ID " + id + " does not exist.");
+        throw new NotFoundException("Book with ID " + id + " does not exist.");
     }
 
     public String returnBook(Long id, Book updatedBook) {
@@ -105,7 +107,7 @@ public class BookService {
             bookRepository.save(existingBook);
             return "Book returned successfully.";
         }
-        throw new BookNotFoundException("Book with ID " + id + " does not exist.");
+        throw new NotFoundException("Book with ID " + id + " does not exist.");
     }
 
     public String setStatus(Long id, Book setStatus) {
@@ -115,7 +117,7 @@ public class BookService {
             bookRepository.save(existingBook);
             return "Book status updated successfully.";
         }
-        throw new BookNotFoundException("Book with ID " + id + " does not exist.");
+        throw new NotFoundException("Book with ID " + id + " does not exist.");
     }
 
     public String deleteBook(Long id) {
@@ -124,6 +126,6 @@ public class BookService {
             bookRepository.deleteById(id);
             return "Book with ID " + id + " deleted successfully.";
         }
-        throw new BookNotFoundException("Book with ID " + id + " does not exist.");
+        throw new NotFoundException("Book with ID " + id + " does not exist.");
     }
 }

@@ -1,5 +1,4 @@
 package com.projectlib.librarian.service;
-import com.projectlib.librarian.exception.BookNotFoundException;
 import com.projectlib.librarian.helper.FilesHelper;
 import com.projectlib.librarian.model.Book;
 import com.projectlib.librarian.repository.BookRepository;
