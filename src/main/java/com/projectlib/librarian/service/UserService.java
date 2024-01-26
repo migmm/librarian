@@ -3,7 +3,6 @@ package com.projectlib.librarian.service;
 import com.projectlib.librarian.model.User_table;
 import com.projectlib.librarian.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -19,18 +18,11 @@ public class UserService {
     private PasswordEncoder passwordEncoder;
 
     public List<User_table> getAllUsers() {
-
         return userRepository.findAll();
     }
 
     public User_table getUserById(Long id) {
-
         return userRepository.findById(id).orElse(null);
-    }
-
-    public User_table findByUsername(String username) {
-        return userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
     }
 
     public String createUser(User_table user) {
