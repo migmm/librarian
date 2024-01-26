@@ -25,7 +25,7 @@ public class UserService {
     public User_table getUserById(Long id) {
 
         return userRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("User with ID " + id + " does not exist."));
+        .orElseThrow(() -> new NotFoundException("User with ID " + id + " does not exist."));
     }
 
     public String createUser(User_table user) {
@@ -36,37 +36,40 @@ public class UserService {
 
     public String updateUser(Long id, User_table updatedUser) {
         User_table existingUser = getUserById(id);
-        if (existingUser != null) {
-            existingUser.setName(updatedUser.getName());
-            existingUser.setSurname(updatedUser.getSurname());
-            existingUser.setStatus(updatedUser.getStatus());
-            existingUser.setEmail(updatedUser.getEmail());
-            existingUser.setUsername(updatedUser.getUsername());
-            existingUser.setRole(updatedUser.getRole());
-            existingUser.setPassword(updatedUser.getPassword());
-            existingUser.setPassword(passwordEncoder.encode(existingUser.getPassword()));
-            userRepository.save(existingUser);
-            return "User updated successfully.";
+        if (existingUser == null) {
+            throw new NotFoundException("User with ID " + id + " does not exist.");
         }
-        throw new NotFoundException("User with ID " + id + " does not exist.");
+
+        existingUser.setName(updatedUser.getName());
+        existingUser.setSurname(updatedUser.getSurname());
+        existingUser.setStatus(updatedUser.getStatus());
+        existingUser.setEmail(updatedUser.getEmail());
+        existingUser.setUsername(updatedUser.getUsername());
+        existingUser.setRole(updatedUser.getRole());
+        existingUser.setPassword(updatedUser.getPassword());
+        existingUser.setPassword(passwordEncoder.encode(existingUser.getPassword()));
+        userRepository.save(existingUser);
+        return "User updated successfully.";
     }
 
     public String setStatus(Long id, Boolean newStatus) {
         User_table existingUser = getUserById(id);
-        if (existingUser != null) {
-            existingUser.setStatus(newStatus);
-            userRepository.save(existingUser);
-            return "User status updated successfully.";
+        if (existingUser == null) {
+            throw new NotFoundException("User with ID " + id + " does not exist.");
         }
-        throw new NotFoundException("User with ID " + id + " does not exist.");
+
+        existingUser.setStatus(newStatus);
+        userRepository.save(existingUser);
+        return "User status updated successfully.";
     }
 
     public String deleteUser(Long id) {
         User_table existingUser = getUserById(id);
-        if (existingUser != null) {
-            userRepository.deleteById(id);
-            return "User with ID " + id + " deleted successfully.";
+        if (existingUser == null) {
+            throw new NotFoundException("User with ID " + id + " does not exist.");
         }
-        throw new NotFoundException("User with ID " + id + " does not exist.");
+
+        userRepository.deleteById(id);
+        return "User with ID " + id + " deleted successfully.";
     }
 }

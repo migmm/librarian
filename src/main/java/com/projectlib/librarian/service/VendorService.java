@@ -20,7 +20,7 @@ public class VendorService {
 
     public Vendor getVendorById(Long id) {
         return vendorRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Vendor with ID " + id + " does not exist."));
+        .orElseThrow(() -> new NotFoundException("Vendor with ID " + id + " does not exist."));
     }
 
     public String createVendor(Vendor vendor) {
@@ -30,24 +30,31 @@ public class VendorService {
 
     public String updateVendor(Long id, Vendor updatedVendor) {
         Vendor existingVendor = getVendorById(id);
-        if (existingVendor != null) {
-            existingVendor.setName(updatedVendor.getName());
-            existingVendor.setStatus(updatedVendor.getStatus());
-            return "Vendor updated successfully.";
+        if (existingVendor == null) {
+            throw new NotFoundException("User with ID " + id + " does not exist.");
         }
-        return "Vendor does not exist.";
+
+        existingVendor.setName(updatedVendor.getName());
+        existingVendor.setStatus(updatedVendor.getStatus());
+        return "Vendor updated successfully.";
     }
 
     public String setStatus(Long id, Vendor setStatus) {
         Vendor existingVendor = getVendorById(id);
-        if (existingVendor != null) {
-            existingVendor.setStatus(setStatus.getStatus());
-            return "Vendor status updated successfully.";
+        if (existingVendor == null) {
+            throw new NotFoundException("User with ID " + id + " does not exist.");
         }
-        return "Vendor does not exist.";
+
+        existingVendor.setStatus(setStatus.getStatus());
+        return "Vendor status updated successfully.";
     }
 
     public String deleteVendor(Long id) {
+        Vendor existingVendor = getVendorById(id);
+        if (existingVendor == null) {
+            throw new NotFoundException("User with ID " + id + " does not exist.");
+        }
+
         vendorRepository.deleteById(id);
         return "Vendor with ID " + id + " deleted successfully.";
     }

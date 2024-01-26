@@ -17,7 +17,6 @@ public class AuthService {
     private PasswordEncoder passwordEncoder;
 
     public User_table findByUsername(String username) {
-
         return authRepository.findByUsername(username);
     }
 

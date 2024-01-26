@@ -19,9 +19,8 @@ public class AuthorService {
     }
 
     public Author getAuthorById(Long id) {
-
         return authorRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Author with ID " + id + " does not exist."));
+        .orElseThrow(() -> new NotFoundException("Author with ID " + id + " does not exist."));
     }
 
     public String createAuthor(Author author) {
@@ -31,32 +30,34 @@ public class AuthorService {
 
     public String updateAuthor(Long id, Author updatedAuthor) {
         Author existingAuthor = getAuthorById(id);
-        if (existingAuthor != null) {
-            existingAuthor.setName(updatedAuthor.getName());
-            existingAuthor.setSurname(updatedAuthor.getSurname());
-            existingAuthor.setStatus(updatedAuthor.getStatus());
-            authorRepository.save(existingAuthor);
-            return "Author updated successfully.";
+        if (existingAuthor == null) {
+            throw new NotFoundException("Author with ID " + id + " does not exist.");
         }
-        throw new NotFoundException("Author with ID " + id + " does not exist.");
+
+        existingAuthor.setName(updatedAuthor.getName());
+        existingAuthor.setSurname(updatedAuthor.getSurname());
+        existingAuthor.setStatus(updatedAuthor.getStatus());
+        authorRepository.save(existingAuthor);
+        return "Author updated successfully.";
     }
 
     public String setStatus(Long id, Author updatedAuthor) {
         Author existingAuthor = getAuthorById(id);
-        if (existingAuthor != null) {
-            existingAuthor.setStatus(updatedAuthor.getStatus());
-            authorRepository.save(existingAuthor);
-            return "Author status updated successfully.";
+        if (existingAuthor == null) {
+            throw new NotFoundException("Author with ID " + id + " does not exist.");
         }
-        throw new NotFoundException("Author with ID " + id + " does not exist.");
+
+        existingAuthor.setStatus(updatedAuthor.getStatus());
+        authorRepository.save(existingAuthor);
+        return "Author status updated successfully.";
     }
 
     public String deleteAuthor(Long id) {
         Author existingAuthor = getAuthorById(id);
-        if (existingAuthor != null) {
+        if (existingAuthor == null) {
+            throw new NotFoundException("Author with ID " + id + " does not exist.");
+        }
         authorRepository.deleteById(id);
         return "Author with ID " + id + " deleted successfully.";
-        }
-        throw new NotFoundException("Author with ID " + id + " does not exist.");
     }
 }
