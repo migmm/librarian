@@ -4,6 +4,7 @@ import com.projectlib.librarian.jwt.JwtResponse;
 import com.projectlib.librarian.jwt.JwtTokenUtil;
 import com.projectlib.librarian.model.User_table;
 import com.projectlib.librarian.service.AuthService;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,12 +29,14 @@ public class AuthController {
     }
 
     @PostMapping("/register")
+    @Operation(summary = "Register User", description = "Register a new user.")
     public ResponseEntity<String> registerUser(@RequestBody User_table user) {
         authService.createUser(user);
         return new ResponseEntity<>("User registered successfully", HttpStatus.CREATED);
     }
 
     @PostMapping("/login")
+    @Operation(summary = "Login user", description = "Login an existing user.")
     public ResponseEntity<JwtResponse> login(@RequestBody User_table user) {
         User_table foundUser = authService.findByUsername(user.getUsername());
 
@@ -49,6 +52,7 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
+    @Operation(summary = "Logout user", description = "Logout user.")
     public ResponseEntity<String> logout() {
         return new ResponseEntity<>("Logout successful", HttpStatus.OK);
     }
