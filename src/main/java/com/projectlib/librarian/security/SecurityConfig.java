@@ -25,7 +25,17 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/", "/books/findAll", "/books/find/**", "/users/delete/**", "/authors/save", "/authors/findAll", "/users/findAll", "/books/delete/**", "/auth/login", "/auth/register", "/auth/logout", "/users/save").permitAll()
+                        // Public URLs
+                        .requestMatchers("/", "/auth/login", "/auth/register", "/auth/logout").permitAll()
+                        // Books URLs
+                        .requestMatchers("/books/findAll", "/books/find/**", "/books/save", "/books/update/**", "/books/delete/**", "/books/setStatus/**").permitAll()
+                        // Authors URLs
+                        .requestMatchers("/authors/findAll", "/authors/find/**", "/authors/save", "/authors/update/**", "/authors/delete/**", "/authors/setStatus/**").permitAll()
+                        // Vendors URLs
+                        .requestMatchers("/vendors/findAll", "/vendors/find/**", "/vendors/save", "/vendors/update/**", "/vendors/delete/**", "/vendors/setStatus/**").permitAll()
+                        // Users URLs
+                        .requestMatchers("/users/findAll", "/users/find/**", "/users/save", "/users/update/**", "/users/delete/**", "/users/setStatus/**").permitAll()
+                        // Authenticated URLs
                         .requestMatchers("/admin").hasAuthority("ADMIN")
                         .requestMatchers("/customer").hasAnyRole("ADMIN","USER")
                         .requestMatchers("/alluser").hasAnyAuthority("ADMIN", "USER").anyRequest().authenticated())
