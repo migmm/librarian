@@ -4,6 +4,7 @@ import com.projectlib.librarian.model.Vendor;
 import com.projectlib.librarian.service.VendorService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -38,14 +39,14 @@ public class VendorController {
 
     @PostMapping("/save")
     @Operation(summary = "Save a new vendor", description = "Save a new vendor with full information using the ID as param.")
-    public ResponseEntity<String> createVendor(@RequestBody Vendor vendor) {
+    public ResponseEntity<String> createVendor(@Valid @RequestBody Vendor vendor) {
         String message = vendorService.createVendor(vendor);
         return new ResponseEntity<>(message, HttpStatus.CREATED);
     }
 
     @PutMapping("/update/{id}")
     @Operation(summary = "Update a vendor", description = "Update a vendor information using the ID as param.")
-    public ResponseEntity<String> updateVendor(@PathVariable Long id, @RequestBody Vendor vendor) {
+    public ResponseEntity<String> updateVendor(@Valid @PathVariable Long id, @RequestBody Vendor vendor) {
         String message = vendorService.updateVendor(id, vendor);
         return new ResponseEntity<>(message, HttpStatus.OK);
     }

@@ -75,7 +75,7 @@ public class BookService {
         return "Book updated successfully.";
     }
 
-    public String borrowBook(Long id, Book updatedBook) {
+    public String borrowBook(Long id) {
         Book existingBook = getBookById(id);
         if (existingBook == null) {
             throw new NotFoundException("Book with ID " + id + " does not exist.");
@@ -94,7 +94,7 @@ public class BookService {
         return "Book borrowed successfully.";
     }
 
-    public String returnBook(Long id, Book updatedBook) {
+    public String returnBook(Long id) {
         Book existingBook = getBookById(id);
         if (existingBook == null) {
             throw new NotFoundException("Book with ID " + id + " does not exist.");

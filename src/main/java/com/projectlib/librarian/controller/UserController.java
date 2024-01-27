@@ -4,6 +4,7 @@ import com.projectlib.librarian.model.User_table;
 import com.projectlib.librarian.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -39,14 +40,14 @@ public class UserController {
 
     @PostMapping("/save")
     @Operation(summary = "Save a new user", description = "Save a new user with full information using the ID as param.")
-    public ResponseEntity<String> createUser(@RequestBody User_table user) {
+    public ResponseEntity<String> createUser(@Valid @RequestBody User_table user) {
         String message = userService.createUser(user);
         return new ResponseEntity<>(message, HttpStatus.CREATED);
     }
 
     @PutMapping("/update/{id}")
     @Operation(summary = "Update a user", description = "Update a user information using the ID as param.")
-    public ResponseEntity<String> updateUser(@PathVariable Long id, @RequestBody User_table user) {
+    public ResponseEntity<String> updateUser(@Valid @PathVariable Long id, @RequestBody User_table user) {
         String message = userService.updateUser(id, user);
         return new ResponseEntity<>(message, HttpStatus.OK);
     }

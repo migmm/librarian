@@ -28,11 +28,11 @@ public class SecurityConfig {
                         // Public URLs
                         .requestMatchers("/", "/auth/login", "/auth/register", "/auth/logout").permitAll()
                         // Books URLs
-                        .requestMatchers("/books/findAll", "/books/find/**", "/books/save", "/books/update/**", "/books/delete/**", "/books/setStatus/**").permitAll()
+                        .requestMatchers("/books/findAll", "/books/find/**", "/books/save", "/books/update/**", "/books/delete/**", "/books/setstatus/**", "/books/borrow/**", "/books/return/**").permitAll()
                         // Authors URLs
-                        .requestMatchers("/authors/findAll", "/authors/find/**", "/authors/save", "/authors/update/**", "/authors/delete/**", "/authors/setStatus/**").permitAll()
+                        .requestMatchers("/authors/findAll", "/authors/find/**", "/authors/save", "/authors/update/**", "/authors/delete/**", "/authors/setstatus/**").permitAll()
                         // Vendors URLs
-                        .requestMatchers("/vendors/findAll", "/vendors/find/**", "/vendors/save", "/vendors/update/**", "/vendors/delete/**", "/vendors/setStatus/**").permitAll()
+                        .requestMatchers("/vendors/findAll", "/vendors/find/**", "/vendors/save", "/vendors/update/**", "/vendors/delete/**", "/vendors/setstatus/**").permitAll()
                         // Users URLs
                         .requestMatchers("/users/findAll", "/users/find/**", "/users/save", "/users/update/**", "/users/delete/**", "/users/setStatus/**").permitAll()
                         // Authenticated URLs

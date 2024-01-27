@@ -30,12 +30,14 @@ public class Author {
     @Column
     @Schema(description = "Author name")
     @NotBlank(message = "Name is required.")
+    @Size(min = 2, message = "Name must be at least 2 characters long.")
     @Size(max = 100, message = "Name cannot exceed 100 characters.")
     private String name;
 
     @Column
     @Schema(description = "Author surname")
     @NotBlank(message = "Surname is required.")
+    @Size(min = 2, message = "Surname must be at least 2 characters long.")
     @Size(max = 100, message = "Surname cannot exceed 100 characters.")
     private String surname;
 
