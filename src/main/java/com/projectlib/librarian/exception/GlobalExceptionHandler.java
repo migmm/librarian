@@ -4,6 +4,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -46,5 +47,14 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ResponseEntity<String> handleNotFoundException(NotFoundException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<String> handleValidationExceptions(MethodArgumentNotValidException methodArgumentNotValidException) {
+        StringBuilder errorMessage = new StringBuilder();
+        methodArgumentNotValidException.getBindingResult().getFieldErrors().forEach(error -> {
+            errorMessage.append("ERROR in field ").append(error.getField()).append(": ").append(error.getDefaultMessage());
+        });
+        return ResponseEntity.badRequest().body(errorMessage.toString());
     }
 }

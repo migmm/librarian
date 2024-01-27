@@ -4,10 +4,12 @@ import com.projectlib.librarian.model.Author;
 import com.projectlib.librarian.service.AuthorService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -37,15 +39,14 @@ public class AuthorController {
     }
 
     @PostMapping("/save")
-    @Operation(summary = "Save a new author", description = "Save a new author with full information using the ID as param.")
-    public ResponseEntity<String> createAuthor(@RequestBody Author author) {
+    public ResponseEntity<String> createAuthor(@Valid @RequestBody Author author) {
         String message = authorService.createAuthor(author);
         return new ResponseEntity<>(message, HttpStatus.CREATED);
     }
 
     @PutMapping("/update/{id}")
     @Operation(summary = "Update an author", description = "Update an author information using the ID as param.")
-    public ResponseEntity<String> updateAuthor(@PathVariable Long id, @RequestBody Author author) {
+    public ResponseEntity<String> updateAuthor(@Valid @PathVariable Long id, @RequestBody Author author) {
         String message = authorService.updateAuthor(id, author);
         return new ResponseEntity<>(message, HttpStatus.OK);
     }
