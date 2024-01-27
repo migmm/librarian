@@ -35,6 +35,10 @@ Replace database_name, username, and password with your own values.
 ### Features
 
     - Global exception handler
+    - Data validation
+    - OWASP Security (CSRF)
+    - Authentication via JWT Token
+
 
 ### Database Relationships
 
@@ -151,6 +155,8 @@ To access to Swagger API documentation you can go to the links below in your loc
 ### Source information
 
 [Swagger Documentation](https://www.baeldung.com/spring-rest-openapi-documentation)
+[Validations implementation](https://medium.com/@himani.prasad016/validations-in-spring-boot-e9948aa6286b)
+[If validation does not work](https://stackoverflow.com/questions/48614773/spring-boot-validation-annotations-valid-and-notblank-not-working)
 
 ### Extra files
 
