@@ -90,7 +90,7 @@ The project uses the following Spring Boot dependencies:
 
     Spring Boot 3.2.1
     Lombok
-    Spring Security
+    Spring Security 6
     Spring Data JPA
     PostgreSQL Driver
 
@@ -100,31 +100,42 @@ This project is under the MIT license. Please refer to the LICENSE file for more
 
 ### Endpoints documentation
 
-| Endpoint                      | Method      | Description                                                    |
-|-------------------------------|-------------|----------------------------------------------------------------|
-|                               |             |                                                                |
-| `/authors/findall`            | GET         | Get all authors.                                               |
-| `/authors/find/{id}`          | GET         | Get author by ID.                                              |
-| `/authors/save`               | POST        | Register new author.                                           |
-| `/authors/update/{id}`        | PUT         | Update a author.                                               |
-| `/authors/setstatus/{id}`     | PUT         | Set author status to true o false (logical deletion).          |
-| `/authors/delete/{id}`        | DELETE      | Delete author from database.                                   |
-|                               |             |                                                                |
-| `/books/findall`              | GET         | Get all books.                                                 |
-| `/books/find/{id}`            | GET         | Get book by ID.                                                |
-| `/books/save`                 | POST        | Register new book.                                             |
-| `/books/update/{id}`          | PUT         | Update a book.                                                 |
-| `/books/setstatus/{id}`       | PUT         | Set book status to true o false (logical deletion).            |
-| `/books/borrow/{id}`          | PUT         | Borrow a book                                                  |
-| `/books/return/{id}`          | PUT         | Return a book                                                  |
-| `/books/delete/{id}`          | DELETE      | Delete book from database.                                     |
-|                               |             |                                                                |
-| `/vendor/findall`             | GET         | Get all vendors.                                               |
-| `/vendor/find/{id}`           | GET         | Get vendor by ID.                                              |
-| `/vendor/save`                | POST        | Register new vendor.                                           |
-| `/vendor/update/{id}`         | PUT         | Update a vendor.                                               |
-| `/vendor/setstatus/{id}`      | PUT         | Set vendor status to true o false (logical deletion).          |
-| `/vendor/delete/{id}`         | DELETE      | Delete vendor from database.                                   |
+| Endpoint                  | Method     | Description                                           |
+|---------------------------|------------|-------------------------------------------------------|
+|                           |            |                                                       |
+| `/authors/findall`        | GET        | Get all authors.                                      |
+| `/authors/find/{id}`      | GET        | Get author by ID.                                     |
+| `/authors/save`           | POST       | Register new author.                                  |
+| `/authors/update/{id}`    | PUT        | Update a author.                                      |
+| `/authors/setstatus/{id}` | PUT        | Set author status to true o false (logical deletion). |
+| `/authors/delete/{id}`    | DELETE     | Delete author from database.                          |
+|                           |            |                                                       |
+| `/books/findall`          | GET        | Get all books.                                        |
+| `/books/find/{id}`        | GET        | Get book by ID.                                       |
+| `/books/save`             | POST       | Register new book.                                    |
+| `/books/update/{id}`      | PUT        | Update a book.                                        |
+| `/books/setstatus/{id}`   | PUT        | Set book status to true o false (logical deletion).   |
+| `/books/borrow/{id}`      | PUT        | Borrow a book                                         |
+| `/books/return/{id}`      | PUT        | Return a book                                         |
+| `/books/delete/{id}`      | DELETE     | Delete book from database.                            |
+|                           |            |                                                       |
+| `/users/findall`          | GET        | Get all users.                                        |
+| `/users/find/{id}`        | GET        | Get users by ID.                                      |
+| `/users/save`             | POST       | Register new user.                                    |
+| `/users/update/{id}`      | PUT        | Update a user.                                        |
+| `/users/setstatus/{id}`   | PUT        | Set user status to true o false (logical deletion).   |
+| `/users/delete/{id}`      | DELETE     | Delete users from database.                           |
+|                           |            |                                                       |
+| `/auth/register`          | POST       | Register a new user.                                  |
+| `/auth/login`             | POST       | Login a registered user.                              |
+| `/auth/logout`            | POST       | Log out a logged-in user.                             |
+|                           |            |                                                       |
+| `/vendor/findall`         | GET        | Get all vendors.                                      |
+| `/vendor/find/{id}`       | GET        | Get vendor by ID.                                     |
+| `/vendor/save`            | POST       | Register new vendor.                                  |
+| `/vendor/update/{id}`     | PUT        | Update a vendor.                                      |
+| `/vendor/setstatus/{id}`  | PUT        | Set vendor status to true o false (logical deletion). |
+| `/vendor/delete/{id}`     | DELETE     | Delete vendor from database.                          |
 
 
 All endpoints uses a local host url http://localhost:8080/
