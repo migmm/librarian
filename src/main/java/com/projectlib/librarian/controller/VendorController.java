@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 
 @RestController
@@ -53,8 +54,13 @@ public class VendorController {
 
     @PutMapping("/setstatus/{id}")  
     @Operation(summary = "Set vendor status", description = "Set vendor status using the ID as param. It used as logical deletion, possible options: true or false.")
-    public ResponseEntity<String> setStatus(@PathVariable Long id, @RequestBody Vendor vendor) {
-        String message = vendorService.setStatus(id, vendor);
+    public ResponseEntity<String> setStatus(@PathVariable Long id, @RequestBody Map<String, Boolean> requestBody) {
+        Boolean status = requestBody.get("status");
+
+        if (status == null) {
+            return new ResponseEntity<>("Invalid status value.", HttpStatus.BAD_REQUEST);
+        }
+        String message = vendorService.setStatus(id, status);
         return new ResponseEntity<>(message, HttpStatus.OK);
     }
 

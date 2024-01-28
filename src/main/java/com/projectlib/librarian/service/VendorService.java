@@ -31,21 +31,26 @@ public class VendorService {
     public String updateVendor(Long id, Vendor updatedVendor) {
         Vendor existingVendor = getVendorById(id);
         if (existingVendor == null) {
-            throw new NotFoundException("User with ID " + id + " does not exist.");
+            throw new NotFoundException("Vendor with ID " + id + " does not exist.");
         }
 
         existingVendor.setName(updatedVendor.getName());
         existingVendor.setStatus(updatedVendor.getStatus());
+
+        vendorRepository.save(existingVendor);
+
         return "Vendor updated successfully.";
     }
 
-    public String setStatus(Long id, Vendor setStatus) {
+
+    public String setStatus(Long id, Boolean vendor) {
         Vendor existingVendor = getVendorById(id);
         if (existingVendor == null) {
             throw new NotFoundException("User with ID " + id + " does not exist.");
         }
 
-        existingVendor.setStatus(setStatus.getStatus());
+        existingVendor.setStatus(vendor);
+        vendorRepository.save(existingVendor);
         return "Vendor status updated successfully.";
     }
 
