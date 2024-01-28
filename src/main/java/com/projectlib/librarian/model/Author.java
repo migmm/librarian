@@ -43,8 +43,7 @@ public class Author {
 
     @Column
     @Schema(description = "Author status")
-    @NotNull(message = "Status is required.")
-    private  Boolean status;
+    private  Boolean status = true;
 
     @ManyToMany(mappedBy = "authors")
     @JsonIgnore
