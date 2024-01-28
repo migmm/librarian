@@ -14,6 +14,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 @RestController
 @RequestMapping("/auth")
+
 public class AuthController {
 
     private final AuthService authService;
@@ -37,7 +38,7 @@ public class AuthController {
 
     @PostMapping("/login")
     @Operation(summary = "Login user", description = "Login an existing user.")
-    public ResponseEntity<JwtResponse> login(@RequestBody User_table user) {
+    public ResponseEntity<?> login(@RequestBody User_table user) {
         User_table foundUser = authService.findByUsername(user.getUsername());
 
         if (foundUser == null || !passwordEncoder.matches(user.getPassword(), foundUser.getPassword())) {
@@ -45,10 +46,12 @@ public class AuthController {
         }
 
         String role = foundUser.getRole();
-        String token = jwtTokenUtil.generateToken(user.getUsername(), role);
 
-        JwtResponse jwtResponse = new JwtResponse(token);
-        return new ResponseEntity<>(jwtResponse, HttpStatus.OK);
+        String accessToken = jwtTokenUtil.generateToken(user.getUsername(), role);
+        String refreshToken = jwtTokenUtil.generateRefreshToken(user.getUsername(), role);
+
+        JwtResponse jwtResponse = new JwtResponse(accessToken, refreshToken);
+        return ResponseEntity.ok(jwtResponse);
     }
 
     @PostMapping("/logout")

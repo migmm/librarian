@@ -3,24 +3,11 @@ package com.projectlib.librarian.jwt;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import lombok.Getter;
-import lombok.Setter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 
 import java.util.Date;
-@Getter
-@Setter
-public class JwtResponse {
-    private String accessToken;
-    private String refreshToken;
-
-    public JwtResponse(String accessToken, String refreshToken) {
-        this.accessToken = accessToken;
-        this.refreshToken = refreshToken;
-    }
-}
 
 @Component
 public class JwtTokenUtil {
@@ -59,7 +46,6 @@ public class JwtTokenUtil {
             Jwts.parser().setSigningKey(JWT_SECRET).parseClaimsJws(token);
             return true;
         } catch (Exception e) {
-            // Log the error or handle it appropriately
             return false;
         }
     }
