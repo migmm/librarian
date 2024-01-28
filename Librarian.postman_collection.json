@@ -10,9 +10,27 @@
 			"item": [
 				{
 					"name": "Get All Books",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
 					"request": {
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "",
+								"type": "default"
+							},
+							{
+								"key": "X-XSRF-TOKEN",
+								"value": "",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": []
+						},
 						"url": {
 							"raw": "http://localhost:8080/books/findAll",
 							"protocol": "http",
@@ -32,7 +50,13 @@
 					"name": "Get Book By ID",
 					"request": {
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "X-XSRF-TOKEN",
+								"value": "f57fa356-a80d-483f-b22b-ddaa08e3e863",
+								"type": "default"
+							}
+						],
 						"url": {
 							"raw": "http://localhost:8080/books/find/1",
 							"protocol": "http",
@@ -53,10 +77,30 @@
 					"name": "Add New Book",
 					"request": {
 						"method": "POST",
-						"header": [],
+						"header": [
+							{
+								"key": "X-XSRF-TOKEN",
+								"value": "cfbf6fa1-94dd-4b51-bb65-621e07feae02",
+								"type": "default"
+							}
+						],
 						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"title\": \"Harry Potter y la piedra filosofal\",\r\n    \"publishDate\": \"2023-09-28\",\r\n    \"genre\": \"ciencia ficción\",\r\n    \"authors\": [\r\n        {\r\n               \"name\": \"J K \", \r\n               \"surname\": \"Rowlling\"\r\n        }\r\n    ]\r\n}",
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "images",
+									"type": "file",
+									"src": [
+										"/C:/Users/Mick/Downloads/Conociendo a los primos (1) (2).png",
+										"/C:/Users/Mick/Downloads/Adivina el numero.png"
+									]
+								},
+								{
+									"key": "book",
+									"value": "{\n    \"isbn\": 1234567891011,\n    \"title\": \"Book example\",\n    \"year\": \"2022-01-08\",\n    \"books_quantity\": 10,\n    \"genre\": \"Ficción\",\n    \"vendor\": null,\n    \"authors\": []\n}\n",
+									"type": "default"
+								}
+							],
 							"options": {
 								"raw": {
 									"language": "json"
@@ -82,7 +126,28 @@
 					"name": "Edit Book",
 					"request": {
 						"method": "PUT",
-						"header": [],
+						"header": [
+							{
+								"key": "X-XSRF-TOKEN",
+								"value": "cfbf6fa1-94dd-4b51-bb65-621e07feae02",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "book",
+									"value": "{\n    \"isbn\": 1234567891011,\n    \"title\": \"Book Example Modified\",\n    \"year\": \"2022-01-08\",\n    \"books_quantity\": 10,\n    \"borrowed_books\": 0,\n    \"books_left\": 10,\n    \"genre\": \"Ficción\",\n    \"status\": true,\n    \"vendor\": null,\n    \"authors\": []\n}",
+									"type": "default"
+								}
+							],
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
 						"url": {
 							"raw": "http://localhost:8080/books/update/1",
 							"protocol": "http",
@@ -103,7 +168,13 @@
 					"name": "Delete Book",
 					"request": {
 						"method": "DELETE",
-						"header": [],
+						"header": [
+							{
+								"key": "X-XSRF-TOKEN",
+								"value": "cfbf6fa1-94dd-4b51-bb65-621e07feae02",
+								"type": "default"
+							}
+						],
 						"url": {
 							"raw": "http://localhost:8080/books/delete/1",
 							"protocol": "http",
@@ -124,7 +195,22 @@
 					"name": "Set Book status",
 					"request": {
 						"method": "PUT",
-						"header": [],
+						"header": [
+							{
+								"key": "X-XSRF-TOKEN",
+								"value": "cfbf6fa1-94dd-4b51-bb65-621e07feae02",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"status\": false\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
 						"url": {
 							"raw": "http://localhost:8080/books/setstatus/1",
 							"protocol": "http",
@@ -145,7 +231,13 @@
 					"name": "Borrow Book",
 					"request": {
 						"method": "PUT",
-						"header": [],
+						"header": [
+							{
+								"key": "X-XSRF-TOKEN",
+								"value": "cfbf6fa1-94dd-4b51-bb65-621e07feae02",
+								"type": "default"
+							}
+						],
 						"url": {
 							"raw": "http://localhost:8080/books/borrow/1",
 							"protocol": "http",
@@ -166,7 +258,13 @@
 					"name": "Return Book",
 					"request": {
 						"method": "PUT",
-						"header": [],
+						"header": [
+							{
+								"key": "X-XSRF-TOKEN",
+								"value": "cfbf6fa1-94dd-4b51-bb65-621e07feae02",
+								"type": "default"
+							}
+						],
 						"url": {
 							"raw": "http://localhost:8080/books/return/1",
 							"protocol": "http",
@@ -233,10 +331,16 @@
 					"name": "Add New Author",
 					"request": {
 						"method": "POST",
-						"header": [],
+						"header": [
+							{
+								"key": "X-XSRF-TOKEN",
+								"value": "cfbf6fa1-94dd-4b51-bb65-621e07feae02",
+								"type": "default"
+							}
+						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"id\": 0,\r\n  \"name\": \"string\",\r\n  \"surname\": \"string\",\r\n  \"status\": true,\r\n  \"books\": [\r\n    \"string\"\r\n  ]\r\n}",
+							"raw": "{\r\n  \"name\": \"Example Name\",\r\n  \"surname\": \"Example Surname\",\r\n  \"books\": [\r\n    \"Example Book\"\r\n  ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -262,7 +366,22 @@
 					"name": "Edit Author",
 					"request": {
 						"method": "PUT",
-						"header": [],
+						"header": [
+							{
+								"key": "X-XSRF-TOKEN",
+								"value": "cfbf6fa1-94dd-4b51-bb65-621e07feae02",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"Modified Author Name\",\r\n  \"surname\": \"Modified Author Surname\",\r\n  \"status\": true,\r\n  \"books\": [\r\n    \"Modified Book Name\"\r\n  ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
 						"url": {
 							"raw": "http://localhost:8080/authors/update/1",
 							"protocol": "http",
@@ -283,7 +402,13 @@
 					"name": "Delete Author",
 					"request": {
 						"method": "DELETE",
-						"header": [],
+						"header": [
+							{
+								"key": "X-XSRF-TOKEN",
+								"value": "cfbf6fa1-94dd-4b51-bb65-621e07feae02",
+								"type": "default"
+							}
+						],
 						"url": {
 							"raw": "http://localhost:8080/authors/delete/1",
 							"protocol": "http",
@@ -304,7 +429,22 @@
 					"name": "Set Author status",
 					"request": {
 						"method": "PUT",
-						"header": [],
+						"header": [
+							{
+								"key": "X-XSRF-TOKEN",
+								"value": "cfbf6fa1-94dd-4b51-bb65-621e07feae02",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"status\": false\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
 						"url": {
 							"raw": "http://localhost:8080/authors/setstatus/1",
 							"protocol": "http",
@@ -352,7 +492,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8080/vendors/find/",
+							"raw": "http://localhost:8080/vendors/find/1",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -361,7 +501,7 @@
 							"path": [
 								"vendors",
 								"find",
-								""
+								"1"
 							]
 						}
 					},
@@ -371,7 +511,22 @@
 					"name": "Add New Vendor",
 					"request": {
 						"method": "POST",
-						"header": [],
+						"header": [
+							{
+								"key": "X-XSRF-TOKEN",
+								"value": "cfbf6fa1-94dd-4b51-bb65-621e07feae02",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Vendor name\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
 						"url": {
 							"raw": "http://localhost:8080/vendors/save",
 							"protocol": "http",
@@ -391,7 +546,22 @@
 					"name": "Edit Vendor",
 					"request": {
 						"method": "PUT",
-						"header": [],
+						"header": [
+							{
+								"key": "X-XSRF-TOKEN",
+								"value": "cfbf6fa1-94dd-4b51-bb65-621e07feae02",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Vendor name edited\",\r\n    \"status\": true\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
 						"url": {
 							"raw": "http://localhost:8080/vendors/update/1",
 							"protocol": "http",
@@ -412,7 +582,13 @@
 					"name": "Delete Vendor",
 					"request": {
 						"method": "DELETE",
-						"header": [],
+						"header": [
+							{
+								"key": "X-XSRF-TOKEN",
+								"value": "cfbf6fa1-94dd-4b51-bb65-621e07feae02",
+								"type": "default"
+							}
+						],
 						"url": {
 							"raw": "http://localhost:8080/vendors/delete/1",
 							"protocol": "http",
@@ -433,7 +609,22 @@
 					"name": "Set Vendors status",
 					"request": {
 						"method": "PUT",
-						"header": [],
+						"header": [
+							{
+								"key": "X-XSRF-TOKEN",
+								"value": "cfbf6fa1-94dd-4b51-bb65-621e07feae02",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"status\": false\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
 						"url": {
 							"raw": "http://localhost:8080/vendors/setstatus/1",
 							"protocol": "http",
@@ -445,6 +636,312 @@
 								"vendors",
 								"setstatus",
 								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Users",
+			"item": [
+				{
+					"name": "Get all Users",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-XSRF-TOKEN",
+								"value": "",
+								"type": "default"
+							},
+							{
+								"key": "Authorization",
+								"value": "",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8080/users/findAll",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"users",
+								"findAll"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get User by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-XSRF-TOKEN",
+								"value": "cfbf6fa1-94dd-4b51-bb65-621e07feae02",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8080/users/find/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"users",
+								"find",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add new User",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-XSRF-TOKEN",
+								"value": "eee36212-af2e-4a47-8cd6-017d5158f0b6",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"User name\",\r\n  \"surname\": \"User surname\",\r\n  \"email\": \"mail@mail.com\",\r\n  \"username\": \"usernn\",\r\n  \"password\": \"pass1234\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/users/save",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"users",
+								"save"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Edit User",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "X-XSRF-TOKEN",
+								"value": "cfbf6fa1-94dd-4b51-bb65-621e07feae02",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"User name edited\",\r\n  \"surname\": \"User surname edited\",\r\n  \"status\": true,\r\n  \"role\": \"user\",\r\n  \"email\": \"mail@mail.com\",\r\n  \"username\": \"usernn\",\r\n  \"password\": \"pass1234\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/users/update/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"users",
+								"update",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete User",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "X-XSRF-TOKEN",
+								"value": "cfbf6fa1-94dd-4b51-bb65-621e07feae02",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8080/users/delete/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"users",
+								"delete",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Set User status",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "X-XSRF-TOKEN",
+								"value": "cfbf6fa1-94dd-4b51-bb65-621e07feae02",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"status\": false\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/users/setstatus/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"users",
+								"setstatus",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-XSRF-TOKEN",
+								"value": "eee36212-af2e-4a47-8cd6-017d5158f0b6",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"username\": \"usernn\",\r\n  \"password\": \"pass1234\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/auth/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Register",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/auth/register",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"auth",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Logout",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/auth/logout",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"auth",
+								"logout"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Refresh token",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"token\": \"eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ1c2Vybm4iLCJyb2xlIjoidXNlciIsImlhdCI6MTcwNjQ4MzMyMywiZXhwIjoxNzA3MzQ3MzIzfQ.jJTWB38HpIOvl3dlWWRMqpEzQwKr1lnS689wCps79nQoJrlks69tnPs6EWtBtqDOumPnJc70RAQ8xTR2-oTD3A\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/auth/refresh-token",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"auth",
+								"refresh-token"
 							]
 						}
 					},
