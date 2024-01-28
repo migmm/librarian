@@ -7,3 +7,7 @@ spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
 spring.jpa.hibernate.ddl-auto=create
 
 upload.dir=images
+
+jwt.secret=
+jwt.token.expiration=
+jwt.refresh.token.expiration=
