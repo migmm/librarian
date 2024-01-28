@@ -3,6 +3,10 @@ package com.projectlib.librarian.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -50,5 +54,5 @@ public class User_table {
 
     @Column
     @Schema(description = "User status")
-    private  Boolean status;
+    private Boolean status = true;
 }

@@ -1,5 +1,7 @@
 package com.projectlib.librarian.controller;
 
+import com.projectlib.librarian.dto.UserDTO;
+import com.projectlib.librarian.model.Book;
 import com.projectlib.librarian.model.User_table;
 import com.projectlib.librarian.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -40,25 +42,29 @@ public class UserController {
 
     @PostMapping("/save")
     @Operation(summary = "Save a new user", description = "Save a new user with full information using the ID as param.")
-    public ResponseEntity<String> createUser(@Valid @RequestBody User_table user) {
-        String message = userService.createUser(user);
+    public ResponseEntity<String> createUser(@Valid @RequestBody UserDTO userDTO) {
+        String message = userService.createUser(userDTO);
         return new ResponseEntity<>(message, HttpStatus.CREATED);
     }
 
     @PutMapping("/update/{id}")
     @Operation(summary = "Update a user", description = "Update a user information using the ID as param.")
-    public ResponseEntity<String> updateUser(@Valid @PathVariable Long id, @RequestBody User_table user) {
-        String message = userService.updateUser(id, user);
+    public ResponseEntity<String> updateUser(@Valid @PathVariable Long id, @RequestBody UserDTO userDTO) {
+        String message = userService.updateUser(id, userDTO);
         return new ResponseEntity<>(message, HttpStatus.OK);
     }
 
     @PutMapping("/setstatus/{id}")
     @Operation(summary = "Set user status", description = "Set user status using the ID as param. It used as logical deletion, possible options: true or false.")
-    public ResponseEntity<String> setStatus(@PathVariable Long id, @RequestBody Map<String, Boolean> statusMap) {
-        Boolean newStatus = statusMap.get("newStatus");
-        String message = userService.setStatus(id, newStatus);
+    public ResponseEntity<String> setStatus(@PathVariable Long id, @RequestBody Map<String, Boolean> requestBody) {
+        Boolean status = requestBody.get("status");
+        if (status == null) {
+            return new ResponseEntity<>("Invalid status value.", HttpStatus.BAD_REQUEST);
+        }
+        String message = userService.setStatus(id, status);
         return new ResponseEntity<>(message, HttpStatus.OK);
     }
+
 
     @DeleteMapping("/delete/{id}")
     @Operation(summary = "Delete a user", description = "Delete a user using the ID as param.")

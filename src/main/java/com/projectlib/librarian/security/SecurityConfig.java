@@ -34,7 +34,7 @@ public class SecurityConfig {
                         // Vendors URLs
                         .requestMatchers("/vendors/findAll", "/vendors/find/**", "/vendors/save", "/vendors/update/**", "/vendors/delete/**", "/vendors/setstatus/**").permitAll()
                         // Users URLs
-                        .requestMatchers("/users/findAll", "/users/find/**", "/users/save", "/users/update/**", "/users/delete/**", "/users/setStatus/**").permitAll()
+                        .requestMatchers("/users/findAll", "/users/find/**", "/users/save", "/users/update/**", "/users/delete/**", "/users/setstatus/**").permitAll()
                         // Authenticated URLs
                         .requestMatchers("/admin").hasAuthority("ADMIN")
                         .requestMatchers("/customer").hasAnyRole("ADMIN","USER")

@@ -1,8 +1,10 @@
 package com.projectlib.librarian.service;
 
+import com.projectlib.librarian.dto.UserDTO;
 import com.projectlib.librarian.exception.NotFoundException;
 import com.projectlib.librarian.model.User_table;
 import com.projectlib.librarian.repository.UserRepository;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -28,13 +30,18 @@ public class UserService {
         .orElseThrow(() -> new NotFoundException("User with ID " + id + " does not exist."));
     }
 
-    public String createUser(User_table user) {
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+    public String createUser(@Valid UserDTO userDTO) {
+        User_table user = new User_table();
+        user.setName(userDTO.getName());
+        user.setSurname(userDTO.getSurname());
+        user.setEmail(userDTO.getEmail());
+        user.setUsername(userDTO.getUsername());
+        user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
         userRepository.save(user);
         return "User created successfully.";
     }
 
-    public String updateUser(Long id, User_table updatedUser) {
+    public String updateUser(Long id, UserDTO updatedUser) {
         User_table existingUser = getUserById(id);
         if (existingUser == null) {
             throw new NotFoundException("User with ID " + id + " does not exist.");
@@ -48,17 +55,18 @@ public class UserService {
         existingUser.setRole(updatedUser.getRole());
         existingUser.setPassword(updatedUser.getPassword());
         existingUser.setPassword(passwordEncoder.encode(existingUser.getPassword()));
+
         userRepository.save(existingUser);
         return "User updated successfully.";
     }
 
-    public String setStatus(Long id, Boolean newStatus) {
+    public String setStatus(Long id, Boolean userTable) {
         User_table existingUser = getUserById(id);
         if (existingUser == null) {
             throw new NotFoundException("User with ID " + id + " does not exist.");
         }
 
-        existingUser.setStatus(newStatus);
+        existingUser.setStatus(userTable);
         userRepository.save(existingUser);
         return "User status updated successfully.";
     }
