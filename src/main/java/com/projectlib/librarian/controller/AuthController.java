@@ -11,6 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.Map;
+
 
 @RestController
 @RequestMapping("/auth")
@@ -51,6 +53,25 @@ public class AuthController {
         String refreshToken = jwtTokenUtil.generateRefreshToken(user.getUsername(), role);
 
         JwtResponse jwtResponse = new JwtResponse(accessToken, refreshToken);
+        return ResponseEntity.ok(jwtResponse);
+    }
+
+    @PostMapping("/refresh-token")
+    @Operation(summary = "Refresh Token", description = "Refresh access token and refresh token.")
+    public ResponseEntity<?> refreshToken(@RequestBody Map<String, String> tokenMap) {
+        String token = tokenMap.get("token");
+
+        if (!jwtTokenUtil.validateToken(token)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token");
+        }
+
+        String username = jwtTokenUtil.getUsernameFromToken(token);
+        String role = jwtTokenUtil.getRoleFromToken(token);
+
+        String newAccessToken = jwtTokenUtil.generateToken(username, role);
+        String newRefreshToken = jwtTokenUtil.generateRefreshToken(username, role);
+
+        JwtResponse jwtResponse = new JwtResponse(newAccessToken, newRefreshToken);
         return ResponseEntity.ok(jwtResponse);
     }
 

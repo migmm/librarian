@@ -36,7 +36,7 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests(authorize -> authorize
                         // Public URLs
-                        .requestMatchers("/", "/auth/login", "/auth/register", "/auth/logout").permitAll()
+                        .requestMatchers("/", "/auth/login", "/auth/refresh-token", "/auth/register", "/auth/logout").permitAll()
                         // Books URLs
                         .requestMatchers("/books/find/**", "/books/save", "/books/update/**", "/books/delete/**", "/books/setstatus/**", "/books/borrow/**", "/books/return/**").permitAll()
                         // Authors URLs
