@@ -36,11 +36,11 @@ public class User_table {
     @Schema(description = "User surname")
     private String surname;
 
-    @Column
+    @Column(unique = true)
     @Schema(description = "User email")
     private String email;
 
-    @Column
+    @Column(unique = true)
     @Schema(description = "User username")
     private String username;
 
