@@ -58,4 +58,11 @@ public class GlobalExceptionHandler {
         });
         return ResponseEntity.badRequest().body(errorMessage.toString());
     }
+
+    // Exception to throw error when username or email exist.
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<String> handleDataIntegrityViolationException(DataIntegrityViolationException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Username or email already exists.");
+    }
 }
