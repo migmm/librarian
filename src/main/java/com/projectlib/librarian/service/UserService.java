@@ -2,7 +2,7 @@ package com.projectlib.librarian.service;
 
 import com.projectlib.librarian.dto.UserDTO;
 import com.projectlib.librarian.exception.NotFoundException;
-import com.projectlib.librarian.model.User_table;
+import com.projectlib.librarian.model.UserModel;
 import com.projectlib.librarian.repository.UserRepository;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,18 +20,18 @@ public class UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    public List<User_table> getAllUsers() {
+    public List<UserModel> getAllUsers() {
         return userRepository.findAll();
     }
 
-    public User_table getUserById(Long id) {
+    public UserModel getUserById(Long id) {
 
         return userRepository.findById(id)
         .orElseThrow(() -> new NotFoundException("User with ID " + id + " does not exist."));
     }
 
     public String createUser(@Valid UserDTO userDTO) {
-        User_table user = new User_table();
+        UserModel user = new UserModel();
         user.setName(userDTO.getName());
         user.setSurname(userDTO.getSurname());
         user.setEmail(userDTO.getEmail());
@@ -42,7 +42,7 @@ public class UserService {
     }
 
     public String updateUser(Long id, UserDTO updatedUser) {
-        User_table existingUser = getUserById(id);
+        UserModel existingUser = getUserById(id);
         if (existingUser == null) {
             throw new NotFoundException("User with ID " + id + " does not exist.");
         }
@@ -61,7 +61,7 @@ public class UserService {
     }
 
     public String setStatus(Long id, Boolean userTable) {
-        User_table existingUser = getUserById(id);
+        UserModel existingUser = getUserById(id);
         if (existingUser == null) {
             throw new NotFoundException("User with ID " + id + " does not exist.");
         }
@@ -72,7 +72,7 @@ public class UserService {
     }
 
     public String deleteUser(Long id) {
-        User_table existingUser = getUserById(id);
+        UserModel existingUser = getUserById(id);
         if (existingUser == null) {
             throw new NotFoundException("User with ID " + id + " does not exist.");
         }

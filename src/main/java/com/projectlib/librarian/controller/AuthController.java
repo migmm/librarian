@@ -2,7 +2,7 @@ package com.projectlib.librarian.controller;
 
 import com.projectlib.librarian.jwt.JwtResponse;
 import com.projectlib.librarian.jwt.JwtTokenUtil;
-import com.projectlib.librarian.model.User_table;
+import com.projectlib.librarian.model.UserModel;
 import com.projectlib.librarian.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,15 +33,15 @@ public class AuthController {
 
     @PostMapping("/register")
     @Operation(summary = "Register User", description = "Register a new user.")
-    public ResponseEntity<String> registerUser(@RequestBody User_table user) {
+    public ResponseEntity<String> registerUser(@RequestBody UserModel user) {
         authService.createUser(user);
         return new ResponseEntity<>("User registered successfully", HttpStatus.CREATED);
     }
 
     @PostMapping("/login")
     @Operation(summary = "Login user", description = "Login an existing user.")
-    public ResponseEntity<?> login(@RequestBody User_table user) {
-        User_table foundUser = authService.findByUsername(user.getUsername());
+    public ResponseEntity<?> login(@RequestBody UserModel user) {
+        UserModel foundUser = authService.findByUsername(user.getUsername());
 
         if (foundUser == null || !passwordEncoder.matches(user.getPassword(), foundUser.getPassword())) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();

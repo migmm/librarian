@@ -1,8 +1,7 @@
 package com.projectlib.librarian.controller;
 
 import com.projectlib.librarian.dto.UserDTO;
-import com.projectlib.librarian.model.Book;
-import com.projectlib.librarian.model.User_table;
+import com.projectlib.librarian.model.UserModel;
 import com.projectlib.librarian.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -27,16 +26,16 @@ public class UserController {
 
     @GetMapping("/findAll")
     @Operation(summary = "Get all users", description = "Get a complete list of all users (does not include which have setStatus=false)")
-    public ResponseEntity<List<User_table>> getAllUsers() {
-        List<User_table> users = userService.getAllUsers();
+    public ResponseEntity<List<UserModel>> getAllUsers() {
+        List<UserModel> users = userService.getAllUsers();
         users.removeIf(user -> !user.getStatus());
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
     @GetMapping("/find/{id}")
     @Operation(summary = "Get a user by ID", description = "Get a user with full information by ID (does not include which have setStatus=false)")
-    public ResponseEntity<User_table>  getUserById(@PathVariable Long id) {
-        User_table user = userService.getUserById(id);
+    public ResponseEntity<UserModel>  getUserById(@PathVariable Long id) {
+        UserModel user = userService.getUserById(id);
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
