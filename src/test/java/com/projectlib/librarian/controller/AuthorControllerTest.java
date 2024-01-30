@@ -1,9 +1,7 @@
 package com.projectlib.librarian.controller;
 
 import com.projectlib.librarian.model.Author;
-import com.projectlib.librarian.service.AuthorService;
 
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

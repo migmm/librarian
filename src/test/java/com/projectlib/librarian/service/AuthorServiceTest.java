@@ -26,7 +26,7 @@ public class AuthorServiceTest {
     private AuthorRepository authorRepository;
 
     @InjectMocks
-    private AuthorService authorService;
+    private AuthorInterface authorInterface;
 
     @BeforeEach
     void setUp() {
@@ -40,7 +40,7 @@ public class AuthorServiceTest {
 
         when(authorRepository.save(Mockito.any(Author.class))).thenReturn(newAuthor);
 
-        String message = authorService.createAuthor(newAuthor);
+        String message = authorInterface.createAuthor(newAuthor);
 
         assertEquals("Author created successfully.", message);
     }
@@ -55,7 +55,7 @@ public class AuthorServiceTest {
         when(authorRepository.findById(authorId)).thenReturn(Optional.of(existingAuthor));
         when(authorRepository.save(Mockito.any(Author.class))).thenReturn(updatedAuthor);
 
-        String message = authorService.updateAuthor(authorId, updatedAuthor);
+        String message = authorInterface.updateAuthor(authorId, updatedAuthor);
 
         assertEquals("Author updated successfully.", message);
     }
@@ -70,7 +70,7 @@ public class AuthorServiceTest {
         when(authorRepository.findById(authorId)).thenReturn(Optional.of(existingAuthor));
         when(authorRepository.save(Mockito.any(Author.class))).thenReturn(updatedAuthor);
 
-        String message = authorService.setStatus(authorId, updatedAuthor);
+        String message = authorInterface.setStatus(authorId, updatedAuthor);
 
         assertEquals("Author status updated successfully.", message);
     }
@@ -82,7 +82,7 @@ public class AuthorServiceTest {
 
         when(authorRepository.existsById(authorId)).thenReturn(true);
 
-        String message = authorService.deleteAuthor(authorId);
+        String message = authorInterface.deleteAuthor(authorId);
 
         assertEquals("Author with ID 1 deleted successfully.", message);
     }

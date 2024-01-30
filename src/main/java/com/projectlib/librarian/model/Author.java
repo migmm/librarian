@@ -43,7 +43,7 @@ public class Author {
 
     @Column
     @Schema(description = "Author status")
-    private  Boolean status = true;
+    private  Boolean status;
 
     @ManyToMany(mappedBy = "authors")
     @JsonIgnore

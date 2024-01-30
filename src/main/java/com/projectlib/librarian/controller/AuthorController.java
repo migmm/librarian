@@ -1,7 +1,7 @@
 package com.projectlib.librarian.controller;
 
-import com.projectlib.librarian.model.Author;
-import com.projectlib.librarian.service.AuthorService;
+import com.projectlib.librarian.dto.AuthorDTO;
+import com.projectlib.librarian.service.AuthorInterface;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -9,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,33 +21,33 @@ import java.util.Map;
 @RequestMapping("/authors")
 public class AuthorController {
     @Autowired
-    private AuthorService authorService;
+    private AuthorInterface authorInterface;
 
     @GetMapping("/findAll")
     @Operation(summary = "Get all authors", description = "Get a complete list of all authors (does not include which have setStatus=false)")
-    public ResponseEntity<List<Author>> getAllAuthors() {
-        List<Author> authors = authorService.getAllAuthors();
+    public ResponseEntity<List<AuthorDTO>> getAllAuthors() {
+        List<AuthorDTO> authors = authorInterface.getAllAuthors();
         authors.removeIf(author -> !author.getStatus());
         return new ResponseEntity<>(authors, HttpStatus.OK);
     }
 
     @GetMapping("/find/{id}")
     @Operation(summary = "Get an author by ID", description = "Get an author with full information by ID (does not include which have setStatus=false)")
-    public ResponseEntity<Author> getAuthorById(@PathVariable Long id) {
-        Author author = authorService.getAuthorById(id);
+    public ResponseEntity<AuthorDTO> getAuthorById(@PathVariable Long id) {
+        AuthorDTO author = authorInterface.getAuthorById(id);
         return new ResponseEntity<>(author, HttpStatus.OK);
     }
 
     @PostMapping("/save")
-    public ResponseEntity<String> createAuthor(@Valid @RequestBody Author author) {
-        String message = authorService.createAuthor(author);
+    public ResponseEntity<String> createAuthor(@Valid @RequestBody AuthorDTO authorDTO) {
+        String message = authorInterface.createAuthor(authorDTO);
         return new ResponseEntity<>(message, HttpStatus.CREATED);
     }
 
     @PutMapping("/update/{id}")
     @Operation(summary = "Update an author", description = "Update an author information using the ID as param.")
-    public ResponseEntity<String> updateAuthor(@Valid @PathVariable Long id, @RequestBody Author author) {
-        String message = authorService.updateAuthor(id, author);
+    public ResponseEntity<String> updateAuthor(@Valid @PathVariable Long id, @Valid @RequestBody AuthorDTO authorDTO) {
+        String message = authorInterface.updateAuthor(id, authorDTO);
         return new ResponseEntity<>(message, HttpStatus.OK);
     }
 
@@ -57,17 +56,17 @@ public class AuthorController {
     public ResponseEntity<String> setStatus(@PathVariable Long id, @RequestBody Map<String, Boolean> requestBody) {
         Boolean status = requestBody.get("status");
         if (status == null) {
-            return new ResponseEntity<>("Invalid status value.", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("Invalid status value. Status must be either true or false.", HttpStatus.BAD_REQUEST);
         }
 
-        String message = authorService.setStatus(id, status);
+        String message = authorInterface.setStatus(id, status);
         return new ResponseEntity<>(message, HttpStatus.OK);
     }
 
     @DeleteMapping("/delete/{id}")
     @Operation(summary = "Delete an author", description = "Delete an author using the ID as param.")
     public ResponseEntity<String> deleteAuthor(@PathVariable Long id) {
-        String message = authorService.deleteAuthor(id);
+        String message = authorInterface.deleteAuthor(id);
         return new ResponseEntity<>(message, HttpStatus.OK);
     }
 }
