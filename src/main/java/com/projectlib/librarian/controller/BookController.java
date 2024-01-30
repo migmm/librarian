@@ -15,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 
 @RestController
@@ -77,8 +78,13 @@ public class BookController {
 
     @PutMapping("/setstatus/{id}")
     @Operation(summary = "Set book status", description = "Set book status using the ID as param. It used as logical deletion, possible options: true or false.")
-    public ResponseEntity<String> setStatus(@PathVariable Long id, @RequestBody Book book) {
-        String message = bookService.setStatus(id, book);
+    public ResponseEntity<String> setStatus(@PathVariable Long id, @RequestBody Map<String, Boolean> requestBody) {
+        Boolean status = requestBody.get("status");
+        if (status == null) {
+            return new ResponseEntity<>("Invalid status value.", HttpStatus.BAD_REQUEST);
+        }
+
+        String message = bookService.setStatus(id, status);
         return new ResponseEntity<>(message, HttpStatus.OK);
     }
 

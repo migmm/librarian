@@ -13,6 +13,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 
 @RestController
@@ -53,8 +54,13 @@ public class AuthorController {
 
     @PutMapping("/setstatus/{id}")
     @Operation(summary = "Set author status", description = "Set author status using the ID as param. It used as logical deletion, possible options: true or false.")
-    public ResponseEntity<String> setStatus(@PathVariable Long id, @RequestBody Author author) {
-        String message = authorService.setStatus(id, author);
+    public ResponseEntity<String> setStatus(@PathVariable Long id, @RequestBody Map<String, Boolean> requestBody) {
+        Boolean status = requestBody.get("status");
+        if (status == null) {
+            return new ResponseEntity<>("Invalid status value.", HttpStatus.BAD_REQUEST);
+        }
+
+        String message = authorService.setStatus(id, status);
         return new ResponseEntity<>(message, HttpStatus.OK);
     }
 

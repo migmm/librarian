@@ -41,13 +41,13 @@ public class AuthorService {
         return "Author updated successfully.";
     }
 
-    public String setStatus(Long id, Author updatedAuthor) {
+    public String setStatus(Long id, Boolean status) {
         Author existingAuthor = getAuthorById(id);
         if (existingAuthor == null) {
             throw new NotFoundException("Author with ID " + id + " does not exist.");
         }
 
-        existingAuthor.setStatus(updatedAuthor.getStatus());
+        existingAuthor.setStatus(status);
         authorRepository.save(existingAuthor);
         return "Author status updated successfully.";
     }

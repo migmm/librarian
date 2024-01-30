@@ -25,7 +25,6 @@ public class UserService {
     }
 
     public UserModel getUserById(Long id) {
-
         return userRepository.findById(id)
         .orElseThrow(() -> new NotFoundException("User with ID " + id + " does not exist."));
     }
@@ -60,13 +59,13 @@ public class UserService {
         return "User updated successfully.";
     }
 
-    public String setStatus(Long id, Boolean userTable) {
+    public String setStatus(Long id, Boolean status) {
         UserModel existingUser = getUserById(id);
         if (existingUser == null) {
             throw new NotFoundException("User with ID " + id + " does not exist.");
         }
 
-        existingUser.setStatus(userTable);
+        existingUser.setStatus(status);
         userRepository.save(existingUser);
         return "User status updated successfully.";
     }

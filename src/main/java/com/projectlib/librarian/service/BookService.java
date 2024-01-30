@@ -113,13 +113,13 @@ public class BookService {
         return "Book returned successfully.";
     }
 
-    public String setStatus(Long id, Book setStatus) {
+    public String setStatus(Long id, Boolean status) {
         Book existingBook = getBookById(id);
         if (existingBook == null) {
             throw new NotFoundException("Book with ID " + id + " does not exist.");
         }
 
-        existingBook.setStatus(setStatus.getStatus());
+        existingBook.setStatus(status);
         bookRepository.save(existingBook);
         return "Book status updated successfully.";
     }

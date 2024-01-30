@@ -43,13 +43,13 @@ public class VendorService {
     }
 
 
-    public String setStatus(Long id, Boolean vendor) {
+    public String setStatus(Long id, Boolean status) {
         Vendor existingVendor = getVendorById(id);
         if (existingVendor == null) {
             throw new NotFoundException("User with ID " + id + " does not exist.");
         }
 
-        existingVendor.setStatus(vendor);
+        existingVendor.setStatus(status);
         vendorRepository.save(existingVendor);
         return "Vendor status updated successfully.";
     }
