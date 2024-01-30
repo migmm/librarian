@@ -35,6 +35,8 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(authorize -> authorize
+                        // Swagger URLs
+                        .requestMatchers("swagger-ui/**", "v3/api-docs/**").permitAll()
                         // Public URLs
                         .requestMatchers("/", "/auth/login", "/auth/refresh-token", "/auth/register", "/auth/logout").permitAll()
                         // Books URLs

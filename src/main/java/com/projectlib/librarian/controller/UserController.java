@@ -64,7 +64,6 @@ public class UserController {
         return new ResponseEntity<>(message, HttpStatus.OK);
     }
 
-
     @DeleteMapping("/delete/{id}")
     @Operation(summary = "Delete a user", description = "Delete a user using the ID as param.")
     public ResponseEntity<String> deleteUser(@PathVariable Long id) {
