@@ -1,6 +1,5 @@
 package com.projectlib.librarian.service;
 
-import com.projectlib.librarian.model.Author;
 import com.projectlib.librarian.model.Vendor;
 import com.projectlib.librarian.repository.VendorRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,7 +26,7 @@ public class VendorServiceTest {
     private VendorRepository vendorRepository;
 
     @InjectMocks
-    private VendorService vendorService;
+    private VendorImplementation vendorImplementation;
 
     @BeforeEach
     void setUp() {
@@ -41,7 +40,7 @@ public class VendorServiceTest {
 
         when(vendorRepository.findAll()).thenReturn(vendors);
 
-        List<Vendor> result = vendorService.getAllVendors();
+        List<Vendor> result = vendorImplementation.getAllVendors();
 
         assertEquals(1, result.size());
     }
@@ -53,7 +52,7 @@ public class VendorServiceTest {
 
         when(vendorRepository.findById(vendorId)).thenReturn(Optional.of(vendor));
 
-        Vendor result = vendorService.getVendorById(vendorId);
+        Vendor result = vendorImplementation.getVendorById(vendorId);
 
         assertEquals(vendor, result);
     }
@@ -64,7 +63,7 @@ public class VendorServiceTest {
 
         when(vendorRepository.findById(vendorId)).thenReturn(Optional.empty());
 
-        Vendor result = vendorService.getVendorById(vendorId);
+        Vendor result = vendorImplementation.getVendorById(vendorId);
 
         assertNull(result);
     }
@@ -73,7 +72,7 @@ public class VendorServiceTest {
     public void testCreateVendor() {
         Vendor newVendor = new Vendor(1L, "New Vendor", true, new HashSet<>());
 
-        vendorService.createVendor(newVendor);
+        vendorImplementation.createVendor(newVendor);
 
         Mockito.verify(vendorRepository, Mockito.times(1)).save(newVendor);
     }
@@ -85,9 +84,9 @@ public class VendorServiceTest {
         Vendor updatedVendor = new Vendor(vendorId, "Updated Vendor", true, new HashSet<>());
 
         when(vendorRepository.findById(vendorId)).thenReturn(Optional.of(existingVendor));
-        vendorService.updateVendor(vendorId, updatedVendor);
+        vendorImplementation.updateVendor(vendorId, updatedVendor);
 
-        String message = vendorService.updateVendor(vendorId, updatedVendor);
+        String message = vendorImplementation.updateVendor(vendorId, updatedVendor);
 
         assertEquals("Vendor updated successfully.", message);
     }
@@ -98,7 +97,7 @@ public class VendorServiceTest {
         Vendor updatedVendor = new Vendor(vendorId, "Updated Vendor", false, new HashSet<>());
 
         when(vendorRepository.findById(vendorId)).thenReturn(Optional.empty());
-        vendorService.updateVendor(vendorId, updatedVendor);
+        vendorImplementation.updateVendor(vendorId, updatedVendor);
 
         Mockito.verify(vendorRepository, Mockito.times(0)).save(updatedVendor);
     }
@@ -110,7 +109,7 @@ public class VendorServiceTest {
         Vendor updatedVendor = new Vendor(vendorId, "Vendor 1", false, new HashSet<>());
 
         when(vendorRepository.findById(vendorId)).thenReturn(Optional.of(existingVendor));
-        String message = vendorService.setStatus(vendorId, updatedVendor);
+        String message = vendorImplementation.setStatus(vendorId, updatedVendor);
 
         assertEquals("Vendor status updated successfully.", message);
     }
@@ -118,7 +117,7 @@ public class VendorServiceTest {
     @Test
     public void testDeleteVendor() {
         Long vendorId = 1L;
-        vendorService.deleteVendor(vendorId);
+        vendorImplementation.deleteVendor(vendorId);
 
         Mockito.verify(vendorRepository, Mockito.times(1)).deleteById(vendorId);
     }

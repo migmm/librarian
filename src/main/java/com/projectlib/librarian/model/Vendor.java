@@ -34,7 +34,7 @@ public class Vendor {
 
     @Column
     @Schema(description = "Vendor status")
-    private Boolean status = true;
+    private Boolean status;
 
     @OneToMany(mappedBy = "vendor")
     @JsonIgnore

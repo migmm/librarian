@@ -1,65 +1,68 @@
 package com.projectlib.librarian.service;
 
+import com.projectlib.librarian.dto.VendorDTO;
 import com.projectlib.librarian.exception.NotFoundException;
+import com.projectlib.librarian.mapper.VendorMapper;
 import com.projectlib.librarian.model.Vendor;
 import com.projectlib.librarian.repository.VendorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Service
-public class VendorService {
+public class VendorImplementation implements VendorInterface {
     @Autowired
     private VendorRepository vendorRepository;
 
-    public List<Vendor> getAllVendors() {
-        return vendorRepository.findAll();
+    @Override
+    public List<VendorDTO> getAllVendors() {
+        List<Vendor> vendors = vendorRepository.findAll();
+        return vendors.stream()
+                .map(VendorMapper::convertToDTO)
+                .collect(Collectors.toList());
     }
 
-    public Vendor getVendorById(Long id) {
-        return vendorRepository.findById(id)
-        .orElseThrow(() -> new NotFoundException("Vendor with ID " + id + " does not exist."));
+    @Override
+    public VendorDTO getVendorById(Long id) {
+        Vendor vendor = vendorRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Vendor with ID " + id + " does not exist."));
+        return VendorMapper.convertToDTO(vendor);
     }
 
-    public String createVendor(Vendor vendor) {
+    @Override
+    public String createVendor(VendorDTO vendorDTO) {
+        Vendor vendor = VendorMapper.convertToEntity(vendorDTO);
         vendorRepository.save(vendor);
         return "Vendor created successfully.";
     }
 
-    public String updateVendor(Long id, Vendor updatedVendor) {
-        Vendor existingVendor = getVendorById(id);
-        if (existingVendor == null) {
-            throw new NotFoundException("Vendor with ID " + id + " does not exist.");
-        }
+    @Override
+    public String updateVendor(Long id, VendorDTO updatedVendorDTO) {
+        Vendor existingVendor = vendorRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Vendor with ID " + id + " does not exist."));
 
-        existingVendor.setName(updatedVendor.getName());
-        existingVendor.setStatus(updatedVendor.getStatus());
+        Vendor updatedVendor = VendorMapper.convertToEntity(updatedVendorDTO);
+        updatedVendor.setId(existingVendor.getId());
 
-        vendorRepository.save(existingVendor);
-
+        vendorRepository.save(updatedVendor);
         return "Vendor updated successfully.";
     }
 
-
+    @Override
     public String setStatus(Long id, Boolean status) {
-        Vendor existingVendor = getVendorById(id);
-        if (existingVendor == null) {
-            throw new NotFoundException("User with ID " + id + " does not exist.");
-        }
+        Vendor existingVendor = vendorRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Vendor with ID " + id + " does not exist."));
 
         existingVendor.setStatus(status);
         vendorRepository.save(existingVendor);
         return "Vendor status updated successfully.";
     }
 
+    @Override
     public String deleteVendor(Long id) {
-        Vendor existingVendor = getVendorById(id);
-        if (existingVendor == null) {
-            throw new NotFoundException("User with ID " + id + " does not exist.");
-        }
-
         vendorRepository.deleteById(id);
         return "Vendor with ID " + id + " deleted successfully.";
     }
