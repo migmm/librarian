@@ -92,6 +92,8 @@ public class Book {
 
     public void setBooks_quantity(Integer books_quantity) {
         this.books_quantity = books_quantity;
-        this.books_left = books_quantity;
+        if (this.books_left == null) {
+            this.books_left = books_quantity;
+        }
     }
 }

@@ -1,9 +1,13 @@
 package com.projectlib.librarian.service;
 
 
+import com.projectlib.librarian.dto.BookDTO;
 import com.projectlib.librarian.exception.NotFoundException;
+import com.projectlib.librarian.mapper.BookMapper;
 import com.projectlib.librarian.model.Book;
+
 import com.projectlib.librarian.repository.BookRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -12,25 +16,34 @@ import com.projectlib.librarian.helper.FilesHelper;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Service
-public class BookService {
+@RequiredArgsConstructor
+public class BookImplementation implements BookInterface{
     @Autowired
     private BookRepository bookRepository;
     @Autowired
     private FilesHelper filesHelper;
 
-    public List<Book> getAllBooks() {
-        return bookRepository.findAll();
+    @Override
+    public List<BookDTO> getAllBooks() {
+        List<Book> books = bookRepository.findAll();
+        return books.stream()
+                .map(BookMapper::convertToDTO)
+                .collect(Collectors.toList());
     }
 
-    public Book getBookById(Long id) {
-        return bookRepository.findById(id)
-        .orElseThrow(() -> new NotFoundException("Book with ID " + id + " does not exist."));
+    @Override
+    public BookDTO getBookById(Long id) {
+        Book book = bookRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Book with ID " + id + " does not exist."));
+        return BookMapper.convertToDTO(book);
     }
 
-    public String createBook(Book book, List<MultipartFile> imagePaths) throws IOException {
+    @Override
+    public String createBook(BookDTO bookDTO, List<MultipartFile> imagePaths) throws IOException {
         List<String> savedImagePaths = new ArrayList<>();
 
         for (MultipartFile multipartFile : imagePaths) {
@@ -38,17 +51,17 @@ public class BookService {
             savedImagePaths.add(savedImagePath);
         }
 
-        book.setImages(savedImagePaths);
-        bookRepository.save(book);
+        bookDTO.setImages(savedImagePaths);
+        Book bookEntity = BookMapper.convertToEntity(bookDTO);
+        bookRepository.save(bookEntity);
 
         return "Book created successfully.";
     }
 
-    public String updateBook(Long id, Book updatedBook, List<MultipartFile> newImages) throws IOException {
-        Book existingBook = getBookById(id);
-        if (existingBook == null) {
-            throw new NotFoundException("Book with ID " + id + " does not exist.");
-        }
+    @Override
+    public String updateBook(Long id, BookDTO updatedBook, List<MultipartFile> newImages) throws IOException {
+        Book existingBook = bookRepository.findById(id)
+        .orElseThrow(() -> new NotFoundException("Book with ID " + id + " does not exist."));
 
         existingBook.setISBN(updatedBook.getISBN());
         existingBook.setTitle(updatedBook.getTitle());
@@ -75,60 +88,60 @@ public class BookService {
         return "Book updated successfully.";
     }
 
+    @Override
     public String borrowBook(Long id) {
-        Book existingBook = getBookById(id);
-        if (existingBook == null) {
-            throw new NotFoundException("Book with ID " + id + " does not exist.");
+        Book existingBook = bookRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Book with ID " + id + " does not exist."));
+
+        if (existingBook.getBooks_left() <= 0) {
+            return "There is no more books to take.";
         }
 
         existingBook.setBorrowed_books(existingBook.getBorrowed_books() + 1);
-        existingBook.setBooks_left(existingBook.getBooks_left() - 1);
+        existingBook.setBooks_left(existingBook.getBooks_quantity() - existingBook.getBorrowed_books());
 
         if (existingBook.getBooks_left() == 0) {
             existingBook.setStatus(false);
-        } else {
-            existingBook.setStatus(true);
         }
 
         bookRepository.save(existingBook);
         return "Book borrowed successfully.";
     }
 
+    @Override
     public String returnBook(Long id) {
-        Book existingBook = getBookById(id);
-        if (existingBook == null) {
-            throw new NotFoundException("Book with ID " + id + " does not exist.");
+        Book existingBook = bookRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Book with ID " + id + " does not exist."));
+
+        if (existingBook.getBorrowed_books() <= 0) {
+            return "There are no borrowed books to return.";
         }
 
         existingBook.setBorrowed_books(existingBook.getBorrowed_books() - 1);
         existingBook.setBooks_left(existingBook.getBooks_left() + 1);
 
-        if (existingBook.getBooks_left() > 0) {
+        if (existingBook.getStatus() == false) {
             existingBook.setStatus(true);
-        } else {
-            existingBook.setStatus(false);
         }
 
         bookRepository.save(existingBook);
         return "Book returned successfully.";
     }
 
+    @Override
     public String setStatus(Long id, Boolean status) {
-        Book existingBook = getBookById(id);
-        if (existingBook == null) {
-            throw new NotFoundException("Book with ID " + id + " does not exist.");
-        }
+        Book existingBook = bookRepository.findById(id)
+        .orElseThrow(() -> new NotFoundException("Book with ID " + id + " does not exist."));
 
         existingBook.setStatus(status);
         bookRepository.save(existingBook);
         return "Book status updated successfully.";
     }
 
+    @Override
     public String deleteBook(Long id) {
-        Book existingBook = getBookById(id);
-        if (existingBook == null) {
-            throw new NotFoundException("Book with ID " + id + " does not exist.");
-        }
+        Book existingBook = bookRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Book with ID " + id + " does not exist."));
 
         bookRepository.deleteById(id);
         return "Book with ID " + id + " deleted successfully.";

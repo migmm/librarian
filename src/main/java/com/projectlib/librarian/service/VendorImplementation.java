@@ -5,6 +5,7 @@ import com.projectlib.librarian.exception.NotFoundException;
 import com.projectlib.librarian.mapper.VendorMapper;
 import com.projectlib.librarian.model.Vendor;
 import com.projectlib.librarian.repository.VendorRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +14,7 @@ import java.util.stream.Collectors;
 
 
 @Service
+@RequiredArgsConstructor
 public class VendorImplementation implements VendorInterface {
     @Autowired
     private VendorRepository vendorRepository;

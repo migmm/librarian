@@ -30,7 +30,7 @@ class BookServiceTest {
     private FilesHelper filesHelper;
 
     @InjectMocks
-    private BookService bookService;
+    private BookImplementation bookImplementation;
 
     @Test
     void getAllBooks() {
@@ -38,7 +38,7 @@ class BookServiceTest {
         books.add(new Book());
         when(bookRepository.findAll()).thenReturn(books);
 
-        List<Book> result = bookService.getAllBooks();
+        List<Book> result = bookImplementation.getAllBooks();
 
         assertEquals(books, result);
     }
@@ -49,7 +49,7 @@ class BookServiceTest {
         Book expectedBook = new Book();
         when(bookRepository.findById(anyLong())).thenReturn(Optional.of(expectedBook));
 
-        Book result = bookService.getBookById(1L);
+        Book result = bookImplementation.getBookById(1L);
 
         assertEquals(expectedBook, result);
     }
@@ -59,7 +59,7 @@ class BookServiceTest {
     void getBookById_nonExistingBook() {
         when(bookRepository.findById(anyLong())).thenReturn(Optional.empty());
 
-        Book result = bookService.getBookById(1L);
+        Book result = bookImplementation.getBookById(1L);
 
         assertNull(result);
     }
@@ -74,7 +74,7 @@ class BookServiceTest {
         when(filesHelper.saveImageToServer(any())).thenReturn("test.jpg");
         when(bookRepository.save(any())).thenReturn(book);
 
-        String result = bookService.createBook(book, images);
+        String result = bookImplementation.createBook(book, images);
 
         assertEquals("Book created successfully.", result);
         assertEquals("test.jpg", book.getImages().get(0));
@@ -92,7 +92,7 @@ class BookServiceTest {
 
         when(bookRepository.findById(bookId)).thenReturn(java.util.Optional.of(existingBook));
 
-        String result = bookService.updateBook(bookId, updatedBook, newImages);
+        String result = bookImplementation.updateBook(bookId, updatedBook, newImages);
 
         verify(filesHelper, times(newImages.size())).saveImageToServer(any());
 
@@ -119,7 +119,7 @@ class BookServiceTest {
 
         when(bookRepository.findById(bookId)).thenReturn(Optional.of(existingBook));
 
-        String result = bookService.borrowBook(bookId, existingBook);
+        String result = bookImplementation.borrowBook(bookId, existingBook);
 
         assertEquals("Book borrowed successfully.", result);
         assertEquals(1, existingBook.getBorrowed_books().intValue());
@@ -138,7 +138,7 @@ class BookServiceTest {
         existingBook.setBooks_left(0);
 
         when(bookRepository.findById(bookId)).thenReturn(java.util.Optional.of(existingBook));
-        String result = bookService.returnBook(bookId, existingBook);
+        String result = bookImplementation.returnBook(bookId, existingBook);
 
         assertEquals("Book returned successfully.", result);
         assertEquals(0, existingBook.getBorrowed_books());
@@ -157,7 +157,7 @@ class BookServiceTest {
         existingBook.setStatus(true);
 
         when(bookRepository.findById(bookId)).thenReturn(java.util.Optional.of(existingBook));
-        String result = bookService.setStatus(bookId, existingBook);
+        String result = bookImplementation.setStatus(bookId, existingBook);
 
         assertEquals("Book status updated successfully.", result);
         assertTrue(existingBook.getStatus().booleanValue());
@@ -173,7 +173,7 @@ class BookServiceTest {
 
         when(bookRepository.findById(bookId)).thenReturn(java.util.Optional.of(existingBook));
 
-        String result = bookService.deleteBook(bookId);
+        String result = bookImplementation.deleteBook(bookId);
 
         assertEquals("Book with ID 1 deleted successfully.", result);
         verify(bookRepository, times(1)).deleteById(bookId);
