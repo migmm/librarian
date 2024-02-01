@@ -1,124 +1,144 @@
 package com.projectlib.librarian.service;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import com.projectlib.librarian.dto.VendorDTO;
+import com.projectlib.librarian.exception.NotFoundException;
 import com.projectlib.librarian.model.Vendor;
 import com.projectlib.librarian.repository.VendorRepository;
-import org.junit.jupiter.api.BeforeEach;
+
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import static org.mockito.Mockito.when;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-
 @SpringBootTest
-public class VendorServiceTest {
+class VendorServiceTest {
+
+    @InjectMocks
+    private VendorImplementation vendorService;
 
     @Mock
     private VendorRepository vendorRepository;
 
-    @InjectMocks
-    private VendorImplementation vendorImplementation;
+    @Test
+    void findAllVendorsTest() {
 
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
+        Vendor vendor1 = mock(Vendor.class);
+        Vendor vendor2 = mock(Vendor.class);
+        when(vendorRepository.findAll()).thenReturn(Arrays.asList(vendor1, vendor2));
+
+        List<VendorDTO> result = vendorService.getAllVendors();
+
+        assertEquals(2, result.size());
     }
 
     @Test
-    public void testGetAllVendors() {
-        List<Vendor> vendors = new ArrayList<>();
-        vendors.add(new Vendor(1L, "Vendor 1", true, new HashSet<>()));
+    void findAllITest() {
 
-        when(vendorRepository.findAll()).thenReturn(vendors);
+        Vendor vendor1 = new Vendor();
+        vendor1.setId(1L);
+        vendor1.setName("John");
+        vendor1.setStatus(true);
 
-        List<Vendor> result = vendorImplementation.getAllVendors();
+        Vendor vendor2 = new Vendor();
+        vendor2.setId(2L);
+        vendor2.setName("Jane");
+        vendor2.setStatus(true);
 
-        assertEquals(1, result.size());
+        List<Vendor> vendorList = Arrays.asList(vendor1, vendor2);
+        when(vendorRepository.findAll()).thenReturn(vendorList);
+
+        List<VendorDTO> expected = vendorList.stream()
+                .map(vendor -> new VendorDTO(vendor.getId(), vendor.getName(), vendor.getStatus()))
+                .collect(Collectors.toList());
+
+        List<VendorDTO> result = vendorService.getAllVendors();
+
+        assertNotNull(result);
+        assertEquals(expected.size(), result.size());
+
+        for (int i = 0; i < expected.size(); i++) {
+            VendorDTO expectedDTO = expected.get(i);
+            VendorDTO resultDTO = result.get(i);
+            assertEquals(expectedDTO.getId(), resultDTO.getId());
+            assertEquals(expectedDTO.getName(), resultDTO.getName());
+            assertEquals(expectedDTO.getStatus(), resultDTO.getStatus());
+        }
     }
 
     @Test
-    public void testGetVendorById() {
+    void saveVendorTest() {
+
+        Vendor vendor = mock(Vendor.class);
+        VendorDTO vendorDto = mock(VendorDTO.class);
+        when(vendorRepository.save(any(Vendor.class))).thenReturn(vendor);
+
+        String result = vendorService.createVendor(vendorDto);
+
+        assertEquals("Vendor created successfully.", result);
+    }
+
+    @Test
+    void deleteVendorTest() {
+
         Long vendorId = 1L;
-        Vendor vendor = new Vendor(vendorId, "Vendor 1", true, new HashSet<>());
+        doNothing().when(vendorRepository).deleteById(vendorId);
 
+        String result = vendorService.deleteVendor(vendorId);
+
+        assertEquals("Vendor with ID " + vendorId + " deleted successfully.", result);
+    }
+
+    @Test
+    void findVendorByIdTest() {
+
+        Long vendorId = 1L;
+        Vendor vendor = new Vendor();
+        vendor.setId(vendorId);
         when(vendorRepository.findById(vendorId)).thenReturn(Optional.of(vendor));
 
-        Vendor result = vendorImplementation.getVendorById(vendorId);
+        VendorDTO result = vendorService.getVendorById(vendorId);
 
-        assertEquals(vendor, result);
+        assertEquals(vendorId, result.getId());
     }
 
     @Test
-    public void testGetVendorByIdVendorNotFound() {
-        Long vendorId = 1L;
+    void getVendorByIdNotFoundTest() {
 
+        Long vendorId = 1L;
         when(vendorRepository.findById(vendorId)).thenReturn(Optional.empty());
 
-        Vendor result = vendorImplementation.getVendorById(vendorId);
-
-        assertNull(result);
+        assertThrows(NotFoundException.class, () -> vendorService.getVendorById(vendorId));
     }
 
     @Test
-    public void testCreateVendor() {
-        Vendor newVendor = new Vendor(1L, "New Vendor", true, new HashSet<>());
+    void updateVendorNotFoundTest() {
 
-        vendorImplementation.createVendor(newVendor);
-
-        Mockito.verify(vendorRepository, Mockito.times(1)).save(newVendor);
-    }
-
-    @Test
-    public void testUpdateVendor() {
         Long vendorId = 1L;
-        Vendor existingVendor = new Vendor(vendorId, "Existing", true, new HashSet<>());
-        Vendor updatedVendor = new Vendor(vendorId, "Updated Vendor", true, new HashSet<>());
+        VendorDTO updatedVendorDTO = new VendorDTO();
+        updatedVendorDTO.setId(vendorId);
 
-        when(vendorRepository.findById(vendorId)).thenReturn(Optional.of(existingVendor));
-        vendorImplementation.updateVendor(vendorId, updatedVendor);
-
-        String message = vendorImplementation.updateVendor(vendorId, updatedVendor);
-
-        assertEquals("Vendor updated successfully.", message);
+        assertThrows(NotFoundException.class, () -> vendorService.updateVendor(vendorId, updatedVendorDTO));
     }
 
     @Test
-    public void testUpdateVendorVendorNotFound() {
+    void deleteVendorNotFoundTest() {
+
         Long vendorId = 1L;
-        Vendor updatedVendor = new Vendor(vendorId, "Updated Vendor", false, new HashSet<>());
+        doThrow(new NotFoundException("Vendor with ID " + vendorId + " does not exist.")).when(vendorRepository)
+                .deleteById(vendorId);
 
-        when(vendorRepository.findById(vendorId)).thenReturn(Optional.empty());
-        vendorImplementation.updateVendor(vendorId, updatedVendor);
-
-        Mockito.verify(vendorRepository, Mockito.times(0)).save(updatedVendor);
-    }
-
-    @Test
-    public void testSetStatus() {
-        Long vendorId = 1L;
-        Vendor existingVendor = new Vendor(vendorId, "Vendor 1", true, new HashSet<>());
-        Vendor updatedVendor = new Vendor(vendorId, "Vendor 1", false, new HashSet<>());
-
-        when(vendorRepository.findById(vendorId)).thenReturn(Optional.of(existingVendor));
-        String message = vendorImplementation.setStatus(vendorId, updatedVendor);
-
-        assertEquals("Vendor status updated successfully.", message);
-    }
-
-    @Test
-    public void testDeleteVendor() {
-        Long vendorId = 1L;
-        vendorImplementation.deleteVendor(vendorId);
-
-        Mockito.verify(vendorRepository, Mockito.times(1)).deleteById(vendorId);
+        assertThrows(NotFoundException.class, () -> vendorService.deleteVendor(vendorId));
     }
 }
