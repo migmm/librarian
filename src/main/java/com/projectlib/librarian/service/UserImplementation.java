@@ -41,6 +41,7 @@ public class UserImplementation implements UserInterface {
     @Override
     public String createUser(UserDTO userDTO) {
         UserModel user = UserMapper.convertToEntity(userDTO);
+        user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
         userRepository.save(user);
         return "User created successfully.";
     }
