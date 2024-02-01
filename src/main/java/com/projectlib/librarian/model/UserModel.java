@@ -38,7 +38,7 @@ public class UserModel {
 
     @Column
     @Schema(description = "User role")
-    private String role = "user";
+    private String role;
 
     @Column
     @Schema(description = "User password")
@@ -46,5 +46,5 @@ public class UserModel {
 
     @Column
     @Schema(description = "User status")
-    private Boolean status = true;
+    private Boolean status;
 }

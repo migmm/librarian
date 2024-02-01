@@ -1,8 +1,7 @@
 package com.projectlib.librarian.controller;
 
 import com.projectlib.librarian.dto.UserDTO;
-import com.projectlib.librarian.model.UserModel;
-import com.projectlib.librarian.service.UserService;
+import com.projectlib.librarian.service.UserImplementation;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -22,34 +21,34 @@ import java.util.Map;
 @RequestMapping("/users")
 public class UserController {
     @Autowired
-    private UserService userService;
+    private UserImplementation userImplementation;
 
     @GetMapping("/findAll")
     @Operation(summary = "Get all users", description = "Get a complete list of all users (does not include which have setStatus=false)")
-    public ResponseEntity<List<UserModel>> getAllUsers() {
-        List<UserModel> users = userService.getAllUsers();
+    public ResponseEntity<List<UserDTO>> getAllUsers() {
+        List<UserDTO> users = userImplementation.getAllUsers();
         users.removeIf(user -> !user.getStatus());
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
     @GetMapping("/find/{id}")
     @Operation(summary = "Get a user by ID", description = "Get a user with full information by ID (does not include which have setStatus=false)")
-    public ResponseEntity<UserModel>  getUserById(@PathVariable Long id) {
-        UserModel user = userService.getUserById(id);
+    public ResponseEntity<UserDTO>  getUserById(@PathVariable Long id) {
+        UserDTO user = userImplementation.getUserById(id);
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
     @PostMapping("/save")
     @Operation(summary = "Save a new user", description = "Save a new user with full information using the ID as param.")
     public ResponseEntity<String> createUser(@Valid @RequestBody UserDTO userDTO) {
-        String message = userService.createUser(userDTO);
+        String message = userImplementation.createUser(userDTO);
         return new ResponseEntity<>(message, HttpStatus.CREATED);
     }
 
     @PutMapping("/update/{id}")
     @Operation(summary = "Update a user", description = "Update a user information using the ID as param.")
     public ResponseEntity<String> updateUser(@Valid @PathVariable Long id, @RequestBody UserDTO userDTO) {
-        String message = userService.updateUser(id, userDTO);
+        String message = userImplementation.updateUser(id, userDTO);
         return new ResponseEntity<>(message, HttpStatus.OK);
     }
 
@@ -60,14 +59,14 @@ public class UserController {
         if (status == null) {
             return new ResponseEntity<>("Invalid status value.", HttpStatus.BAD_REQUEST);
         }
-        String message = userService.setStatus(id, status);
+        String message = userImplementation.setStatus(id, status);
         return new ResponseEntity<>(message, HttpStatus.OK);
     }
 
     @DeleteMapping("/delete/{id}")
     @Operation(summary = "Delete a user", description = "Delete a user using the ID as param.")
     public ResponseEntity<String> deleteUser(@PathVariable Long id) {
-        String message = userService.deleteUser(id);
+        String message = userImplementation.deleteUser(id);
         return new ResponseEntity<>(message, HttpStatus.OK);
     }
 }
