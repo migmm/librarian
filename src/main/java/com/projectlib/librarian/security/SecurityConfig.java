@@ -35,31 +35,36 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(authorize -> authorize
-                        // Swagger URLs
-                        .requestMatchers("swagger-ui/**", "v3/api-docs/**").permitAll()
-                        // Public URLs
-                        .requestMatchers("/", "/auth/login", "/auth/refresh-token", "/auth/register", "/auth/logout").permitAll()
-                        // Books URLs
-                        .requestMatchers("/books/find/**", "/books/save", "/books/update/**", "/books/delete/**", "/books/setstatus/**", "/books/borrow/**", "/books/return/**").permitAll()
-                        // Authors URLs
-                        .requestMatchers( "/authors/findAll", "/authors/find/**", "/authors/save", "/authors/update/**", "/authors/delete/**", "/authors/setstatus/**").permitAll()
-                        // Vendors URLs
-                        .requestMatchers("/vendors/findAll", "/vendors/find/**", "/vendors/save", "/vendors/update/**", "/vendors/delete/**", "/vendors/setstatus/**").permitAll()
-                        // Users URLs
-                        .requestMatchers("/users/findAll", "/users/find/**", "/users/save", "/users/update/**", "/users/delete/**", "/users/setstatus/**").permitAll()
-                        // Authenticated URLs
-                        //.requestMatchers("/admin").hasAuthority("ADMIN")
-                        //.requestMatchers("/customer").hasAnyRole("ADMIN","USER")
-                        //.requestMatchers("/alluser").hasAnyAuthority("ADMIN", "USER").anyRequest().authenticated()
-                        .requestMatchers("/books/findAll").authenticated())
-                .addFilterBefore(new JwtAuthenticationFilter(authenticationManager, jwtTokenUtil), UsernamePasswordAuthenticationFilter.class)
-                //.csrf((csrf) -> csrf
-                //        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                //        .csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler())
-                //);
 
-                // Temporarly disable csrf for testing
-                .csrf(csrf -> csrf.disable());
+                        // Public URLs
+                        .requestMatchers("swagger-ui/**", "v3/api-docs/**").permitAll()
+                        .requestMatchers("/", "/auth/login", "/auth/register").permitAll()
+                        .requestMatchers("/books/findAll", "/books/find/**").permitAll()
+                        .requestMatchers( "/authors/findAll", "/authors/find/**").permitAll()
+                        .requestMatchers("/vendors/findAll", "/vendors/find/**").permitAll()
+                        .requestMatchers( "/users/save", "/users/update/**", "/users/setstatus/**").permitAll()
+
+                        // Authenticated URLs
+                        // USER or ADMIN
+                        .requestMatchers("/auth/logout", "/auth/refresh-token").authenticated()
+                        .requestMatchers("/books/borrow/**", "/books/return/**").authenticated()
+
+                        // ONLY ADMIN
+                        .requestMatchers("/users/findAll", "/users/find/**", "/users/delete/**").hasAuthority("admin")
+                        .requestMatchers("/vendors/save", "/vendors/update/**", "/vendors/delete/**", "/vendors/setstatus/**").hasAuthority("admin")
+                        .requestMatchers("/authors/save", "/authors/update/**", "/authors/delete/**", "/authors/setstatus/**").hasAuthority("admin")
+                        .requestMatchers("/books/save", "/books/update/**", "/books/delete/**", "/books/setstatus/**").hasAuthority("admin"))
+
+                .addFilterBefore(new JwtAuthenticationFilter(authenticationManager, jwtTokenUtil), UsernamePasswordAuthenticationFilter.class)
+
+                .csrf((csrf) -> csrf
+                        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                        .csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler())
+                );
+
+                // enable this for testing routes
+                //.csrf(csrf -> csrf.disable());
+
         return http.build();
     }
 }
