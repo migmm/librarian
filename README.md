@@ -36,9 +36,9 @@ Replace database_name, username, and password with your own values.
 
     - Global exception handler
     - Data validation
-    - OWASP Security (CSRF)
+    - OWASP Security (CSRF and the protections provided by Sping Security)
     - Authentication via JWT Token
-
+    - Password encryption
 
 ### Database Relationships
 
