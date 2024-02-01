@@ -8,6 +8,7 @@ import java.util.List;
 
 
 public interface BookInterface {
+    
     List<BookDTO> getAllBooks();
     BookDTO getBookById(Long id);
     String createBook(BookDTO book, List<MultipartFile> imagePaths) throws IOException, java.io.IOException;

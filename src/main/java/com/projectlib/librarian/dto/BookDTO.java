@@ -20,6 +20,7 @@ import java.util.List;
 @AllArgsConstructor
 public class BookDTO {
 
+    
     @Schema(description = "Book ID")
     private Long id;
 

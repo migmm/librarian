@@ -20,6 +20,7 @@ import java.util.Map;
 @Tag(name = "Vendors", description = "Endpoints to work with vendors.")
 @RequestMapping("/vendors")
 public class VendorController {
+    
     @Autowired
     private VendorInterface vendorInterface;
 

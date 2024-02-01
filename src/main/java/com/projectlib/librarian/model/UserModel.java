@@ -14,6 +14,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class UserModel {
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")

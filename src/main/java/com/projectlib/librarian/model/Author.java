@@ -19,6 +19,7 @@ import java.util.Set;
 @Getter
 @Setter
 public class Author {
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "author_id")

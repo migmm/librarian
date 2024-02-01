@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Import;
 @SpringBootApplication()
 @Import(SecurityConfig.class)
 public class LibrarianApplication {
+	
 	public static void main(String[] args) {
 		SpringApplication.run(LibrarianApplication.class, args);
 	}

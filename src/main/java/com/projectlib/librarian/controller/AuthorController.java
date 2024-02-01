@@ -20,6 +20,7 @@ import java.util.Map;
 @Tag(name = "Authors", description = "Endpoints to work with authors.")
 @RequestMapping("/authors")
 public class AuthorController {
+    
     @Autowired
     private AuthorInterface authorInterface;
 

@@ -20,6 +20,7 @@ import java.util.Map;
 @Tag(name = "Users", description = "Endpoints to work with users.")
 @RequestMapping("/users")
 public class UserController {
+    
     @Autowired
     private UserImplementation userImplementation;
 

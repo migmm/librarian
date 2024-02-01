@@ -17,6 +17,7 @@ import java.util.UUID;
 
 @Component
 public class FilesHelper {
+    
     @Value("${upload.dir}")
     private String uploadDir;
 

@@ -4,6 +4,7 @@ import com.projectlib.librarian.dto.AuthorDTO;
 import java.util.List;
 
 public interface AuthorInterface {
+    
     List<AuthorDTO> getAllAuthors();
     AuthorDTO getAuthorById(Long id);
     String createAuthor(AuthorDTO authorDTO);
