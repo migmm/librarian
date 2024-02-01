@@ -34,11 +34,11 @@ Replace database_name, username, and password with your own values.
 
 ### Features
 
-    - Global exception handler
-    - Data validation
-    - OWASP Security (CSRF and the protections provided by Sping Security)
-    - Authentication via JWT Token
-    - Password encryption
+- Global exception handler
+- Data validation
+- OWASP Security (CSRF and the protections provided by Sping Security)
+- Authentication via JWT Token
+- Password encryption
 
 ### Database Relationships
 
