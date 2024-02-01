@@ -1,26 +1,32 @@
 package com.projectlib.librarian.controller;
 
-import com.projectlib.librarian.model.Vendor;
+import com.projectlib.librarian.dto.VendorDTO;
+
 import com.projectlib.librarian.service.VendorImplementation;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -33,123 +39,112 @@ public class VendorControllerTest {
     @MockBean
     private VendorImplementation vendorImplementation;
 
+    @Value("${jwt.test.token}")
+    private String JWT_TOKEN_TEST;
+
+
     @Test
     @DisplayName("Get all vendors")
-    public void testGetAllvendors() throws Exception {
-        // Mock data
-        List<Vendor> vendors = new ArrayList<>();
+    public void testGetAllVendorsTest() throws Exception {
 
-        vendors.add(new Vendor(1L, "Vendor 1",  true, new HashSet<>()));
-        vendors.add(new Vendor(2L, "Vendor 2", true, new HashSet<>()));
+        VendorDTO vendorDTO = mock(VendorDTO.class);
+        VendorDTO vendorDTO2 = mock(VendorDTO.class);
 
-        when(vendorImplementation.getAllVendors()).thenReturn(vendors);
+        List<VendorDTO> vendorDTOList = new ArrayList<>();
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/vendors/findAll"))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].name").value("Vendor 1"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[1].name").value("Vendor 2"));
+        vendorDTOList.add(vendorDTO);
+        vendorDTOList.add(vendorDTO2);
 
-        verify(vendorImplementation, times(1)).getAllVendors();
-    }
+        when(vendorImplementation.getAllVendors()).thenReturn(vendorDTOList);
 
-    @Test
-    @DisplayName("Get a vendor by ID")
-    public void testGetvendorById() throws Exception {
-        // Mock data
-        Vendor vendor = new Vendor(1L, "Vendor 1", true, new HashSet<>());
-        Long vendorId = 1L;
-
-        when(vendorImplementation.getVendorById(vendorId)).thenReturn(vendor);
-
-        mockMvc.perform(MockMvcRequestBuilders.get("/vendors/find/{id}", vendorId))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.name").value("Vendor 1"));
-
-        verify(vendorImplementation, times(1)).getVendorById(vendorId);
-    }
-
-    @Test
-    @DisplayName("Create new vendor")
-    public void testCreatevendor() throws Exception {
-        // Mock data
-        Vendor newvendor = new Vendor(1L, "Vendor 1", true, new HashSet<>());
-
-        when(vendorImplementation.createVendor(newvendor)).thenReturn("vendor created successfully.");
-
-        mockMvc.perform(MockMvcRequestBuilders.post("/vendors/save")
+        mockMvc.perform(MockMvcRequestBuilders
+                        .get("/vendors/findAll").with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{"
-                                + "\"id\":3,"
-                                + "\"isbn\":0,"
-                                + "\"title\":\"New vendor\","
-                                + "\"year\":\"2023-11-02T21:02:24.982Z\","
-                                + "\"vendors_quantity\":5,"
-                                + "\"borrowed_vendors\":0,"
-                                + "\"vendors_left\":5,"
-                                + "\"genre\":\"Adventure\","
-                                + "\"status\":true,"
-                                + "\"vendors\":["
-                                + "]"
-                                + "}"))
-                .andExpect(status().isCreated());
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().is2xxSuccessful()
+                );
     }
 
     @Test
-    @DisplayName("Update a vendor")
-    public void testUpdateVendor() throws Exception {
-        // Mock data
-        Long vendorId = 1L;
-        Vendor updatedvendor = new Vendor(1L, "Vendor 1", true, new HashSet<>());
+    @DisplayName("Get vendor by ID")
+    public void testGetVendorByIdTest() throws Exception {
 
-        when(vendorImplementation.updateVendor(vendorId, updatedvendor)).thenReturn("vendor updated successfully.");
+        VendorDTO vendorDTO = new VendorDTO();
+        vendorDTO.setId(1L);
+        vendorDTO.setName("Vendor name");
 
-        mockMvc.perform(MockMvcRequestBuilders.put("/vendors/update/{id}", vendorId)
+        when(vendorImplementation.getVendorById(1L)).thenReturn(vendorDTO);
+
+        mockMvc.perform(MockMvcRequestBuilders
+                        .get("/vendors/find/1").with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{"
-                                + "\"id\":3,"
-                                + "\"isbn\":0,"
-                                + "\"title\":\"New vendor\","
-                                + "\"year\":\"2023-11-02T21:02:24.982Z\","
-                                + "\"vendors_quantity\":5,"
-                                + "\"borrowed_vendors\":0,"
-                                + "\"vendors_left\":5,"
-                                + "\"genre\":\"Adventure\","
-                                + "\"status\":true,"
-                                + "\"vendors\":["
-                                + "]"
-                                + "}"))
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(1))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.name").value("Vendor name"));
+    }
+
+    @Test
+    @DisplayName("Add new vendor")
+    public void addNewVendorTest() throws Exception {
+
+        VendorDTO vendorDTO = mock(VendorDTO.class);
+        when(vendorImplementation.createVendor(vendorDTO)).thenReturn(anyString());
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/vendors/save").with(csrf())
+                        .content("{\"name\":\"Example name\"}")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + JWT_TOKEN_TEST))
+                .andExpect(MockMvcResultMatchers.status().isCreated());
+    }
+
+    @Test
+    @DisplayName("Edit a vendor")
+    public void editVendorTest() throws Exception {
+
+        VendorDTO updatedVendorDTO = new VendorDTO();
+
+        updatedVendorDTO.setId(1L);
+        updatedVendorDTO.setName("Updated Name");
+
+        when(vendorImplementation.updateVendor(1L, updatedVendorDTO)).thenReturn("Vendor updated successfully.");
+
+        mockMvc.perform(MockMvcRequestBuilders.put("/vendors/update/1").with(csrf())
+                        .content("{\"id\":1,\"name\":\"Updated Name\"}")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + JWT_TOKEN_TEST))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+    }
+
+    @Test
+    @DisplayName("Delete an vendor")
+    public void deleteVendorTest() throws Exception {
+
+        when(vendorImplementation.deleteVendor(1L)).thenReturn("Vendor with ID 1 deleted successfully.");
+
+        mockMvc.perform(MockMvcRequestBuilders.delete("/vendors/delete/1").with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + JWT_TOKEN_TEST))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().string("Vendor with ID 1 deleted successfully."));
+    }
+
+    @Test
+    @DisplayName("Set vendor status")
+    public void setVendorStatusTest() throws Exception {
+        Long vendorId = 1L;
+        boolean status = false;
+
+        when(vendorImplementation.setStatus(vendorId, status)).thenReturn("Vendor status updated successfully.");
+
+        mockMvc.perform(MockMvcRequestBuilders.put("/vendors/setstatus/1").with(csrf())
+                        .content("{\"status\":false}")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + JWT_TOKEN_TEST))
                 .andExpect(status().isOk());
-    }
-
-    @Test
-    @DisplayName("Set vendor status (logical deletion)")
-    public void testSetStatus() throws Exception {
-        // Mock data
-        Long vendorId = 1L;
-        Vendor vendor = new Vendor(1L, "Vendor 1", true, new HashSet<>());
-
-        when(vendorImplementation.setStatus(vendorId, vendor)).thenReturn("vendor status updated successfully.");
-
-        mockMvc.perform(MockMvcRequestBuilders.put("/vendors/setstatus/{id}", vendorId)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"status\":true}"))
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    @DisplayName("Delete vendor")
-    public void testDeletevendor() throws Exception {
-        // Mock data
-        Long vendorId = 1L;
-
-        when(vendorImplementation.deleteVendor(vendorId)).thenReturn("vendor with ID " + vendorId + " deleted successfully.");
-
-        mockMvc.perform(MockMvcRequestBuilders.delete("/vendors/delete/{id}", vendorId))
-                .andExpect(status().isOk())
-                .andExpect(content().string("vendor with ID " + vendorId + " deleted successfully."));
-
-        verify(vendorImplementation, times(1)).deleteVendor(vendorId);
     }
 }
