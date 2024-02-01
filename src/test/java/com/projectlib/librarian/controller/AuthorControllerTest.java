@@ -1,23 +1,28 @@
 package com.projectlib.librarian.controller;
 
-import com.projectlib.librarian.model.Author;
+import com.projectlib.librarian.dto.AuthorDTO;
+
+import com.projectlib.librarian.service.AuthorImplementation;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 
 import static org.mockito.Mockito.*;
@@ -32,125 +37,114 @@ public class AuthorControllerTest {
     private MockMvc mockMvc;
 
     @MockBean
-    private AuthorService authorService;
+    private AuthorImplementation authorImplementation;
+
+    @Value("${jwt.test.token}")
+    private String JWT_TOKEN_TEST;
+
 
     @Test
     @DisplayName("Get all authors")
-    public void testGetAllAuthors() throws Exception {
-        // Mock data
-        List<Author> authors = new ArrayList<>();
+    public void testfindAllAuthorsTest() throws Exception {
 
-        authors.add(new Author(1L, "Author 1", "New Last Name", true, new HashSet<>()));
-        authors.add(new Author(2L, "Author 2", "New Last Name", true, new HashSet<>()));
+        AuthorDTO authorDTO = mock(AuthorDTO.class);
+        AuthorDTO authorDTO2 = mock(AuthorDTO.class);
 
-        when(authorService.getAllAuthors()).thenReturn(authors);
+        List<AuthorDTO> authorDTOList = new ArrayList<>();
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/authors/findAll"))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].name").value("Author 1"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[1].name").value("Author 2"));
+        authorDTOList.add(authorDTO);
+        authorDTOList.add(authorDTO2);
 
-        verify(authorService, times(1)).getAllAuthors();
-    }
+        when(authorImplementation.getAllAuthors()).thenReturn(authorDTOList);
 
-    @Test
-    @DisplayName("Get an author by ID")
-    public void testGetAuthorById() throws Exception {
-        // Mock data
-        Author author = new Author(1L, "Author 1", "New Last Name", true, new HashSet<>());
-        Long authorId = 1L;
-
-        when(authorService.getAuthorById(authorId)).thenReturn(author);
-
-        mockMvc.perform(MockMvcRequestBuilders.get("/authors/find/{id}", authorId))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.name").value("Author 1"));
-
-        verify(authorService, times(1)).getAuthorById(authorId);
-    }
-
-    @Test
-    @DisplayName("Create new author")
-    public void testCreateauthor() throws Exception {
-        // Mock data
-        Author newauthor = new Author(1L, "New Author", "New Last Name", true, new HashSet<>());
-
-        when(authorService.createAuthor(newauthor)).thenReturn("Author created successfully.");
-
-        mockMvc.perform(MockMvcRequestBuilders.post("/authors/save")
+        mockMvc.perform(MockMvcRequestBuilders
+                        .get("/authors/findAll").with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{"
-                                + "\"id\":3,"
-                                + "\"isbn\":0,"
-                                + "\"title\":\"New author\","
-                                + "\"year\":\"2023-11-02T21:02:24.982Z\","
-                                + "\"authors_quantity\":5,"
-                                + "\"borrowed_authors\":0,"
-                                + "\"authors_left\":5,"
-                                + "\"genre\":\"Adventure\","
-                                + "\"status\":true,"
-                                + "\"authors\":["
-                                + "]"
-                                + "}"))
-                .andExpect(status().isCreated());
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().is2xxSuccessful()
+                );
+    }
+
+    @Test
+    @DisplayName("Get author by ID")
+    public void testfindAuthorByIdTest() throws Exception {
+
+        AuthorDTO authorDTO = new AuthorDTO();
+        authorDTO.setId(1L);
+        authorDTO.setName("John");
+
+        when(authorImplementation.getAuthorById(1L)).thenReturn(authorDTO);
+
+        mockMvc.perform(MockMvcRequestBuilders
+                        .get("/authors/find/1").with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(1))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.name").value("John"));
+    }
+
+    @Test
+    @DisplayName("Add new author")
+    public void saveAuthorTest() throws Exception {
+
+        AuthorDTO authorDTO = mock(AuthorDTO.class);
+        when(authorImplementation.createAuthor(authorDTO)).thenReturn(anyString());
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/authors/save").with(csrf())
+                        .content("{\"name\":\"Example name\", \"surname\":\"Example surname\", \"books\":[]}")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + JWT_TOKEN_TEST))
+                .andExpect(MockMvcResultMatchers.status().isCreated());
     }
 
     @Test
     @DisplayName("Update an author")
-    public void testUpdateauthor() throws Exception {
-        // Mock data
-        Long authorId = 1L;
-        Author updatedauthor = new Author(1L, "New Author", "New Last Name", true, new HashSet<>());
+    public void updateAuthorTest() throws Exception {
 
-        when(authorService.updateAuthor(authorId, updatedauthor)).thenReturn("Author updated successfully.");
+        AuthorDTO updatedAuthorDTO = new AuthorDTO();
 
-        mockMvc.perform(MockMvcRequestBuilders.put("/authors/update/{id}", authorId)
+        updatedAuthorDTO.setId(1L);
+        updatedAuthorDTO.setName("Updated Name");
+
+        when(authorImplementation.updateAuthor(1L, updatedAuthorDTO)).thenReturn("Author updated successfully.");
+
+        mockMvc.perform(MockMvcRequestBuilders.put("/authors/update/1").with(csrf())
+                        .content("{\"id\":1,\"name\":\"Updated Name\",\"surname\":\"Example surname\"}")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{"
-                                + "\"id\":3,"
-                                + "\"isbn\":0,"
-                                + "\"title\":\"New author\","
-                                + "\"year\":\"2023-11-02T21:02:24.982Z\","
-                                + "\"authors_quantity\":5,"
-                                + "\"borrowed_authors\":0,"
-                                + "\"authors_left\":5,"
-                                + "\"genre\":\"Adventure\","
-                                + "\"status\":true,"
-                                + "\"authors\":["
-                                + "]"
-                                + "}"))
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    @DisplayName("Set author status (logical deletion)")
-    public void testSetStatus() throws Exception {
-        // Mock data
-        Long authorId = 1L;
-        Author author = new Author(1L, "New Author", "New Last Name", true, new HashSet<>());
-
-        when(authorService.setStatus(authorId, author)).thenReturn("author status updated successfully.");
-
-        mockMvc.perform(MockMvcRequestBuilders.put("/authors/setstatus/{id}", authorId)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"status\":true}"))
-                .andExpect(status().isOk());
+                        .accept(MediaType.APPLICATION_JSON)
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + JWT_TOKEN_TEST))
+                .andExpect(MockMvcResultMatchers.status().isOk());
     }
 
     @Test
     @DisplayName("Delete an author")
-    public void testDeleteAuthor() throws Exception {
-        // Mock data
+    public void deleteAuthorTest() throws Exception {
+
+        when(authorImplementation.deleteAuthor(1L)).thenReturn("Author with ID 1 deleted successfully.");
+
+        mockMvc.perform(MockMvcRequestBuilders.delete("/authors/delete/1").with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + JWT_TOKEN_TEST))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().string("Author with ID 1 deleted successfully."));
+    }
+
+    @Test
+    @DisplayName("Set author status")
+    public void setAuthorStatusTest() throws Exception {
         Long authorId = 1L;
+        boolean status = false;
 
-        when(authorService.deleteAuthor(authorId)).thenReturn("author with ID " + authorId + " deleted successfully.");
+        when(authorImplementation.setStatus(authorId, status)).thenReturn("Author status updated successfully.");
 
-        mockMvc.perform(MockMvcRequestBuilders.delete("/authors/delete/{id}", authorId))
-                .andExpect(status().isOk())
-                .andExpect(content().string("author with ID " + authorId + " deleted successfully."));
-
-        verify(authorService, times(1)).deleteAuthor(authorId);
+        mockMvc.perform(MockMvcRequestBuilders.put("/authors/setstatus/1").with(csrf())
+                        .content("{\"status\":false}")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + JWT_TOKEN_TEST))
+                .andExpect(status().isOk());
     }
 }

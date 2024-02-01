@@ -18,7 +18,10 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserDTO {
-    
+
+    @Schema(description = "User ID")
+    private Long id;
+
     @Schema(description = "User first name")
     @NotBlank(message = "User first name is required.")
     @Size(min = 2, max = 30, message = "User first name must be between 2 and 30 characters long.")

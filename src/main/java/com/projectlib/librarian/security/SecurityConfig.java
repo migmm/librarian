@@ -62,7 +62,7 @@ public class SecurityConfig {
                         .csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler())
                 );
 
-                // enable this for testing routes
+                // Uncomment this and comment the code above for testing routes in postman
                 //.csrf(csrf -> csrf.disable());
 
         return http.build();
