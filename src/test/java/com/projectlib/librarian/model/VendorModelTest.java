@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.HashSet;
 import java.util.Set;
 
+
 @DisplayName("Vendor model tests")
 public class VendorModelTest {
 

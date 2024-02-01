@@ -22,6 +22,7 @@ import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+
 @SpringBootTest
 class UserServiceTest {
 
