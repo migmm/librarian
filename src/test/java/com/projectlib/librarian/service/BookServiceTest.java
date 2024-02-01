@@ -1,28 +1,35 @@
 package com.projectlib.librarian.service;
-import com.projectlib.librarian.helper.FilesHelper;
+
+import com.projectlib.librarian.dto.BookDTO;
+import com.projectlib.librarian.exception.NotFoundException;
+
+import com.projectlib.librarian.mapper.BookMapper;
 import com.projectlib.librarian.model.Book;
 import com.projectlib.librarian.repository.BookRepository;
-import org.junit.jupiter.api.DisplayName;
+import com.projectlib.librarian.helper.FilesHelper;
+
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
+
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-@DisplayName("Book service tests")
 class BookServiceTest {
+
     @Mock
     private BookRepository bookRepository;
 
@@ -30,152 +37,130 @@ class BookServiceTest {
     private FilesHelper filesHelper;
 
     @InjectMocks
-    private BookImplementation bookImplementation;
+    private BookImplementation bookService;
 
-    @Test
-    void getAllBooks() {
-        List<Book> books = new ArrayList<>();
-        books.add(new Book());
-        when(bookRepository.findAll()).thenReturn(books);
+    private BookMapper bookMapper;
 
-        List<Book> result = bookImplementation.getAllBooks();
-
-        assertEquals(books, result);
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
+        bookMapper = new BookMapper();
     }
 
     @Test
-    @DisplayName("Get book by ID (existing book)")
-    void getBookById_existingBook() {
-        Book expectedBook = new Book();
-        when(bookRepository.findById(anyLong())).thenReturn(Optional.of(expectedBook));
+    void getAllBooksTest() {
 
-        Book result = bookImplementation.getBookById(1L);
-
-        assertEquals(expectedBook, result);
-    }
-
-    @Test
-    @DisplayName("Get book by ID (non existing book)")
-    void getBookById_nonExistingBook() {
-        when(bookRepository.findById(anyLong())).thenReturn(Optional.empty());
-
-        Book result = bookImplementation.getBookById(1L);
-
-        assertNull(result);
-    }
-
-    @Test
-    @DisplayName("Create a book")
-    void createBook() throws IOException {
         Book book = new Book();
-        List<MultipartFile> images = new ArrayList<>();
-        images.add(new MockMultipartFile("image", "test.jpg", "image/jpeg", new byte[0]));
+        book.setTitle("Test Book");
+        when(bookRepository.findAll()).thenReturn(Collections.singletonList(book));
 
-        when(filesHelper.saveImageToServer(any())).thenReturn("test.jpg");
-        when(bookRepository.save(any())).thenReturn(book);
+        List<BookDTO> result = bookService.getAllBooks();
 
-        String result = bookImplementation.createBook(book, images);
+        assertEquals(1, result.size());
+        assertEquals("Test Book", result.get(0).getTitle());
+    }
+
+    @Test
+    void getBookByIdBookExistsTest() {
+
+        Book book = new Book(1L, 1234567890123L, "Book 1", new Date(), 10, 0, 10, "Genre 1", true, new ArrayList<>(), null, null);
+        when(bookRepository.findById(1L)).thenReturn(java.util.Optional.ofNullable(book));
+
+        BookDTO result = bookService.getBookById(1L);
+
+        assertEquals("Book 1", result.getTitle());
+    }
+
+    @Test
+    void getBookByIdBookNotExistsTest() {
+
+        when(bookRepository.findById(1L)).thenReturn(java.util.Optional.empty());
+
+        assertThrows(NotFoundException.class, () -> bookService.getBookById(1L));
+    }
+
+    @Test
+    void createBookTest() throws IOException {
+
+        BookDTO bookDTO = new BookDTO(null, 1234567890123L, "Book 1", new Date(), 10, 0, 10, "Genre 1", true, new ArrayList<>(), null);
+
+        List<MultipartFile> images = Arrays.asList(
+                new MockMultipartFile("image1", "image1.png", "image/png", new byte[]{1, 2, 3}),
+                new MockMultipartFile("image2", "image2.png", "image/png", new byte[]{4, 5, 6})
+        );
+        when(filesHelper.saveImageToServer(any(MultipartFile.class))).thenReturn("path/to/image.png");
+
+        String result = bookService.createBook(bookDTO, images);
 
         assertEquals("Book created successfully.", result);
-        assertEquals("test.jpg", book.getImages().get(0));
+        verify(bookRepository, times(1)).save(any(Book.class));
     }
 
     @Test
-    @DisplayName("Update a book")
-    void updateBook() throws IOException {
-        Long bookId = 1L;
-        Book existingBook = new Book();
-        Book updatedBook = new Book();
-        List<MultipartFile> newImages = new ArrayList<>();
+    void updateBookTest() throws IOException {
 
-        lenient().when(filesHelper.saveImageToServer(any())).thenReturn("test.jpg");
+        BookDTO updatedBookDTO = new BookDTO(null, 1234567890123L, "Updated Book 1", new Date(), 15, 2, 13, "Genre 1", true, new ArrayList<>(), null);
+        List<MultipartFile> newImages = Arrays.asList(
+                new MockMultipartFile("newImage1", "newImage1.png", "image/png", new byte[]{7, 8, 9}),
+                new MockMultipartFile("newImage2", "newImage2.png", "image/png", new byte[]{10, 11, 12})
+        );
+        Book existingBook = new Book(1L, 1234567890123L, "Book 1", new Date(), 10, 0, 10, "Genre 1", true, new ArrayList<>(), null, null);
+        when(bookRepository.findById(1L)).thenReturn(java.util.Optional.ofNullable(existingBook));
+        when(filesHelper.saveImageToServer(any(MultipartFile.class))).thenReturn("path/to/newImage.png");
 
-        when(bookRepository.findById(bookId)).thenReturn(java.util.Optional.of(existingBook));
+        String result = bookService.updateBook(1L, updatedBookDTO, newImages);
 
-        String result = bookImplementation.updateBook(bookId, updatedBook, newImages);
-
-        verify(filesHelper, times(newImages.size())).saveImageToServer(any());
-
-        if (existingBook.getImages() != null && !existingBook.getImages().isEmpty()) {
-            verify(filesHelper, times(1)).deleteImagesFromServer(anyList());
-        } else {
-            verify(filesHelper, never()).deleteImagesFromServer(anyList());
-        }
-
-        verify(bookRepository, times(1)).save(existingBook);
-
-        assertEquals(updatedBook.getISBN(), existingBook.getISBN());
-        assertEquals(updatedBook.getTitle(), existingBook.getTitle());
         assertEquals("Book updated successfully.", result);
+        verify(bookRepository, times(1)).save(any(Book.class));
     }
 
     @Test
-    @DisplayName("Test borrow a book")
-    void borrowBook() {
-        Long bookId = 1L;
-        Book existingBook = new Book();
-        existingBook.setBooks_left(2);
-        existingBook.setBorrowed_books(0);
+    void borrowBookTest() {
 
-        when(bookRepository.findById(bookId)).thenReturn(Optional.of(existingBook));
+        Book existingBook = new Book(1L, 1234567890123L, "Book 1", new Date(), 10, 0, 10, "Genre 1", true, new ArrayList<>(), null, null);
+        when(bookRepository.findById(1L)).thenReturn(java.util.Optional.ofNullable(existingBook));
 
-        String result = bookImplementation.borrowBook(bookId, existingBook);
+        String result = bookService.borrowBook(1L);
 
         assertEquals("Book borrowed successfully.", result);
-        assertEquals(1, existingBook.getBorrowed_books().intValue());
-        assertEquals(1, existingBook.getBooks_left().intValue());
-        assertTrue(existingBook.getStatus());
-
-        verify(bookRepository, times(1)).save(existingBook);
+        assertEquals(1, existingBook.getBorrowed_books());
+        assertEquals(9, existingBook.getBooks_left());
     }
 
     @Test
-    @DisplayName("Test return a book")
-    void returnBook() {
-        Long bookId = 1L;
-        Book existingBook = new Book();
-        existingBook.setBorrowed_books(1);
-        existingBook.setBooks_left(0);
+    void returnBookTest() {
 
-        when(bookRepository.findById(bookId)).thenReturn(java.util.Optional.of(existingBook));
-        String result = bookImplementation.returnBook(bookId, existingBook);
+        Book existingBook = new Book(1L, 1234567890123L, "Book 1", new Date(), 10, 2, 8, "Genre 1", true, new ArrayList<>(), null, null);
+        when(bookRepository.findById(1L)).thenReturn(java.util.Optional.ofNullable(existingBook));
+
+        String result = bookService.returnBook(1L);
 
         assertEquals("Book returned successfully.", result);
-        assertEquals(0, existingBook.getBorrowed_books());
-        assertEquals(1, existingBook.getBooks_left());
-
-        assertTrue(existingBook.getStatus());
-
-        verify(bookRepository, times(1)).save(existingBook);
+        assertEquals(1, existingBook.getBorrowed_books());
+        assertEquals(9, existingBook.getBooks_left());
     }
 
     @Test
-    @DisplayName("Test Set status of a book (logical deletion)")
-    void setStatus() {
-        Long bookId = 1L;
-        Book existingBook = new Book();
-        existingBook.setStatus(true);
+    void setStatusTest() {
 
-        when(bookRepository.findById(bookId)).thenReturn(java.util.Optional.of(existingBook));
-        String result = bookImplementation.setStatus(bookId, existingBook);
+        Book existingBook = new Book(1L, 1234567890123L, "Book 1", new Date(), 10, 0, 10, "Genre 1", true, new ArrayList<>(), null, null);
+        when(bookRepository.findById(1L)).thenReturn(java.util.Optional.ofNullable(existingBook));
+
+        String result = bookService.setStatus(1L, false);
 
         assertEquals("Book status updated successfully.", result);
-        assertTrue(existingBook.getStatus().booleanValue());
-
-        verify(bookRepository, times(1)).save(existingBook);
+        assertEquals(false, existingBook.getStatus());
     }
 
     @Test
-    @DisplayName("Test delete a book")
-    void deleteBook() {
-        Long bookId = 1L;
-        Book existingBook = new Book();
+    void deleteBookTest() {
 
-        when(bookRepository.findById(bookId)).thenReturn(java.util.Optional.of(existingBook));
+        Book existingBook = new Book(1L, 1234567890123L, "Book 1", new Date(), 10, 0, 10, "Genre 1", true, new ArrayList<>(), null, null);
+        when(bookRepository.findById(1L)).thenReturn(java.util.Optional.ofNullable(existingBook));
 
-        String result = bookImplementation.deleteBook(bookId);
+        String result = bookService.deleteBook(1L);
 
         assertEquals("Book with ID 1 deleted successfully.", result);
-        verify(bookRepository, times(1)).deleteById(bookId);
+        verify(bookRepository, times(1)).deleteById(1L);
     }
 }
