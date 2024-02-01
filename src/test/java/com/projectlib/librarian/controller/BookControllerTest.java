@@ -1,153 +1,186 @@
 package com.projectlib.librarian.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.projectlib.librarian.model.Book;
+import com.projectlib.librarian.dto.BookDTO;
 import com.projectlib.librarian.service.BookImplementation;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.*;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.web.multipart.MultipartFile;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpHeaders;
 
-import java.io.IOException;
+import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.test.web.servlet.MockMvc;
+
+import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequestBuilder;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-class BookControllerTest {
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-    @InjectMocks
-    private BookController bookController;
 
-    @Mock
+@SpringBootTest
+@AutoConfigureMockMvc
+@DisplayName("Book controllers tests")
+public class BookControllerTest {
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    @MockBean
     private BookImplementation bookImplementation;
 
-    @BeforeEach
-    public void setup() {
-        MockitoAnnotations.openMocks(this);
+    @Value("${jwt.test.token}")
+    private String JWT_TOKEN_TEST;
+
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
+    @Test
+    @DisplayName("Get all books")
+    public void testGetAllBooksTest() throws Exception {
+
+        BookDTO bookDTO = mock(BookDTO.class);
+        BookDTO bookDTO2 = mock(BookDTO.class);
+
+        List<BookDTO> bookDTOList = new ArrayList<>();
+
+        bookDTOList.add(bookDTO);
+        bookDTOList.add(bookDTO2);
+
+        when(bookImplementation.getAllBooks()).thenReturn(bookDTOList);
+
+        mockMvc.perform(MockMvcRequestBuilders
+                        .get("/books/findAll").with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().is2xxSuccessful()
+                );
     }
 
     @Test
-    void testGetAllBooks() {
-        List<Book> mockBooks = new ArrayList<>();
-        when(bookImplementation.getAllBooks()).thenReturn(mockBooks);
+    @DisplayName("Get book by ID")
+    public void testGetBookByIdTest() throws Exception {
 
-        ResponseEntity<List<Book>> response = bookController.getAllBooks();
+        BookDTO bookDTO = mock(BookDTO.class);
+        BookDTO bookDTO2 = mock(BookDTO.class);
 
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(mockBooks, response.getBody());
-        verify(bookImplementation, times(1)).getAllBooks();
+        List<BookDTO> bookDTOList = new ArrayList<>();
+
+        bookDTOList.add(bookDTO);
+        bookDTOList.add(bookDTO2);
+
+        when(bookImplementation.getBookById(1L)).thenReturn(bookDTO);
+
+        mockMvc.perform(MockMvcRequestBuilders
+                        .get("/books/find/1").with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isOk());
     }
 
     @Test
-    void testGetBookById() {
+    @DisplayName("Save new book")
+    public void saveNewBookTest() throws Exception {
+        BookDTO bookDTO = new BookDTO();
+        bookDTO.setISBN(1234567890123L);
+        bookDTO.setTitle("Example Title");
+        bookDTO.setYear(new SimpleDateFormat("yyyy").parse("2023"));
+        bookDTO.setBooks_quantity(10);
+        bookDTO.setGenre("Example Genre");
+
+        when(bookImplementation.createBook(eq(bookDTO), anyList())).thenReturn("Book created successfully.");
+
+        String bookJson = "{\"ISBN\":1234567890123,\"title\":\"Example Title\",\"year\":2023,\"books_quantity\":10,\"genre\":\"Example Genre\"}";
+
+        MockMultipartFile bookJsonPart = new MockMultipartFile("book", "book.json", MediaType.APPLICATION_JSON_VALUE, bookJson.getBytes());
+        MockMultipartFile imagesPart = new MockMultipartFile("images", "image1.jpg", MediaType.IMAGE_JPEG_VALUE, "Image1Content".getBytes());
+
+        mockMvc.perform(MockMvcRequestBuilders.multipart("/books/save")
+                        .file(bookJsonPart)
+                        .file(imagesPart)
+                        .with(csrf())
+                        .contentType(MediaType.MULTIPART_FORM_DATA)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + JWT_TOKEN_TEST))
+                .andExpect(MockMvcResultMatchers.status().isCreated());
+    }
+
+    @Test
+    @DisplayName("Update a book")
+    public void eupdateBookTest() throws Exception {
+
+        BookDTO updatedBookDTO = new BookDTO();
+        updatedBookDTO.setId(1L);
+        updatedBookDTO.setISBN(1234567890123L);
+        updatedBookDTO.setTitle("Updated Title");
+        updatedBookDTO.setYear(new SimpleDateFormat("yyyy").parse("2023"));
+        updatedBookDTO.setBooks_quantity(10);
+        updatedBookDTO.setGenre("Example Genre");
+
+        when(bookImplementation.updateBook(eq(1L), eq(updatedBookDTO), anyList())).thenReturn("Book updated successfully.");
+
+        String updatedBookJson = "{\"id\":1,\"ISBN\":1234567890123,\"title\":\"Updated Title\",\"year\":2023,\"books_quantity\":10,\"genre\":\"Example Genre\"}";
+
+        byte[] updatedBookJsonBytes = updatedBookJson.getBytes();
+
+        MockMultipartFile bookJsonPart = new MockMultipartFile("book", "book.json", MediaType.APPLICATION_JSON_VALUE, updatedBookJsonBytes);
+
+        MockMultipartFile imagesPart = new MockMultipartFile("images", "image1.jpg", MediaType.IMAGE_JPEG_VALUE, "Image1Content".getBytes());
+
+        MockMultipartHttpServletRequestBuilder builder = MockMvcRequestBuilders.multipart("/books/update/1");
+        builder.with(request -> {
+            request.setMethod("PUT");
+            return request;
+        });
+
+        mockMvc.perform(builder
+                        .file(bookJsonPart)
+                        .file(imagesPart)
+                        .with(csrf())
+                        .contentType(MediaType.MULTIPART_FORM_DATA)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + JWT_TOKEN_TEST))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+    }
+
+    @Test
+    @DisplayName("Delete an book")
+    public void deleteBookTest() throws Exception {
+
+        when(bookImplementation.deleteBook(1L)).thenReturn("Book with ID 1 deleted successfully.");
+
+        mockMvc.perform(MockMvcRequestBuilders.delete("/books/delete/1").with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + JWT_TOKEN_TEST))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.content().string("Book with ID 1 deleted successfully."));
+    }
+
+    @Test
+    @DisplayName("Set book status")
+    public void setBookStatusTest() throws Exception {
         Long bookId = 1L;
-        Book mockBook = new Book();
-        when(bookImplementation.getBookById(bookId)).thenReturn(mockBook);
+        boolean status = false;
 
-        ResponseEntity<Book> response = bookController.getBookById(bookId);
+        when(bookImplementation.setStatus(bookId, status)).thenReturn("Book status updated successfully.");
 
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(mockBook, response.getBody());
-        verify(bookImplementation, times(1)).getBookById(bookId);
-    }
-
-    @Test
-    void createBook() throws IOException {
-        String bookJson = "{\"id\":1,\"title\":\"New Book\",\"isbn\":123456,\"status\":true}";
-        List<MultipartFile> images = Arrays.asList(new MockMultipartFile("image", "new.jpg", "image/jpeg", "New image".getBytes()));
-
-        when(bookImplementation.createBook(any(), eq(images)))
-                .thenReturn("Book created successfully.");
-
-        ResponseEntity<String> response = bookController.createBook(bookJson, images);
-
-        assertEquals(HttpStatus.CREATED, response.getStatusCode());
-
-        verify(bookImplementation, times(1)).createBook(any(), eq(images));
-    }
-
-    @Test
-    void updateBook() throws IOException {
-        Long bookId = 1L;
-        String bookJson = "{\"id\":1,\"title\":\"Updated Book\",\"isbn\":789012,\"status\":true}";
-        List<MultipartFile> images = Arrays.asList(new MockMultipartFile("image", "updated.jpg", "image/jpeg", "Updated image".getBytes()));
-
-        ObjectMapper objectMapper = new ObjectMapper();
-        Book expectedBook = objectMapper.readValue(bookJson, Book.class);
-
-        when(bookImplementation.updateBook(eq(bookId), any(), eq(images)))
-                .thenReturn("Book updated successfully."); // Cambiado a un retorno exitoso
-
-        ResponseEntity<String> response = bookController.updateBook(bookId, bookJson, images);
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals("Book updated successfully.", response.getBody());
-
-        verify(bookImplementation, times(1)).updateBook(eq(bookId), any(), eq(images));
-    }
-
-    @Test
-    void borrowBook() {
-        Long bookId = 1L;
-        Book borrowedBook = new Book();
-
-        when(bookImplementation.borrowBook(eq(bookId), any())).thenReturn("Book borrowed successfully.");
-
-        ResponseEntity<String> response = bookController.borrowBook(bookId, borrowedBook);
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals("Book borrowed successfully.", response.getBody());
-
-        verify(bookImplementation, times(1)).borrowBook(bookId, borrowedBook);
-    }
-
-    @Test
-    void returnBook() {
-        Long bookId = 1L;
-        Book returnedBook = new Book();
-
-        when(bookImplementation.returnBook(eq(bookId), any())).thenReturn("Book returned successfully.");
-
-        ResponseEntity<String> response = bookController.returnBook(bookId, returnedBook);
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals("Book returned successfully.", response.getBody());
-
-        verify(bookImplementation, times(1)).returnBook(bookId, returnedBook);
-    }
-
-    @Test
-    void setStatus() {
-        Long bookId = 1L;
-        Book statusBook = new Book();
-
-        when(bookImplementation.setStatus(eq(bookId), any())).thenReturn("Book status updated successfully.");
-
-        ResponseEntity<String> response = bookController.setStatus(bookId, statusBook);
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals("Book status updated successfully.", response.getBody());
-
-        verify(bookImplementation, times(1)).setStatus(bookId, statusBook);
-    }
-
-    @Test
-    void deleteBook() {
-        Long bookId = 1L;
-
-        when(bookImplementation.deleteBook(eq(bookId))).thenReturn("Book with ID 1 deleted successfully.");
-
-        ResponseEntity<String> response = bookController.deleteBook(bookId);
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals("Book with ID 1 deleted successfully.", response.getBody());
-
-        verify(bookImplementation, times(1)).deleteBook(bookId);
+        mockMvc.perform(MockMvcRequestBuilders.put("/books/setstatus/1").with(csrf())
+                        .content("{\"status\":false}")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + JWT_TOKEN_TEST))
+                .andExpect(status().isOk());
     }
 }
