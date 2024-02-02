@@ -9,6 +9,8 @@ import com.projectlib.librarian.model.Book;
 import com.projectlib.librarian.repository.BookRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import com.projectlib.librarian.helper.FilesHelper;
@@ -16,7 +18,6 @@ import com.projectlib.librarian.helper.FilesHelper;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 
 @Service
@@ -29,11 +30,9 @@ public class BookImplementation implements BookInterface{
     private FilesHelper filesHelper;
 
     @Override
-    public List<BookDTO> getAllBooks() {
-        List<Book> books = bookRepository.findAll();
-        return books.stream()
-                .map(BookMapper::convertToDTO)
-                .collect(Collectors.toList());
+    public Page<BookDTO> getAllBooks(Pageable pageable) {
+        Page<Book> booksPage = bookRepository.findAll(pageable);
+        return booksPage.map(BookMapper::convertToDTO);
     }
 
     @Override

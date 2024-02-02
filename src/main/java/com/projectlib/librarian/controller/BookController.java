@@ -11,6 +11,11 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -35,10 +40,11 @@ public class BookController {
 
     @GetMapping("/findAll")
     @Operation(summary = "Get all books", description = "Get a complete list of all books (does not include which have setStatus=false)")
-    public ResponseEntity<List<BookDTO>> getAllBooks() {
-        List<BookDTO> books = bookInterface.getAllBooks();
-        books.removeIf(book -> !book.getStatus());
-        return new ResponseEntity<>(books, HttpStatus.OK);
+    public ResponseEntity<Page<BookDTO>> getAllBooks(
+            @PageableDefault(page = 0, size = 10, sort = "id", direction = Sort.Direction.ASC) Pageable pageable
+    ) {
+        Page<BookDTO> booksPage = bookInterface.getAllBooks(pageable);
+        return new ResponseEntity<>(booksPage, HttpStatus.OK);
     }
 
     @GetMapping("/find/{id}")
