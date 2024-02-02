@@ -43,6 +43,12 @@ public class BookImplementation implements BookInterface{
     }
 
     @Override
+    public Page<BookDTO> getBooksByName(String name, Pageable pageable) {
+        Page<Book> booksPage = bookRepository.findByTitleContainingIgnoreCase(name, pageable);
+        return booksPage.map(BookMapper::convertToDTO);
+    }
+
+    @Override
     public String createBook(BookDTO bookDTO, List<MultipartFile> imagePaths) throws IOException {
         List<String> savedImagePaths = new ArrayList<>();
 

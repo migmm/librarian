@@ -1,6 +1,7 @@
 package com.projectlib.librarian.service;
 
 import com.projectlib.librarian.dto.BookDTO;
+import com.projectlib.librarian.model.Book;
 import io.jsonwebtoken.io.IOException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -13,6 +14,7 @@ public interface BookInterface {
     
     Page<BookDTO> getAllBooks(Pageable pageable);
     BookDTO getBookById(Long id);
+    Page<BookDTO> getBooksByName(String name, Pageable pageable);
     String createBook(BookDTO book, List<MultipartFile> imagePaths) throws IOException, java.io.IOException;
     String updateBook(Long id, BookDTO updatedBook, List<MultipartFile> newImages) throws IOException, java.io.IOException;
     String borrowBook(Long id);
