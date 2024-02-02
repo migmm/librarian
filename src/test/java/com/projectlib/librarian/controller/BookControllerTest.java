@@ -9,6 +9,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
 
 import org.springframework.http.MediaType;
@@ -21,6 +25,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static org.mockito.Mockito.*;
@@ -50,22 +55,19 @@ public class BookControllerTest {
     @DisplayName("Get all books")
     public void testGetAllBooksTest() throws Exception {
 
-        BookDTO bookDTO = mock(BookDTO.class);
-        BookDTO bookDTO2 = mock(BookDTO.class);
+        Pageable pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
 
-        List<BookDTO> bookDTOList = new ArrayList<>();
-
-        bookDTOList.add(bookDTO);
-        bookDTOList.add(bookDTO2);
-
-        when(bookImplementation.getAllBooks()).thenReturn(bookDTOList);
+        when(bookImplementation.getAllBooks(pageable)).thenReturn(new PageImpl<>(Collections.emptyList(), pageable, 0));
 
         mockMvc.perform(MockMvcRequestBuilders
-                        .get("/books/findAll").with(csrf())
+                        .get("/books/findAll")
+                        .param("page", "0")
+                        .param("size", "10")
+                        .param("sort", "id,asc")
+                        .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.status().is2xxSuccessful()
-                );
+                .andExpect(MockMvcResultMatchers.status().is2xxSuccessful());
     }
 
     @Test
@@ -118,7 +120,7 @@ public class BookControllerTest {
 
     @Test
     @DisplayName("Update a book")
-    public void eupdateBookTest() throws Exception {
+    public void updateBookTest() throws Exception {
 
         BookDTO updatedBookDTO = new BookDTO();
         updatedBookDTO.setId(1L);
