@@ -16,6 +16,10 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -53,12 +57,15 @@ class BookServiceTest {
 
         Book book = new Book();
         book.setTitle("Test Book");
-        when(bookRepository.findAll()).thenReturn(Collections.singletonList(book));
 
-        List<BookDTO> result = bookService.getAllBooks();
+        Pageable pageable = PageRequest.of(0, Integer.MAX_VALUE);
 
-        assertEquals(1, result.size());
-        assertEquals("Test Book", result.get(0).getTitle());
+        when(bookRepository.findAll(pageable)).thenReturn(new PageImpl<>(Collections.singletonList(book)));
+
+        Page<BookDTO> result = bookService.getAllBooks(pageable);
+
+        assertEquals(1, result.getContent().size());
+        assertEquals("Test Book", result.getContent().get(0).getTitle());
     }
 
     @Test
