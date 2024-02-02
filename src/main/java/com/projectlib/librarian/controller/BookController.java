@@ -42,11 +42,14 @@ public class BookController {
     @Operation(summary = "Get all books", description = "Get a complete list of all books (does not include which have setStatus=false)")
     public ResponseEntity<Page<BookDTO>> getAllBooks(
             @PageableDefault(page = 0, size = 10, sort = "id", direction = Sort.Direction.ASC) Pageable pageable,
-            @RequestParam(value = "name", required = false) String name
+            @RequestParam(value = "name", required = false) String name,
+            @RequestParam(value = "isbn", required = false) Long isbn
     ) {
         Page<BookDTO> booksPage;
         if (name != null && !name.isEmpty()) {
             booksPage = bookInterface.getBooksByName(name, pageable);
+        } else if (isbn != null) {
+            booksPage = bookInterface.getBooksByISBN(isbn, pageable);
         } else {
             booksPage = bookInterface.getAllBooks(pageable);
         }

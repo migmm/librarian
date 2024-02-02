@@ -15,6 +15,7 @@ public interface BookInterface {
     Page<BookDTO> getAllBooks(Pageable pageable);
     BookDTO getBookById(Long id);
     Page<BookDTO> getBooksByName(String name, Pageable pageable);
+    Page<BookDTO> getBooksByISBN(Long isbn, Pageable pageable);
     String createBook(BookDTO book, List<MultipartFile> imagePaths) throws IOException, java.io.IOException;
     String updateBook(Long id, BookDTO updatedBook, List<MultipartFile> newImages) throws IOException, java.io.IOException;
     String borrowBook(Long id);

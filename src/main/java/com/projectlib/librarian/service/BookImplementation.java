@@ -49,6 +49,12 @@ public class BookImplementation implements BookInterface{
     }
 
     @Override
+    public Page<BookDTO> getBooksByISBN(Long isbn, Pageable pageable) {
+        Page<Book> books = bookRepository.findByISBN(isbn, pageable);
+        return books.map(BookMapper::convertToDTO);
+    }
+
+    @Override
     public String createBook(BookDTO bookDTO, List<MultipartFile> imagePaths) throws IOException {
         List<String> savedImagePaths = new ArrayList<>();
 
