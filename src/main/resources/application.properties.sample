@@ -1,13 +1,26 @@
+
+# Database configuration
 spring.datasource.url=
 spring.datasource.username=
 spring.datasource.password=
 
+# JPA and Hibernate configuration
 spring.datasource.driver-class-name=org.postgresql.Driver
 spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
 spring.jpa.hibernate.ddl-auto=create
 
+# Image upload directory
 upload.dir=images
 
+# Secret pass to manage JWT token
 jwt.secret=
+
+# Access token expiration time in milliseconds
 jwt.token.expiration=
+
+# Refresh token expiration time in milliseconds
 jwt.refresh.token.expiration=
+
+# JWT token for testing (admin role, and 100 years of expiration)
+jwt.test.token=eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTcwNjc5NzExMiwiZXhwIjo0ODYwMzk3MTEyfQ.jXf3Bj2z-A298MNNZlWDiDIRTW_lFgj5QKNcwzZJ3kNUxghe7257qvs6xq2cChwNI6kO8GLFnvH0QuPicOsEJw
+
