@@ -17,11 +17,6 @@
 						"method": "GET",
 						"header": [
 							{
-								"key": "Authorization",
-								"value": "",
-								"type": "default"
-							},
-							{
 								"key": "X-XSRF-TOKEN",
 								"value": "",
 								"type": "default"
@@ -32,7 +27,7 @@
 							"urlencoded": []
 						},
 						"url": {
-							"raw": "http://localhost:8080/books/findAll",
+							"raw": "http://localhost:8080/books/findAll?page=0&size=6&sort=title,asc&name=Book%20example",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -41,6 +36,24 @@
 							"path": [
 								"books",
 								"findAll"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "0"
+								},
+								{
+									"key": "size",
+									"value": "6"
+								},
+								{
+									"key": "sort",
+									"value": "title,asc"
+								},
+								{
+									"key": "name",
+									"value": "Book%20example"
+								}
 							]
 						}
 					},
@@ -80,7 +93,12 @@
 						"header": [
 							{
 								"key": "X-XSRF-TOKEN",
-								"value": "cfbf6fa1-94dd-4b51-bb65-621e07feae02",
+								"value": "c702b199-049e-4322-a0f7-7c3f8ac460e0",
+								"type": "default"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer ",
 								"type": "default"
 							}
 						],
@@ -334,7 +352,7 @@
 						"header": [
 							{
 								"key": "X-XSRF-TOKEN",
-								"value": "cfbf6fa1-94dd-4b51-bb65-621e07feae02",
+								"value": "bdd77d1b-54df-4f10-a8fb-1d1f1de1b966",
 								"type": "default"
 							}
 						],
@@ -369,7 +387,7 @@
 						"header": [
 							{
 								"key": "X-XSRF-TOKEN",
-								"value": "cfbf6fa1-94dd-4b51-bb65-621e07feae02",
+								"value": "bdd77d1b-54df-4f10-a8fb-1d1f1de1b966",
 								"type": "default"
 							}
 						],
@@ -746,13 +764,13 @@
 						"header": [
 							{
 								"key": "X-XSRF-TOKEN",
-								"value": "cfbf6fa1-94dd-4b51-bb65-621e07feae02",
+								"value": "bdd77d1b-54df-4f10-a8fb-1d1f1de1b966",
 								"type": "default"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"name\": \"User name edited\",\r\n  \"surname\": \"User surname edited\",\r\n  \"status\": true,\r\n  \"role\": \"user\",\r\n  \"email\": \"mail@mail.com\",\r\n  \"username\": \"usernn\",\r\n  \"password\": \"pass1234\"\r\n}",
+							"raw": "{\r\n  \"name\": \"User name edited\",\r\n  \"surname\": \"User surname edited\",\r\n  \"status\": true,\r\n  \"role\": \"user\",\r\n  \"email\": \"maill@mail.com\",\r\n  \"username\": \"usernnl\",\r\n  \"password\": \"pass1234\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -850,7 +868,7 @@
 						"header": [
 							{
 								"key": "X-XSRF-TOKEN",
-								"value": "eee36212-af2e-4a47-8cd6-017d5158f0b6",
+								"value": "c702b199-049e-4322-a0f7-7c3f8ac460e0",
 								"type": "default"
 							}
 						],
@@ -882,7 +900,13 @@
 					"name": "Register",
 					"request": {
 						"method": "POST",
-						"header": [],
+						"header": [
+							{
+								"key": "X-XSRF-TOKEN",
+								"value": "c702b199-049e-4322-a0f7-7c3f8ac460e0",
+								"type": "default"
+							}
+						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\r\n  \"name\": \"User name\",\r\n  \"surname\": \"User surname\",\r\n  \"email\": \"mail@mail.com\",\r\n  \"username\": \"usernn\",\r\n  \"password\": \"pass1234\"\r\n}\r\n",
