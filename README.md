@@ -8,6 +8,7 @@
 
 This is a sample project that uses Spring Boot and PostgreSQL to create a Java application. The project uses Maven as a dependency management system and has been developed with Java 17.
 
+
 ### Prerequisites
 
 Before running the application, make sure you have the following components installed:
@@ -16,6 +17,7 @@ Before running the application, make sure you have the following components inst
     Apache Maven 3.9.4 or higher
     PostgreSQL 13.4 or higher
     An Integrated Development Environment (IDE) compatible with Java, such as IntelliJ IDEA or Eclipse (optional)
+
 
 ### Database Configuration
 
@@ -32,6 +34,7 @@ Make sure you have a PostgreSQL database set up. You can configure the database 
 
 Replace database_name, username, and password with your own values.
 
+
 ### Features
 
 - Global exception handler
@@ -39,12 +42,15 @@ Replace database_name, username, and password with your own values.
 - OWASP Security (CSRF and the protections provided by Sping Security)
 - Authentication via JWT Token
 - Password encryption
+- Pagination in book endpoint and possibility to search by ISBN or book name
+
 
 ### Database Relationships
 
 ![Logo](https://github.com/migmm/librarian/blob/media/assets/relations.png)
  
 I used three types of relationships.
+
 
 ##### Foreign Key Relationship (Using a Junction Table)
 
@@ -53,13 +59,16 @@ In some scenarios, you might need to establish many-to-many relationships betwee
     book entity has a @ManyToMany relationship with the book_author entity.
     author entity also has a @ManyToMany relationship with the book_author entity.
 
+
 ##### Direct Relationship
  
 In other cases, you may have direct relationships between entities, such as a one-to-one or one-to-many relationship. In this project I made a relationship @OneToOne between books and vendors.
 
+
 ##### Element Collection
  
 In this case I used a collection of images, in file helper with the bean @ElementCollection. This is often used when you want to model a one-to-many relationship without creating a separate table for the related entities. Instead, the collection is stored as part of the owning entity's table.
+
 
 ### Running the Project
 
@@ -82,11 +91,28 @@ Run the project again and you are in!
 Alternatively, you can build an executable JAR file and then run it:
 
     mvn package
+
+    or
+
     java -jar target/project_name.jar
 
-    Replace project_name with the name of your project.
+Replace project_name with the name of your project.
 
-    The application will be available at http://localhost:8080. You can access it from your web browser.
+Yoy can also build the project without run tests
+    
+    mvn clean package -DskipTests
+    
+
+The application will be available at http://localhost:8080. You can access it from your web browser.
+
+### Dockerfile
+
+To run the project in local with Docker you can build and run the project with the commands
+
+    docker build -t librarian .
+
+    docker run --rm librarian
+
 
 ### Dependences
 
@@ -101,6 +127,7 @@ The project uses the following Spring Boot dependencies:
 You can manage the dependencies in the project's pom.xml file.
 
 This project is under the MIT license. Please refer to the LICENSE file for more details.
+
 
 ### Endpoints documentation
 
@@ -145,6 +172,21 @@ This project is under the MIT license. Please refer to the LICENSE file for more
 All endpoints uses a local host url http://localhost:8080/
 If you want a more complete description of the endpoints and how to use it go to the section below.
 
+
+### Pagination and search by ISBN or book name
+
+The book endpoint has the possibility to paginate results by the number of items per page, order them and select which page to view. It's also possible to search by the book's name or ISBN, for example.
+
+    Get all books
+    http://localhost:8080/books/findAll?page=0&size=6&sort=title,asc
+
+    Search by name (you can use %20 for spaces)
+    http://localhost:8080/books/findAll?page=0&size=6&sort=title,asc&name=Book%20Example
+
+    Search by ISBN
+    http://localhost:8080/books/findAll?page=0&size=6&sort=title,asc&ISBN=1234567890123
+
+
 ### Swagger documentation
 
 To access to Swagger API documentation you can go to the links below in your localhost:
@@ -152,15 +194,33 @@ To access to Swagger API documentation you can go to the links below in your loc
 [Swagger UI](http://localhost:8080/swagger-ui/index.html)
 [Swagger JSON](http://localhost:8080/v3/api-docs)
 
+
 ### Source information
 
 [Swagger Documentation](https://www.baeldung.com/spring-rest-openapi-documentation)
+
 [Validations implementation](https://medium.com/@himani.prasad016/validations-in-spring-boot-e9948aa6286b)
+
 [If validation does not work](https://stackoverflow.com/questions/48614773/spring-boot-validation-annotations-valid-and-notblank-not-working)
+
+[Pagination results](https://howtodoinjava.com/spring-data/pagination-sorting-example/)
+
+[Send multipart in put with mockmvc](https://stackoverflow.com/questions/38571716/how-to-put-multipart-form-data-using-spring-mockmvc)
+
+[Testing with JWT token](https://stackoverflow.com/questions/61500578/how-to-mock-jwt-authentication-in-a-spring-boot-unit-test)
+
+[Testing with JWT token](https://stackoverflow.com/questions/45241566/spring-boot-unit-tests-with-jwt-token-security)
+
+[Testing with CSRF](https://stackoverflow.com/questions/25605373/unit-testing-controllers-with-csrf-protection-enabled-in-spring-security)
+
+[Testing with CSRF](https://docs.spring.io/spring-security/reference/servlet/test/mockmvc/csrf.html)
+
 
 ### Extra files
 
 I included a [Dummy data](dummy_data.sql) to populate the database and a [Postman file](Librarian.postman_collection.json) to test the routes propertly, you can use in postman o you can import this file in another tester like [Hoppscotch](https://hoppscotch.io/).
+
+I also included a [Dockerfile](Dockerfile) to make a deploy.
 
 ### Contact
 
