@@ -43,6 +43,7 @@ Replace database_name, username, and password with your own values.
 - Authentication via JWT Token
 - Password encryption
 - Pagination in book endpoint and possibility to search by ISBN or book name
+- Image quantity, size and dimension limiter
 
 
 ### Database Relationships
