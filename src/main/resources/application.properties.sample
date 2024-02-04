@@ -22,5 +22,15 @@ jwt.token.expiration=
 jwt.refresh.token.expiration=
 
 # JWT token for testing (admin role, and 100 years of expiration)
-jwt.test.token=eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTcwNjc5NzExMiwiZXhwIjo0ODYwMzk3MTEyfQ.jXf3Bj2z-A298MNNZlWDiDIRTW_lFgj5QKNcwzZJ3kNUxghe7257qvs6xq2cChwNI6kO8GLFnvH0QuPicOsEJw
+jwt.test.token=
+
+# Image limitation configurations
+# For image.max.size use an int number. Example: 5242880 is 5 * 1024 * 1024 which is 5MB
+# For image.max.width use a pixel size number. Example: 1024
+# For image.max.height use a pixel size number. Example: 1024
+# For image.max.allowed use an int number. Example: 5
+image.max.size=
+image.max.width=
+image.max.height=
+image.max.allowed=
 

@@ -6,13 +6,13 @@ import com.projectlib.librarian.mapper.BookMapper;
 import com.projectlib.librarian.model.Book;
 
 import com.projectlib.librarian.service.BookInterface;
+import com.projectlib.librarian.utils.ImageUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -37,6 +37,9 @@ public class BookController {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @Autowired
+    private final ImageUtils imageUtils;
 
     @GetMapping("/findAll")
     @Operation(summary = "Get all books", description = "Get a complete list of all books (does not include which have setStatus=false)")
@@ -66,6 +69,16 @@ public class BookController {
     @PostMapping("/save")
     @Operation(summary = "Save a new book", description = "Save a new book with full information.")
     public ResponseEntity<String> createBook(@Valid @RequestPart("book") String bookJson, @RequestPart("images") List<MultipartFile> images) throws IOException {
+        if (!imageUtils.isValidImageCount(images.size())) {
+            return new ResponseEntity<>("Number of images exceeds the maximum limit.", HttpStatus.BAD_REQUEST);
+        }
+
+        for (MultipartFile image : images) {
+            if (!imageUtils.isValidImageSize(image.getBytes())) {
+                return new ResponseEntity<>("Image size exceeds the maximum limit.", HttpStatus.BAD_REQUEST);
+            }
+        }
+
         BookDTO bookDTO = BookMapper.convertToDTO(objectMapper.readValue(bookJson, Book.class));
         String message = bookInterface.createBook(bookDTO, images);
         return new ResponseEntity<>(message, HttpStatus.CREATED);
@@ -74,6 +87,16 @@ public class BookController {
     @PutMapping("/update/{id}")
     @Operation(summary = "Update a book", description = "Update a book information using the ID as param.")
     public ResponseEntity<String> updateBook(@Valid @PathVariable Long id, @RequestPart("book") String bookJson, @RequestPart(name = "images", required = false) List<MultipartFile> images) throws IOException {
+        if (!imageUtils.isValidImageCount(images.size())) {
+            return new ResponseEntity<>("Number of images exceeds the maximum limit.", HttpStatus.BAD_REQUEST);
+        }
+
+        for (MultipartFile image : images) {
+            if (!imageUtils.isValidImageSize(image.getBytes())) {
+                return new ResponseEntity<>("Image size exceeds the maximum limit.", HttpStatus.BAD_REQUEST);
+            }
+        }
+
         BookDTO bookDTO = BookMapper.convertToDTO(objectMapper.readValue(bookJson, Book.class));
         String message = bookInterface.updateBook(id, bookDTO, images);
         return new ResponseEntity<>(message, HttpStatus.OK);
