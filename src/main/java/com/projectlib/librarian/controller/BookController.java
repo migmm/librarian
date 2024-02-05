@@ -69,14 +69,8 @@ public class BookController {
     @PostMapping("/save")
     @Operation(summary = "Save a new book", description = "Save a new book with full information.")
     public ResponseEntity<String> createBook(@Valid @RequestPart("book") String bookJson, @RequestPart("images") List<MultipartFile> images) throws IOException {
-        if (!imageUtils.isValidImageCount(images.size())) {
-            return new ResponseEntity<>("Number of images exceeds the maximum limit.", HttpStatus.BAD_REQUEST);
-        }
-
-        for (MultipartFile image : images) {
-            if (!imageUtils.isValidImageSize(image.getBytes())) {
-                return new ResponseEntity<>("Image size exceeds the maximum limit.", HttpStatus.BAD_REQUEST);
-            }
+        if (!imageUtils.imageCheck(images)) {
+            return new ResponseEntity<>("Invalid image(s) provided.", HttpStatus.BAD_REQUEST);
         }
 
         BookDTO bookDTO = BookMapper.convertToDTO(objectMapper.readValue(bookJson, Book.class));
@@ -87,14 +81,8 @@ public class BookController {
     @PutMapping("/update/{id}")
     @Operation(summary = "Update a book", description = "Update a book information using the ID as param.")
     public ResponseEntity<String> updateBook(@Valid @PathVariable Long id, @RequestPart("book") String bookJson, @RequestPart(name = "images", required = false) List<MultipartFile> images) throws IOException {
-        if (!imageUtils.isValidImageCount(images.size())) {
-            return new ResponseEntity<>("Number of images exceeds the maximum limit.", HttpStatus.BAD_REQUEST);
-        }
-
-        for (MultipartFile image : images) {
-            if (!imageUtils.isValidImageSize(image.getBytes())) {
-                return new ResponseEntity<>("Image size exceeds the maximum limit.", HttpStatus.BAD_REQUEST);
-            }
+        if (!imageUtils.imageCheck(images)) {
+            return new ResponseEntity<>("Invalid image(s) provided.", HttpStatus.BAD_REQUEST);
         }
 
         BookDTO bookDTO = BookMapper.convertToDTO(objectMapper.readValue(bookJson, Book.class));
