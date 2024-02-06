@@ -90,13 +90,14 @@ public class BookController {
         }
 
         List<String> fileNames = awsS3Service.generateUUIDFileNames(images.size());
-        List<String> imageUrls = awsS3Service.uploadFiles(images, awsS3Service.getAwsS3BucketName(), fileNames);
 
         BookDTO bookDTO = BookMapper.convertToDTO(objectMapper.readValue(bookJson, Book.class));
+        bookDTO.setImages(fileNames);
+
         String message = bookInterface.createBook(bookDTO, images);
         return new ResponseEntity<>(message, HttpStatus.CREATED);
     }
-
+    
     @PutMapping("/update/{id}")
     @Operation(summary = "Update a book", description = "Update a book information using the ID as param.")
     public ResponseEntity<String> updateBook(@Valid @PathVariable Long id, @RequestPart("book") String bookJson, @RequestPart(name = "images", required = false) List<MultipartFile> images) throws IOException {
@@ -105,9 +106,10 @@ public class BookController {
         }
 
         List<String> fileNames = awsS3Service.generateUUIDFileNames(images.size());
-        List<String> imageUrls = awsS3Service.uploadFiles(images, awsS3Service.getAwsS3BucketName(), fileNames);
 
         BookDTO bookDTO = BookMapper.convertToDTO(objectMapper.readValue(bookJson, Book.class));
+        bookDTO.setImages(fileNames);
+
         String message = bookInterface.updateBook(id, bookDTO, images);
         return new ResponseEntity<>(message, HttpStatus.OK);
     }

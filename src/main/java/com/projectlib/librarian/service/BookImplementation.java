@@ -58,12 +58,6 @@ public class BookImplementation implements BookInterface{
     public String createBook(BookDTO bookDTO, List<MultipartFile> imagePaths) throws IOException {
         List<String> savedImagePaths = new ArrayList<>();
 
-        for (MultipartFile multipartFile : imagePaths) {
-            String savedImagePath = filesHelper.saveImageToServer(multipartFile);
-            savedImagePaths.add(savedImagePath);
-        }
-
-        bookDTO.setImages(savedImagePaths);
         Book bookEntity = BookMapper.convertToEntity(bookDTO);
         bookRepository.save(bookEntity);
 
@@ -83,18 +77,6 @@ public class BookImplementation implements BookInterface{
         existingBook.setBooks_left(updatedBook.getBooks_left());
         existingBook.setGenre(updatedBook.getGenre());
         existingBook.setStatus(updatedBook.getStatus());
-
-        if (newImages != null && !newImages.isEmpty()) {
-            filesHelper.deleteImagesFromServer(existingBook.getImages());
-
-            List<String> savedImagePaths = new ArrayList<>();
-
-            for (MultipartFile multipartFile : newImages) {
-                String savedImagePath = filesHelper.saveImageToServer(multipartFile);
-                savedImagePaths.add(savedImagePath);
-            }
-            existingBook.setImages(savedImagePaths);
-        }
 
         bookRepository.save(existingBook);
         return "Book updated successfully.";
