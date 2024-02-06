@@ -1,6 +1,7 @@
 package com.projectlib.librarian.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.projectlib.librarian.aws.AwsS3Service;
 import com.projectlib.librarian.dto.BookDTO;
 import com.projectlib.librarian.mapper.BookMapper;
 import com.projectlib.librarian.model.Book;
@@ -41,6 +42,9 @@ public class BookController {
     @Autowired
     private final ImageUtils imageUtils;
 
+    @Autowired
+    private AwsS3Service awsS3Service;
+
     @GetMapping("/findAll")
     @Operation(summary = "Get all books", description = "Get a complete list of all books (does not include which have setStatus=false)")
     public ResponseEntity<Page<BookDTO>> getAllBooks(
@@ -56,6 +60,12 @@ public class BookController {
         } else {
             booksPage = bookInterface.getAllBooks(pageable);
         }
+
+        booksPage.getContent().forEach(book -> {
+            List<String> imageUrls = awsS3Service.generatePresignedUrlsForImages(book.getImageUrls());
+            book.setImageUrls(imageUrls);
+        });
+
         return new ResponseEntity<>(booksPage, HttpStatus.OK);
     }
 
@@ -63,6 +73,12 @@ public class BookController {
     @Operation(summary = "Get a book by ID", description = "Get a book with full information by ID (does not include which have setStatus=false)")
     public ResponseEntity<BookDTO> getBookById(@PathVariable Long id) {
         BookDTO book = bookInterface.getBookById(id);
+
+        if (book.getImageUrls() != null) {
+            List<String> imageUrls = awsS3Service.generatePresignedUrlsForImages(book.getImageUrls());
+            book.setImageUrls(imageUrls);
+        }
+
         return new ResponseEntity<>(book, HttpStatus.OK);
     }
 
@@ -72,6 +88,9 @@ public class BookController {
         if (!imageUtils.imageCheck(images)) {
             return new ResponseEntity<>("Invalid image(s) provided.", HttpStatus.BAD_REQUEST);
         }
+
+        List<String> fileNames = awsS3Service.generateUUIDFileNames(images.size());
+        List<String> imageUrls = awsS3Service.uploadFiles(images, awsS3Service.getAwsS3BucketName(), fileNames);
 
         BookDTO bookDTO = BookMapper.convertToDTO(objectMapper.readValue(bookJson, Book.class));
         String message = bookInterface.createBook(bookDTO, images);
@@ -84,6 +103,9 @@ public class BookController {
         if (!imageUtils.imageCheck(images)) {
             return new ResponseEntity<>("Invalid image(s) provided.", HttpStatus.BAD_REQUEST);
         }
+
+        List<String> fileNames = awsS3Service.generateUUIDFileNames(images.size());
+        List<String> imageUrls = awsS3Service.uploadFiles(images, awsS3Service.getAwsS3BucketName(), fileNames);
 
         BookDTO bookDTO = BookMapper.convertToDTO(objectMapper.readValue(bookJson, Book.class));
         String message = bookInterface.updateBook(id, bookDTO, images);
@@ -119,7 +141,11 @@ public class BookController {
     @DeleteMapping("/delete/{id}")
     @Operation(summary = "Delete an book", description = "Delete an book using the ID as param.")
     public ResponseEntity<String> deleteBook(@PathVariable Long id) {
-        String message = bookInterface.deleteBook(id);
-        return new ResponseEntity<>(message, HttpStatus.OK);
+        String book = bookInterface.deleteBook(id);
+
+        List<String> imageUrls = awsS3Service.extractImageUrlsFromDeleteResult(book);
+        awsS3Service.deleteFiles(imageUrls);
+
+        return new ResponseEntity<>(book, HttpStatus.OK);
     }
 }

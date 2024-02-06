@@ -1,4 +1,4 @@
-package com.projectlib.librarian.config;
+package com.projectlib.librarian.aws;
 
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
@@ -10,17 +10,16 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-
 @Configuration
 public class AwsS3Config {
 
-    @Value("${aws.accessKey}")
+    @Value("${aws.s3.accessKey}")
     private String awsAccessKey;
 
-    @Value("${aws.secretKey}")
+    @Value("${aws.s3.secretKey}")
     private String awsSecretKey;
 
-    @Value("${aws.region}")
+    @Value("${aws.s3.region}")
     private String awsRegion;
 
     @Value("${aws.s3.endpoint}")
@@ -33,5 +32,26 @@ public class AwsS3Config {
                 .withCredentials(new AWSStaticCredentialsProvider(awsCredentials))
                 .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(awsS3Endpoint, awsRegion))
                 .build();
+    }
+
+    @Bean
+    public AwsS3Service awsS3Service() {
+        return new AwsS3Service();
+    }
+
+    @Value("${aws.s3.bucket.name}")
+    private String awsS3BucketName;
+
+    @Value("${aws.s3.endpoint}")
+    private String awsS3BucketUrl;
+
+    @Bean
+    public String awsS3BucketName() {
+        return awsS3BucketName;
+    }
+
+    @Bean
+    public String awsS3BucketUrl() {
+        return awsS3BucketUrl;
     }
 }
