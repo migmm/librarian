@@ -36,21 +36,23 @@ public class AwsS3Service {
         return fileNames;
     }
 
-    public List<String> uploadFiles(List<MultipartFile> files, String bucketName, List<String> fileNames) {
-        List<String> fileUrls = new ArrayList<>();
+    public List<String> uploadFiles(List<MultipartFile> files, String bucketName) {
+        List<String> fileNamesWithExtension = new ArrayList<>();
+        List<String> uniqueFileNames = generateUUIDFileNames(files.size()); // Genera nombres de archivo únicos para la cantidad de archivos
+
         for (int i = 0; i < files.size(); i++) {
+            MultipartFile file = files.get(i);
+            String originalFileName = file.getOriginalFilename();
+            String extension = originalFileName.substring(originalFileName.lastIndexOf("."));
+            String fileName = uniqueFileNames.get(i) + extension; // Genera un nombre único para el archivo con su extensión
             try {
-                String originalFileName = files.get(i).getOriginalFilename();
-                String extension = originalFileName.substring(originalFileName.lastIndexOf("."));
-                String fileName = fileNames.get(i) + extension;
-                amazonS3Client.putObject(bucketName, fileName, files.get(i).getInputStream(), null);
-                String fileUrl = awsS3Endpoint + "/" + fileName;
-                fileUrls.add(fileUrl);
+                amazonS3Client.putObject(bucketName, fileName, file.getInputStream(), null);
+                fileNamesWithExtension.add(fileName);
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
-        return fileUrls;
+        return fileNamesWithExtension;
     }
 
     public List<String> generatePresignedUrlsForImages(List<String> imageUrls) {
@@ -73,7 +75,6 @@ public class AwsS3Service {
                         .withExpiration(expiration);
         return amazonS3Client.generatePresignedUrl(generatePresignedUrlRequest);
     }
-
 
     public String getAwsS3BucketName() {
         return awsS3BucketName;

@@ -89,11 +89,10 @@ public class BookController {
             return new ResponseEntity<>("Invalid image(s) provided.", HttpStatus.BAD_REQUEST);
         }
 
-        List<String> fileNames = awsS3Service.generateUUIDFileNames(images.size());
-        awsS3Service.uploadFiles(images, awsS3Service.getAwsS3BucketName(), fileNames);
+        List<String> uploadedFileNamesWithExtension = awsS3Service.uploadFiles(images, awsS3Service.getAwsS3BucketName());
 
         BookDTO bookDTO = BookMapper.convertToDTO(objectMapper.readValue(bookJson, Book.class));
-        bookDTO.setImages(fileNames);
+        bookDTO.setImages(uploadedFileNamesWithExtension);
 
         String message = bookInterface.createBook(bookDTO, images);
         return new ResponseEntity<>(message, HttpStatus.CREATED);
@@ -106,11 +105,10 @@ public class BookController {
             return new ResponseEntity<>("Invalid image(s) provided.", HttpStatus.BAD_REQUEST);
         }
 
-        List<String> fileNames = awsS3Service.generateUUIDFileNames(images.size());
-        awsS3Service.uploadFiles(images, awsS3Service.getAwsS3BucketName(), fileNames);
+        List<String> uploadedFileNamesWithExtension = awsS3Service.uploadFiles(images, awsS3Service.getAwsS3BucketName());
 
         BookDTO bookDTO = BookMapper.convertToDTO(objectMapper.readValue(bookJson, Book.class));
-        bookDTO.setImages(fileNames);
+        bookDTO.setImages(uploadedFileNamesWithExtension);
 
         String message = bookInterface.updateBook(id, bookDTO, images);
         return new ResponseEntity<>(message, HttpStatus.OK);
