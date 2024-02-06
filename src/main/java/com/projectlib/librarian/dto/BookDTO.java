@@ -64,20 +64,10 @@ public class BookDTO {
     @Schema(description = "Book images")
     private List<String> images;
 
-    private List<String> imageUrls;
-
     @Schema(description = "Book vendor")
     private Vendor vendor;
 
     public Boolean getStatus() {
         return status;
-    }
-
-    public List<String> getImageUrls() {
-        return imageUrls;
-    }
-
-    public void setImageUrls(List<String> imageUrls) {
-        this.imageUrls = imageUrls;
     }
 }
