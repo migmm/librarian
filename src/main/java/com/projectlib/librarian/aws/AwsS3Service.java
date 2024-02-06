@@ -3,6 +3,8 @@ package com.projectlib.librarian.aws;
 import com.amazonaws.HttpMethod;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
+import com.amazonaws.services.s3.model.DeleteObjectsRequest;
+import com.amazonaws.services.s3.model.DeleteObjectsResult;
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -74,19 +76,17 @@ public class AwsS3Service {
         return awsS3BucketName;
     }
 
-    public String deleteFiles(List<String> fileUrls) {
-        for (String fileUrl : fileUrls) {
-            String fileName = getFileNameFromUrl(fileUrl);
-            amazonS3Client.deleteObject(new DeleteObjectRequest(awsS3BucketName, fileName));
-        }
-        return "Files deleted successfully";
-    }
-
     private String getFileNameFromUrl(String fileUrl) {
         return fileUrl.substring(fileUrl.lastIndexOf("/") + 1);
     }
 
     public List<String> extractImageUrlsFromDeleteResult(String deleteResult) {
         return Arrays.asList(deleteResult.split(","));
+    }
+
+    public void deleteFiles(List<String> keys) {
+        DeleteObjectsRequest deleteObjectsRequest = new DeleteObjectsRequest(awsS3BucketName)
+                .withKeys(keys.toArray(new String[0]));
+        DeleteObjectsResult deleteObjectsResult = amazonS3Client.deleteObjects(deleteObjectsRequest);
     }
 }

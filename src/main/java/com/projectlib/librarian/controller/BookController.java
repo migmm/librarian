@@ -143,11 +143,12 @@ public class BookController {
     @DeleteMapping("/delete/{id}")
     @Operation(summary = "Delete an book", description = "Delete an book using the ID as param.")
     public ResponseEntity<String> deleteBook(@PathVariable Long id) {
-        String book = bookInterface.deleteBook(id);
+        BookDTO deletedBook = bookInterface.getBookById(id);
+        String message = bookInterface.deleteBook(id);
 
-        List<String> imageUrls = awsS3Service.extractImageUrlsFromDeleteResult(book);
-        awsS3Service.deleteFiles(imageUrls);
+        List<String> imageKeys = deletedBook.getImages();
+        awsS3Service.deleteFiles(imageKeys);
 
-        return new ResponseEntity<>(book, HttpStatus.OK);
+        return new ResponseEntity<>(message, HttpStatus.OK);
     }
 }

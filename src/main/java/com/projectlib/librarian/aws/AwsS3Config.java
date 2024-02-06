@@ -31,7 +31,7 @@ public class AwsS3Config {
 
     @Value("${aws.s3.endpoint}")
     private String awsS3BucketUrl;
-    
+
     @Bean
     public AmazonS3 amazonS3Client() {
         AWSCredentials awsCredentials = new BasicAWSCredentials(awsAccessKey, awsSecretKey);
