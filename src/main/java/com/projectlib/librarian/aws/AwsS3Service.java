@@ -40,7 +40,9 @@ public class AwsS3Service {
         List<String> fileUrls = new ArrayList<>();
         for (int i = 0; i < files.size(); i++) {
             try {
-                String fileName = fileNames.get(i);
+                String originalFileName = files.get(i).getOriginalFilename();
+                String extension = originalFileName.substring(originalFileName.lastIndexOf("."));
+                String fileName = fileNames.get(i) + extension;
                 amazonS3Client.putObject(bucketName, fileName, files.get(i).getInputStream(), null);
                 String fileUrl = awsS3Endpoint + "/" + fileName;
                 fileUrls.add(fileUrl);
