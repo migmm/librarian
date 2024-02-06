@@ -62,8 +62,8 @@ public class BookController {
         }
 
         booksPage.getContent().forEach(book -> {
-            List<String> imageUrls = awsS3Service.generatePresignedUrlsForImages(book.getImageUrls());
-            book.setImageUrls(imageUrls);
+            List<String> imageUrls = awsS3Service.generatePresignedUrlsForImages(book.getImages());
+            book.setImages(imageUrls);
         });
 
         return new ResponseEntity<>(booksPage, HttpStatus.OK);
@@ -74,9 +74,9 @@ public class BookController {
     public ResponseEntity<BookDTO> getBookById(@PathVariable Long id) {
         BookDTO book = bookInterface.getBookById(id);
 
-        if (book.getImageUrls() != null) {
-            List<String> imageUrls = awsS3Service.generatePresignedUrlsForImages(book.getImageUrls());
-            book.setImageUrls(imageUrls);
+        if (book.getImages() != null) {
+            List<String> imageUrls = awsS3Service.generatePresignedUrlsForImages(book.getImages());
+            book.setImages(imageUrls);
         }
 
         return new ResponseEntity<>(book, HttpStatus.OK);

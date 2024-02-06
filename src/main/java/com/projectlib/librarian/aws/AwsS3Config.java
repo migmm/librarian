@@ -25,6 +25,13 @@ public class AwsS3Config {
     @Value("${aws.s3.endpoint}")
     private String awsS3Endpoint;
 
+
+    @Value("${aws.s3.bucket.name}")
+    private String awsS3BucketName;
+
+    @Value("${aws.s3.endpoint}")
+    private String awsS3BucketUrl;
+    
     @Bean
     public AmazonS3 amazonS3Client() {
         AWSCredentials awsCredentials = new BasicAWSCredentials(awsAccessKey, awsSecretKey);
@@ -32,26 +39,5 @@ public class AwsS3Config {
                 .withCredentials(new AWSStaticCredentialsProvider(awsCredentials))
                 .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(awsS3Endpoint, awsRegion))
                 .build();
-    }
-
-    @Bean
-    public AwsS3Service awsS3Service() {
-        return new AwsS3Service();
-    }
-
-    @Value("${aws.s3.bucket.name}")
-    private String awsS3BucketName;
-
-    @Value("${aws.s3.endpoint}")
-    private String awsS3BucketUrl;
-
-    @Bean
-    public String awsS3BucketName() {
-        return awsS3BucketName;
-    }
-
-    @Bean
-    public String awsS3BucketUrl() {
-        return awsS3BucketUrl;
     }
 }

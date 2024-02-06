@@ -1,5 +1,6 @@
 package com.projectlib.librarian.aws;
 
+import com.amazonaws.HttpMethod;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
@@ -10,10 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class AwsS3Service {
@@ -27,6 +25,10 @@ public class AwsS3Service {
     @Value("${aws.s3.endpoint}")
     private String awsS3Endpoint;
 
+    public AwsS3Service(AmazonS3 amazonS3Client) {
+        this.amazonS3Client = amazonS3Client;
+    }
+
     public List<String> generateUUIDFileNames(int count) {
         List<String> fileNames = new ArrayList<>();
         for (int i = 0; i < count; i++) {
@@ -38,13 +40,13 @@ public class AwsS3Service {
 
     public List<String> uploadFiles(List<MultipartFile> files, String bucketName) {
         List<String> fileNamesWithExtension = new ArrayList<>();
-        List<String> uniqueFileNames = generateUUIDFileNames(files.size()); // Genera nombres de archivo únicos para la cantidad de archivos
+        List<String> uniqueFileNames = generateUUIDFileNames(files.size());
 
         for (int i = 0; i < files.size(); i++) {
             MultipartFile file = files.get(i);
             String originalFileName = file.getOriginalFilename();
             String extension = originalFileName.substring(originalFileName.lastIndexOf("."));
-            String fileName = uniqueFileNames.get(i) + extension; // Genera un nombre único para el archivo con su extensión
+            String fileName = uniqueFileNames.get(i) + extension;
             try {
                 amazonS3Client.putObject(bucketName, fileName, file.getInputStream(), null);
                 fileNamesWithExtension.add(fileName);
@@ -55,25 +57,17 @@ public class AwsS3Service {
         return fileNamesWithExtension;
     }
 
-    public List<String> generatePresignedUrlsForImages(List<String> imageUrls) {
+    public List<String> generatePresignedUrlsForImages(List<String> imageKeys) {
         List<String> presignedUrls = new ArrayList<>();
-        for (String imageUrl : imageUrls) {
-            String fileName = getFileNameFromUrl(imageUrl);
-            URL presignedUrl = generatePresignedUrl(awsS3BucketName, fileName);
+        for (String imageKey : imageKeys) {
+            Date expiration = new Date(System.currentTimeMillis() + 3600000);
+            GeneratePresignedUrlRequest generatePresignedUrlRequest = new GeneratePresignedUrlRequest(awsS3BucketName, imageKey)
+                    .withMethod(HttpMethod.GET)
+                    .withExpiration(expiration);
+            URL presignedUrl = amazonS3Client.generatePresignedUrl(generatePresignedUrlRequest);
             presignedUrls.add(presignedUrl.toString());
         }
         return presignedUrls;
-    }
-
-    public URL generatePresignedUrl(String bucketName, String fileName) {
-        java.util.Date expiration = new java.util.Date();
-        long expTimeMillis = expiration.getTime();
-        expTimeMillis += 1000 * 60 * 60; // 1 hour
-        expiration.setTime(expTimeMillis);
-        GeneratePresignedUrlRequest generatePresignedUrlRequest =
-                new GeneratePresignedUrlRequest(bucketName, fileName)
-                        .withExpiration(expiration);
-        return amazonS3Client.generatePresignedUrl(generatePresignedUrlRequest);
     }
 
     public String getAwsS3BucketName() {
