@@ -44,6 +44,8 @@ Replace database_name, username, and password with your own values.
 - Password encryption
 - Pagination in book endpoint and possibility to search by ISBN or book name
 - Image quantity, size and dimension limiter
+- Images stored in AWS S3
+- Used presigned urls to get images
 
 
 ### Database Relationships
