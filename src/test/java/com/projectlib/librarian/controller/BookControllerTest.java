@@ -1,5 +1,6 @@
 package com.projectlib.librarian.controller;
 
+import com.amazonaws.util.IOUtils;
 import com.projectlib.librarian.dto.BookDTO;
 import com.projectlib.librarian.service.BookImplementation;
 import org.junit.jupiter.api.DisplayName;
@@ -19,10 +20,12 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 
-import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -33,6 +36,8 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import javax.imageio.ImageIO;
 
 
 @SpringBootTest
@@ -93,7 +98,8 @@ public class BookControllerTest {
 
     @Test
     @DisplayName("Save new book")
-    public void saveNewBookTest() throws Exception {
+    void saveNewBookTest() throws Exception {
+
         BookDTO bookDTO = new BookDTO();
         bookDTO.setISBN(1234567890123L);
         bookDTO.setTitle("Example Title");
@@ -101,19 +107,23 @@ public class BookControllerTest {
         bookDTO.setBooks_quantity(10);
         bookDTO.setGenre("Example Genre");
 
-        when(bookImplementation.createBook(eq(bookDTO), anyList())).thenReturn("Book created successfully.");
-
-        String bookJson = "{\"ISBN\":1234567890123,\"title\":\"Example Title\",\"year\":2023,\"books_quantity\":10,\"genre\":\"Example Genre\"}";
+        String bookJson = "{\"ISBN\":1234567890123,\"title\":\"Example Title\",\"year\":\"2023-01-01\",\"books_quantity\":10,\"genre\":\"Example Genre\"}";
 
         MockMultipartFile bookJsonPart = new MockMultipartFile("book", "book.json", MediaType.APPLICATION_JSON_VALUE, bookJson.getBytes());
-        MockMultipartFile imagesPart = new MockMultipartFile("images", "image1.jpg", MediaType.IMAGE_JPEG_VALUE, "Image1Content".getBytes());
+
+        InputStream imageStream = this.getClass().getResourceAsStream("/images/test_image.jpg");
+        BufferedImage bufferedImage = ImageIO.read(imageStream);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ImageIO.write(bufferedImage, "jpg", baos);
+        byte[] imageBytes = baos.toByteArray();
+        MockMultipartFile imagePart = new MockMultipartFile("images", "test_image.jpg", MediaType.IMAGE_JPEG_VALUE, imageBytes);
 
         mockMvc.perform(MockMvcRequestBuilders.multipart("/books/save")
                         .file(bookJsonPart)
-                        .file(imagesPart)
-                        .with(csrf())
+                        .file(imagePart)
                         .contentType(MediaType.MULTIPART_FORM_DATA)
                         .accept(MediaType.APPLICATION_JSON)
+                        .with(csrf())
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + JWT_TOKEN_TEST))
                 .andExpect(MockMvcResultMatchers.status().isCreated());
     }
@@ -122,33 +132,39 @@ public class BookControllerTest {
     @DisplayName("Update a book")
     public void updateBookTest() throws Exception {
 
-        BookDTO updatedBookDTO = new BookDTO();
-        updatedBookDTO.setId(1L);
-        updatedBookDTO.setISBN(1234567890123L);
-        updatedBookDTO.setTitle("Updated Title");
-        updatedBookDTO.setYear(new SimpleDateFormat("yyyy").parse("2023"));
-        updatedBookDTO.setBooks_quantity(10);
-        updatedBookDTO.setGenre("Example Genre");
+        BookDTO existingBookDTO = new BookDTO();
+        existingBookDTO.setISBN(1234567890123L);
+        existingBookDTO.setTitle("Existing Title");
+        existingBookDTO.setYear(new SimpleDateFormat("yyyy").parse("2023"));
+        existingBookDTO.setBooks_quantity(10);
+        existingBookDTO.setGenre("Example Genre");
 
-        when(bookImplementation.updateBook(eq(1L), eq(updatedBookDTO), anyList())).thenReturn("Book updated successfully.");
+        String existingBookJson = "{\"ISBN\":1234567890123,\"title\":\"Existing Title\",\"year\":\"2023-01-01\",\"books_quantity\":10,\"genre\":\"Example Genre\"}";
+        byte[] existingBookJsonBytes = existingBookJson.getBytes();
 
-        String updatedBookJson = "{\"id\":1,\"ISBN\":1234567890123,\"title\":\"Updated Title\",\"year\":2023,\"books_quantity\":10,\"genre\":\"Example Genre\"}";
+        MockMultipartFile bookJsonPart = new MockMultipartFile("book", "book.json", MediaType.APPLICATION_JSON_VALUE, existingBookJsonBytes);
 
-        byte[] updatedBookJsonBytes = updatedBookJson.getBytes();
+        InputStream imageStream = this.getClass().getResourceAsStream("/images/test_image.jpg");
+        byte[] imageBytes = IOUtils.toByteArray(imageStream);
 
-        MockMultipartFile bookJsonPart = new MockMultipartFile("book", "book.json", MediaType.APPLICATION_JSON_VALUE, updatedBookJsonBytes);
+        MockMultipartFile imagePart = new MockMultipartFile("images", "test_image.jpg", MediaType.IMAGE_JPEG_VALUE, imageBytes);
 
-        MockMultipartFile imagesPart = new MockMultipartFile("images", "image1.jpg", MediaType.IMAGE_JPEG_VALUE, "Image1Content".getBytes());
-
-        MockMultipartHttpServletRequestBuilder builder = MockMvcRequestBuilders.multipart("/books/update/1");
-        builder.with(request -> {
-            request.setMethod("PUT");
-            return request;
-        });
-
-        mockMvc.perform(builder
+        mockMvc.perform(MockMvcRequestBuilders.multipart("/books/save")
                         .file(bookJsonPart)
-                        .file(imagesPart)
+                        .file(imagePart)
+                        .with(csrf())
+                        .contentType(MediaType.MULTIPART_FORM_DATA)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + JWT_TOKEN_TEST))
+                .andExpect(MockMvcResultMatchers.status().isCreated());
+
+        mockMvc.perform(MockMvcRequestBuilders.multipart("/books/update/1")
+                        .file(bookJsonPart)
+                        .file(imagePart)
+                        .with(request -> {
+                            request.setMethod("PUT");
+                            return request;
+                        })
                         .with(csrf())
                         .contentType(MediaType.MULTIPART_FORM_DATA)
                         .accept(MediaType.APPLICATION_JSON)
