@@ -25,38 +25,54 @@ public class ImageUtils {
     private int MAX_IMAGES_ALLOWED;
 
     public boolean isValidImageSize(byte[] imageData) {
+
         return imageData.length <= MAX_IMAGE_SIZE;
     }
 
-    public boolean isValidImageDimensions(byte[] imageData) throws IOException {
-        BufferedImage bufferedImage = ImageIO.read(new ByteArrayInputStream(imageData));
-        int imageWidth = bufferedImage.getWidth();
-        int imageHeight = bufferedImage.getHeight();
-        return imageWidth <= MAX_IMAGE_WIDTH && imageHeight <= MAX_IMAGE_HEIGHT;
+    public boolean isValidImageDimensions(byte[] imageData) {
+        try {
+            BufferedImage bufferedImage = ImageIO.read(new ByteArrayInputStream(imageData));
+            if (bufferedImage == null) {
+                return false;
+            }
+            int imageWidth = bufferedImage.getWidth();
+            int imageHeight = bufferedImage.getHeight();
+            return imageWidth <= MAX_IMAGE_WIDTH && imageHeight <= MAX_IMAGE_HEIGHT;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     public boolean isValidImageCount(int numberOfImages) {
+
         return numberOfImages <= MAX_IMAGES_ALLOWED;
     }
 
     public boolean imageCheck(List<MultipartFile> images) {
+
         if (images.size() > MAX_IMAGES_ALLOWED) {
             return false;
         }
 
         for (MultipartFile image : images) {
-            try {
-                byte[] imageData = image.getBytes();
-                if (!isValidImageSize(imageData)) {
-                    return false;
-                }
-                if (!isValidImageDimensions(imageData)) {
-                    return false;
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
+            if (!isValidImage(image)) {
                 return false;
             }
+        }
+        return true;
+    }
+
+    private boolean isValidImage(MultipartFile image) {
+
+        try {
+            byte[] imageData = image.getBytes();
+            if (!isValidImageSize(imageData) || !isValidImageDimensions(imageData)) {
+                return false;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
         }
         return true;
     }
