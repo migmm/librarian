@@ -6,7 +6,6 @@ import com.projectlib.librarian.exception.NotFoundException;
 import com.projectlib.librarian.mapper.BookMapper;
 import com.projectlib.librarian.model.Book;
 import com.projectlib.librarian.repository.BookRepository;
-import com.projectlib.librarian.helper.FilesHelper;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -37,9 +36,6 @@ class BookServiceTest {
 
     @Mock
     private BookRepository bookRepository;
-
-    @Mock
-    private FilesHelper filesHelper;
 
     @InjectMocks
     private BookImplementation bookService;

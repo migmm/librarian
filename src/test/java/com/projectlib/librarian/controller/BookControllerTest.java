@@ -27,15 +27,11 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import javax.imageio.ImageIO;
 
@@ -53,8 +49,6 @@ public class BookControllerTest {
 
     @Value("${jwt.test.token}")
     private String JWT_TOKEN_TEST;
-
-    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Test
     @DisplayName("Get all books")
@@ -173,12 +167,20 @@ public class BookControllerTest {
     }
 
     @Test
-    @DisplayName("Delete an book")
+    @DisplayName("Delete a book")
     public void deleteBookTest() throws Exception {
+        // Crear un objeto BookDTO simulado
+        BookDTO bookDTO = new BookDTO();
+        bookDTO.setId(1L);
+        bookDTO.setTitle("Example Book");
+        bookDTO.setISBN(1234567890123L);
+        bookDTO.setImages(Arrays.asList("image1.jpg", "image2.jpg"));
 
+        when(bookImplementation.getBookById(1L)).thenReturn(bookDTO);
         when(bookImplementation.deleteBook(1L)).thenReturn("Book with ID 1 deleted successfully.");
 
-        mockMvc.perform(MockMvcRequestBuilders.delete("/books/delete/1").with(csrf())
+        mockMvc.perform(MockMvcRequestBuilders.delete("/books/delete/1")
+                        .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + JWT_TOKEN_TEST))
