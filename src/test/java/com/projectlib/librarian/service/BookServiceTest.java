@@ -96,7 +96,6 @@ class BookServiceTest {
                 new MockMultipartFile("image1", "image1.png", "image/png", new byte[]{1, 2, 3}),
                 new MockMultipartFile("image2", "image2.png", "image/png", new byte[]{4, 5, 6})
         );
-        when(filesHelper.saveImageToServer(any(MultipartFile.class))).thenReturn("path/to/image.png");
 
         String result = bookService.createBook(bookDTO, images);
 
@@ -107,18 +106,20 @@ class BookServiceTest {
     @Test
     void updateBookTest() throws IOException {
 
+        Book existingBook = new Book(1L, 1234567890123L, "Book 1", new Date(), 10, 0, 10, "Genre 1", true, new ArrayList<>(), null, null);
+        when(bookRepository.findById(1L)).thenReturn(Optional.of(existingBook));
+
         BookDTO updatedBookDTO = new BookDTO(null, 1234567890123L, "Updated Book 1", new Date(), 15, 2, 13, "Genre 1", true, new ArrayList<>(), null);
         List<MultipartFile> newImages = Arrays.asList(
                 new MockMultipartFile("newImage1", "newImage1.png", "image/png", new byte[]{7, 8, 9}),
                 new MockMultipartFile("newImage2", "newImage2.png", "image/png", new byte[]{10, 11, 12})
         );
-        Book existingBook = new Book(1L, 1234567890123L, "Book 1", new Date(), 10, 0, 10, "Genre 1", true, new ArrayList<>(), null, null);
-        when(bookRepository.findById(1L)).thenReturn(java.util.Optional.ofNullable(existingBook));
-        when(filesHelper.saveImageToServer(any(MultipartFile.class))).thenReturn("path/to/newImage.png");
+
+        when(bookRepository.save(any(Book.class))).thenReturn(existingBook);
 
         String result = bookService.updateBook(1L, updatedBookDTO, newImages);
-
         assertEquals("Book updated successfully.", result);
+
         verify(bookRepository, times(1)).save(any(Book.class));
     }
 
