@@ -4,5 +4,6 @@ WORKDIR /app
 
 COPY target/librarian-0.0.1-SNAPSHOT.jar /app/app.jar
 
-CMD ["java", "-jar", "app.jar"]
+EXPOSE 8080
 
+ENTRYPOINT ["java", "-jar", "app.jar"]
